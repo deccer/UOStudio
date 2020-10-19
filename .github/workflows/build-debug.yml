@@ -1,0 +1,43 @@
+﻿name: Build-Debug
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "!*" # not a tag push
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+env:
+  DOTNET_NOLOGO: false
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  NUGET_XMLDOC_MODE: skip
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on:
+          [
+              macos-10.15,
+              ubuntu-16.04,
+              ubuntu-18.04,
+              ubuntu-latest,
+              windows-2016,
+              windows-2019,
+          ]
+    name: ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.402
+
+      - run: dotnet build -c Debug
+      - run: dotnet test -c Debug --no-build

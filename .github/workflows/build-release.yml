@@ -1,0 +1,63 @@
+﻿name: Build-Release
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+*"
+
+env:
+  DOTNET_NOLOGO: false
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  NUGET_XMLDOC_MODE: skip
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on:
+          [
+              macos-10.15,
+              ubuntu-16.04,
+              ubuntu-18.04,
+              windows-2016,
+              windows-2019,
+          ]
+    name: ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs-on }}
+    env:
+      GIT_TAG: ${GITHUB_REF#refs/tags/}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.402
+
+      - uses: dotnet/nbgv@master
+        id: nbgv
+
+      - if: ${{ contains(matrix.runs-on, 'windows') }}
+      - run: dotnet build -c Release -p:Version=${{ env.GIT_TAG2 }}
+      - if: ${{ contains(matrix.runs-on, 'macos') || contains(matrix.runs-on, 'ubuntu') }}
+      - run: dotnet build -c Release -p:Version=${{ env.GIT_TAG }}
+
+      - run: dotnet test -c Release --no-build
+      - if: ${{ contains(matrix.runs-on, 'windows') }}
+      - run: dotnet publish ./src/NCentrED/NCentrED.csproj -r ${{ matrix.runs-on }} -c Release --no-build -o ./build/windows -p:Version=${{ env.GIT_TAG2 }}
+      - if: ${{ contains(matrix.runs-on, 'macos') }}
+      - run: dotnet publish ./src/NCentrED/NCentrED.csproj -r ${{ matrix.runs-on }} -c Release --no-build -o ./build/macos -p:Version=${{ env.GIT_TAG }}
+      - if: ${{ contains(matrix.runs-on, 'ubuntu') }}
+      - run: dotnet publish ./src/NCentrED/NCentrED.csproj -r ${{ matrix.runs-on }} -c Release --no-build -o ./build/ubuntu -p:Version=${{ env.GIT_TAG }}
+
+      - name: Create Artifact
+        run: rm -rf ./src/*/bin && rm -rf ./src/*/obj && zip -9 -r NCentrED.zip ./*
+
+      - name: Upload Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./NCentrED.zip
+          asset_name: NCentrED-${{ matrix.os }}-x64-${{ steps.nbgv.outputs.Version }}.zip
+          asset_content_type: application/zip
