@@ -35,6 +35,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v2
+      - run: git submodule update --init --recursive
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.402
