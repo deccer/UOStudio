@@ -39,9 +39,8 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
-      - name: Install zlib
+      - ${{ if or(contains(matrix.runs-on, 'ubuntu-16.04'), contains(matrix.runs-on, 'ubuntu-18.04')) }}:
         run: sudo apt-get install zlib1g-dev
-        if: ${{ contains(matrix.runs-on, 'ubuntu-16.04') or contains(matrix.runs-on, 'ubuntu-18.04') }}
 
       - uses: actions/setup-dotnet@v1
         with:
