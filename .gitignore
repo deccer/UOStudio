@@ -351,3 +351,6 @@ MigrationBackup/
 
 # Rider
 .idea/
+
+# FNA libs
+!external/fnalibs/**/*.*
