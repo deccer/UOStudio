@@ -36,8 +36,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\x86\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true' " />
-        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\x64\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false' " />
+        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\32bit\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true' " />
+        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\64bit\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false' " />
         <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\osx\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
         <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\vulkan\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
         <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\lib64\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false' " />
