@@ -9,6 +9,7 @@ namespace Ned.Client
     {
         public static void Main(string[] args)
         {
+            DllMap.Initialise();
             var compositionRoot = CreateCompositionRoot();
 
             using var clientGame = compositionRoot.GetService<ClientGame>();
