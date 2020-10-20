@@ -353,4 +353,6 @@ MigrationBackup/
 .idea/
 
 # FNA libs
-!external/fnalibs/**/*.*
+!external/fnalibs/
+!external/fnalibs/x64/*.*
+!external/fnalibs/x86/*.*
