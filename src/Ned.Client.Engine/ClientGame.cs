@@ -41,10 +41,10 @@ namespace Ned.Client.Engine
         {
             base.Initialize();
 
+            _logger.Information("Initializing...");
             _currentKeyboardState = Keyboard.GetState();
             _currentMouseState = Mouse.GetState();
 
-            _logger.Information("Initializing...");
             _guiInputHandler = new ImGuiInputHandler();
             _guiRenderer = new ImGuiRenderer(this, _guiInputHandler)
                 .Initialize()
@@ -65,9 +65,18 @@ namespace Ned.Client.Engine
             base.Draw(gameTime);
         }
 
+        protected override void LoadContent()
+        {
+            _logger.Information("Loading Content...");
+            base.LoadContent();
+            _logger.Information("Loading Content...Done");
+        }
+
         protected override void UnloadContent()
         {
+            _logger.Information("Unloading Content...");
             base.UnloadContent();
+            _logger.Information("Unloading Content...Done");
         }
 
         protected override void Update(GameTime gameTime)
