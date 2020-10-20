@@ -3,10 +3,41 @@
 ![Build-Debug](https://github.com/deccer/NCentrED/workflows/Build-Debug/badge.svg)
 ![.github/workflows/build-release.yml](https://github.com/deccer/NCentrED/workflows/.github/workflows/build-release.yml/badge.svg)
 
-Complete rewrite of
-- [CentrED](https://redmine.aksdb.de/projects/centred/wiki/CentrED)
-- [CentrED+](https://uo.wzk.cz/centred-plus/)
+NCentrED - the Ultima Online multiplayer world editor
 
- in C#. The multiplayer Ultima Online world editors made by Andreas Schneider and StaticZ.
+Complete rewrite of
+- [CentrED](https://redmine.aksdb.de/projects/centred/wiki/CentrED) made by Andreas Schneider
+- [CentrED+](https://uo.wzk.cz/centred-plus/) made by StaticZ
+
+ in C#.
 
 Hop onto the discord if you want to find out more - https://discord.gg/tYeZh3f
+
+## Development Setup
+
+### Windows
+
+```ps
+git clone --recursive https://github.com/deccer/NCentrED
+cd NCentrED
+```
+
+open `Ned.sln` with Visual Studio, Visual Studio Code or Rider.
+For Visual Studio Code you have to install the "C#" extension.
+
+### Linux
+
+Ubuntu
+
+#### Prerequisites
+```bash
+sudo apt install libsdl2-dev
+```
+
+### OSX
+
+Not Supported, as I don't have a system to test/play with.
+
+#### Disclaimer
+Ultima™ Online © 1997 Electronic Arts Inc. Ultima, the UO logo, Are You With Us?, ORIGIN, the ORIGIN logo and We create worlds are trademarks or registered trademarks of Electronic Arts Inc. in the U.S. and/or other countries. All rights reserved. ORIGIN™ is an Electronic Arts™ brand.
+
