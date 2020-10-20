@@ -42,6 +42,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ned.Server.Engine", "src\Ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNA.Core", "external\FNA\FNA.Core.csproj", "{AF833E9C-A82E-46E2-B7CF-2DD6BB888E26}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{2A284388-DA81-433D-BB2F-0138800CD065}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "client", "client", "{2D68DE8B-0108-456E-B583-8AB50958594F}"
+ProjectSection(SolutionItems) = preProject
+	assets\client\splashscreen.png = assets\client\splashscreen.png
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +69,7 @@ Global
 		{14DA5B0E-4A10-4013-A8D4-6DD1F9454B43} = {304FF3A6-6D54-4C8A-ACD0-AA1698648346}
 		{651BB934-C75D-4E0E-A251-B6EBDBAF1DCC} = {304FF3A6-6D54-4C8A-ACD0-AA1698648346}
 		{AF833E9C-A82E-46E2-B7CF-2DD6BB888E26} = {304FF3A6-6D54-4C8A-ACD0-AA1698648346}
+		{2D68DE8B-0108-456E-B583-8AB50958594F} = {2A284388-DA81-433D-BB2F-0138800CD065}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5ECE21F1-CC33-40ED-8273-2A83917A3418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

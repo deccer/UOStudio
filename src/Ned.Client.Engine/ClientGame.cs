@@ -1,9 +1,11 @@
-﻿using ImGuiNET;
+﻿using System;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Ned.Client.Engine.UI;
 using Serilog;
+using Num = System.Numerics;
 
 namespace Ned.Client.Engine
 {
@@ -18,6 +20,9 @@ namespace Ned.Client.Engine
         private MouseState _currentMouseState;
 
         private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f);
+        private Texture2D _splashScreenTexture;
+        private IntPtr _splashScreenTextureId;
+        private bool _showSplashScreen = true;
 
         public ClientGame(ILogger logger)
         {
@@ -39,8 +44,6 @@ namespace Ned.Client.Engine
 
         protected override void Initialize()
         {
-            base.Initialize();
-
             _logger.Information("Initializing...");
             _currentKeyboardState = Keyboard.GetState();
             _currentMouseState = Mouse.GetState();
@@ -51,7 +54,7 @@ namespace Ned.Client.Engine
                 .RebuildFontAtlas();
 
             ImGui.GetIO().ConfigFlags = ImGuiConfigFlags.DockingEnable;
-
+            base.Initialize();
             _logger.Information("Initializing...Done");
         }
 
@@ -69,12 +72,17 @@ namespace Ned.Client.Engine
         {
             _logger.Information("Loading Content...");
             base.LoadContent();
+
+            _splashScreenTexture = Content.Load<Texture2D>("Content/splashscreen");
+            _splashScreenTextureId = _guiRenderer.BindTexture(_splashScreenTexture);
+
             _logger.Information("Loading Content...Done");
         }
 
         protected override void UnloadContent()
         {
             _logger.Information("Unloading Content...");
+            _splashScreenTexture.Dispose();
             base.UnloadContent();
             _logger.Information("Unloading Content...Done");
         }
@@ -115,6 +123,18 @@ namespace Ned.Client.Engine
                 }
 
                 ImGui.EndMainMenuBar();
+            }
+
+            if (_showSplashScreen && ImGui.Begin("Splashscreen"))
+            {
+                ImGui.SetWindowPos(new Num.Vector2(_graphics.PreferredBackBufferWidth / 2.0f - _splashScreenTexture.Width / 2.0f, _graphics.PreferredBackBufferHeight / 2.0f - _splashScreenTexture.Height / 2.0f));
+                ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Num.Vector2(0, 0));
+                if (ImGui.ImageButton(_splashScreenTextureId, new Num.Vector2(_splashScreenTexture.Width, _splashScreenTexture.Height), Num.Vector2.Zero, Num.Vector2.One, 0))
+                {
+                    _showSplashScreen = false;
+                }
+                ImGui.PopStyleVar();
+                ImGui.End();
             }
         }
     }

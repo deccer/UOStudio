@@ -29,5 +29,11 @@
     <ItemGroup>
       <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <None Include="..\..\assets\client\splashscreen.png">
+        <Link>Content\splashscreen.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 
 </Project>

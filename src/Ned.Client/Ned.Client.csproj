@@ -43,6 +43,13 @@
         <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\lib64\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false' " />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="..\..\assets\client\splashscreen.png">
+        <Link>Content\splashscreen.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <Target Name="PostBuild" AfterTargets="Build">
         <Message Text="Copying ThirdPartyLibraries" />
         <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true' " />
