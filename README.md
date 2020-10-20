@@ -19,6 +19,7 @@ Hop onto the discord if you want to find out more - https://discord.gg/tYeZh3f
 
 ```ps
 git clone --recursive https://github.com/deccer/NCentrED
+git submodule update --init --recursive --force
 cd NCentrED
 ```
 
