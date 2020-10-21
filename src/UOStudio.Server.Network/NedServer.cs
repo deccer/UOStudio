@@ -45,7 +45,7 @@ namespace UOStudio.Server.Network
         {
             if (_server.ConnectedPeersCount < 10)
             {
-                request.AcceptIfKey("NCentrED");
+                request.AcceptIfKey("UOStudio");
             }
             else
             {

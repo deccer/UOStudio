@@ -38,7 +38,7 @@ namespace UOStudio.Client.Engine
             _nedClient = nedClient;
             _nedClient.Connected += NedClientConnectedHandler;
 
-            Window.Title = "NCentrED";
+            Window.Title = "UOStudio";
 
             _graphics = new GraphicsDeviceManager(this)
             {

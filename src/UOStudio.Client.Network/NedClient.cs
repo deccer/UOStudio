@@ -57,7 +57,7 @@ namespace UOStudio.Client.Network
             _logger.Debug($"NetworkClient - Connecting to {address}:{port}...");
             _client.Start();
             _clientThread.Start();
-            _peerConnection = _client.Connect(address, port, "NCentrED");
+            _peerConnection = _client.Connect(address, port, "UOStudio");
         }
 
         public void Disconnect()

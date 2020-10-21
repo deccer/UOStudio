@@ -1,7 +1,7 @@
 # NCentrED
-[![CodeFactor](https://www.codefactor.io/repository/github/deccer/ncentred/badge)](https://www.codefactor.io/repository/github/deccer/ncentred)
-![Build-Debug](https://github.com/deccer/NCentrED/workflows/Build-Debug/badge.svg)
-![.github/workflows/build-release.yml](https://github.com/deccer/NCentrED/workflows/.github/workflows/build-release.yml/badge.svg)
+[![CodeFactor](https://www.codefactor.io/repository/github/deccer/uostudio/badge)](https://www.codefactor.io/repository/github/deccer/ncentred)
+![Build-Debug](https://github.com/deccer/UOStudio/workflows/Build-Debug/badge.svg)
+![.github/workflows/build-release.yml](https://github.com/deccer/UOStudio/workflows/.github/workflows/build-release.yml/badge.svg)
 
 NCentrED - the Ultima Online multiplayer world editor
 
@@ -18,9 +18,9 @@ Hop onto the discord if you want to find out more - https://discord.gg/tYeZh3f
 ### Windows
 
 ```ps
-git clone --recursive https://github.com/deccer/NCentrED
+git clone --recursive https://github.com/deccer/UOStudio
 git submodule update --init --recursive --force
-cd NCentrED
+cd UOStudio
 ```
 
 open `Ned.sln` with Visual Studio, Visual Studio Code or Rider.
