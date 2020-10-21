@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Ned.Core\Ned.Core.csproj" />
+      <ProjectReference Include="..\UOStudio.Core\UOStudio.Core.csproj" />
+    </ItemGroup>
+
+</Project>

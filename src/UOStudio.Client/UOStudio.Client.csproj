@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\stylecop.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Engine\UOStudio.Client.Engine.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Network\UOStudio.Client.Network.csproj" />
+        <ProjectReference Include="..\UOStudio.Core\UOStudio.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\32bit\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true' " />
+        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\64bit\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false' " />
+        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\osx\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
+        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\vulkan\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
+        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\lib64\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false' " />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\assets\client\splashscreen.png">
+        <Link>Content\splashscreen.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="Build">
+        <Message Text="Copying ThirdPartyLibraries" />
+        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true' " />
+        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false' " />
+        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
+        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false' " />
+    </Target>
+</Project>
