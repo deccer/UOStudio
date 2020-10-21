@@ -29,6 +29,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
+      <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
        <ProjectReference Include="..\UOStudio.Client.Network\UOStudio.Client.Network.csproj" />
     </ItemGroup>
     <ItemGroup>

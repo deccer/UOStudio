@@ -16,7 +16,6 @@ namespace UOStudio.Client.Core.Settings
             _configurationLoader = configurationLoader;
             _configurationSaver = configurationSaver;
             AppSettings = new AppSettings();
-            Load();
         }
 
         public AppSettings AppSettings { get; private set; }

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Serilog;
+using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Network;
 using Num = System.Numerics;
@@ -14,6 +15,7 @@ namespace UOStudio.Client.Engine
     public class ClientGame : Game
     {
         private readonly ILogger _logger;
+        private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly INedClient _nedClient;
         private GraphicsDeviceManager _graphics;
         private ImGuiInputHandler _guiInputHandler;
@@ -32,18 +34,21 @@ namespace UOStudio.Client.Engine
         private string _serverPortText = "9050";
         private int _serverPort;
 
-        public ClientGame(ILogger logger, INedClient nedClient)
+        public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider,  INedClient nedClient)
         {
             _logger = logger;
+            _appSettingsProvider = appSettingsProvider;
             _nedClient = nedClient;
+
+            _appSettingsProvider.Load();
             _nedClient.Connected += NedClientConnectedHandler;
 
             Window.Title = "UOStudio";
 
             _graphics = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferWidth = 1920,
-                PreferredBackBufferHeight = 1080,
+                PreferredBackBufferWidth = _appSettingsProvider.AppSettings.Video.Width,
+                PreferredBackBufferHeight = _appSettingsProvider.AppSettings.Video.Height,
                 PreferMultiSampling = true,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
