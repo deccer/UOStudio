@@ -1,15 +1,17 @@
-# NCentrED
+# UOStudio
 [![CodeFactor](https://www.codefactor.io/repository/github/deccer/uostudio/badge)](https://www.codefactor.io/repository/github/deccer/ncentred)
 ![Build-Debug](https://github.com/deccer/UOStudio/workflows/Build-Debug/badge.svg)
 ![.github/workflows/build-release.yml](https://github.com/deccer/UOStudio/workflows/.github/workflows/build-release.yml/badge.svg)
 
-NCentrED - the Ultima Online multiplayer world editor
+UOStudio - the Ultima Online multiplayer world editor
 
 Complete rewrite of
 - [CentrED](https://redmine.aksdb.de/projects/centred/wiki/CentrED) made by Andreas Schneider
 - [CentrED+](https://uo.wzk.cz/centred-plus/) made by StaticZ
 
  in C#.
+
+Hopefully with many useful additions.
 
 Hop onto the discord if you want to find out more - https://discord.gg/tYeZh3f
 
@@ -23,7 +25,7 @@ git submodule update --init --recursive --force
 cd UOStudio
 ```
 
-open `Ned.sln` with Visual Studio, Visual Studio Code or Rider.
+open `UOStudio.sln` with Visual Studio, Visual Studio Code or Rider.
 For Visual Studio Code you have to install the "C#" extension.
 
 ### Linux
