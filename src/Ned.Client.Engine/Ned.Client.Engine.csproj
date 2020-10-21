@@ -28,6 +28,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
+      <ProjectReference Include="..\Ned.Client.Network\Ned.Client.Network.csproj" />
     </ItemGroup>
     <ItemGroup>
       <None Include="..\..\assets\client\splashscreen.png">

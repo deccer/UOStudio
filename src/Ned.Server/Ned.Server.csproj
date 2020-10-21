@@ -33,6 +33,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Ned.Server.Engine\Ned.Server.Engine.csproj" />
+      <ProjectReference Include="..\Ned.Server.Network\Ned.Server.Network.csproj" />
     </ItemGroup>
 
 </Project>

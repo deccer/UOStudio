@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Ned.Client.Engine.UI;
+using Ned.Client.Network;
 using Serilog;
 using Num = System.Numerics;
 
@@ -12,6 +14,7 @@ namespace Ned.Client.Engine
     public class ClientGame : Game
     {
         private readonly ILogger _logger;
+        private readonly INedClient _nedClient;
         private GraphicsDeviceManager _graphics;
         private ImGuiInputHandler _guiInputHandler;
         private ImGuiRenderer _guiRenderer;
@@ -23,10 +26,17 @@ namespace Ned.Client.Engine
         private Texture2D _splashScreenTexture;
         private IntPtr _splashScreenTextureId;
         private bool _showSplashScreen = true;
+        private bool _showLoginScreen;
 
-        public ClientGame(ILogger logger)
+        private string _serverName = "localhost";
+        private string _serverPortText = "9050";
+        private int _serverPort;
+
+        public ClientGame(ILogger logger, INedClient nedClient)
         {
             _logger = logger;
+            _nedClient = nedClient;
+            _nedClient.Connected += NedClientConnectedHandler;
 
             Window.Title = "NCentrED";
 
@@ -70,21 +80,21 @@ namespace Ned.Client.Engine
 
         protected override void LoadContent()
         {
-            _logger.Information("Loading Content...");
+            _logger.Information("Content - Loading...");
             base.LoadContent();
 
             _splashScreenTexture = Content.Load<Texture2D>("Content/splashscreen");
             _splashScreenTextureId = _guiRenderer.BindTexture(_splashScreenTexture);
 
-            _logger.Information("Loading Content...Done");
+            _logger.Information("Content - Loading...Done");
         }
 
         protected override void UnloadContent()
         {
-            _logger.Information("Unloading Content...");
+            _logger.Information("Content - Unloading...");
             _splashScreenTexture.Dispose();
             base.UnloadContent();
-            _logger.Information("Unloading Content...Done");
+            _logger.Information("Content - Unloading...Done");
         }
 
         protected override void Update(GameTime gameTime)
@@ -98,6 +108,12 @@ namespace Ned.Client.Engine
             base.Update(gameTime);
         }
 
+        private void NedClientConnectedHandler(EndPoint endPoint, int clientId)
+        {
+            _showLoginScreen = false;
+            _nedClient.SendMessage("Tadaaaa!");
+        }
+
         private void DrawUi()
         {
             if (ImGui.BeginMainMenuBar())
@@ -106,6 +122,17 @@ namespace Ned.Client.Engine
                 {
                     if (ImGui.BeginMenu("File"))
                     {
+                        if (ImGui.MenuItem("Connect..."))
+                        {
+                            _showLoginScreen = true;
+                        }
+
+                        if (ImGui.MenuItem("Disconnect"))
+                        {
+                            _nedClient.Disconnect();
+                        }
+
+                        ImGui.Separator();
                         if (ImGui.MenuItem("Quit"))
                         {
                             Exit();
@@ -132,8 +159,23 @@ namespace Ned.Client.Engine
                 if (ImGui.ImageButton(_splashScreenTextureId, new Num.Vector2(_splashScreenTexture.Width, _splashScreenTexture.Height), Num.Vector2.Zero, Num.Vector2.One, 0))
                 {
                     _showSplashScreen = false;
+                    _showLoginScreen = true;
                 }
                 ImGui.PopStyleVar();
+                ImGui.End();
+            }
+
+            if (_showLoginScreen && ImGui.Begin("Login", ImGuiWindowFlags.NoCollapse))
+            {
+                ImGui.InputText("Server Name or Ip Address", ref _serverName, 64);
+                ImGui.InputText("Port", ref _serverPortText, 5);
+
+                if (ImGui.Button("Connect"))
+                {
+                    _serverPort = int.TryParse(_serverPortText, out var port) ? port : 0;
+                    _nedClient.Connect(_serverName, _serverPort);
+                }
+
                 ImGui.End();
             }
         }

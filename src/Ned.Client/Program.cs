@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Ned.Client.Engine;
+using Ned.Client.Network;
 using Serilog;
 
 namespace Ned.Client
@@ -18,12 +19,16 @@ namespace Ned.Client
 
         private static IServiceProvider CreateCompositionRoot()
         {
-            var services = new ServiceCollection();
-            var logger = new LoggerConfiguration()
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .MinimumLevel.Verbose()
                 .WriteTo.Console()
+                .WriteTo.File("client.log")
                 .CreateLogger();
 
-            services.AddSingleton<ILogger>(logger);
+            var services = new ServiceCollection();
+            services.AddSingleton<ILogger>(Log.Logger);
+            services.AddSingleton<INedClient, NedClient>();
             services.AddSingleton<ClientGame>();
             return services.BuildServiceProvider();
         }
