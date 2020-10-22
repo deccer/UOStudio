@@ -16,7 +16,7 @@ namespace UOStudio.Client.Engine
     {
         private readonly ILogger _logger;
         private readonly IAppSettingsProvider _appSettingsProvider;
-        private readonly INedClient _nedClient;
+        private readonly INetworkClient _networkClient;
         private GraphicsDeviceManager _graphics;
         private ImGuiInputHandler _guiInputHandler;
         private ImGuiRenderer _guiRenderer;
@@ -34,14 +34,14 @@ namespace UOStudio.Client.Engine
         private string _serverPortText = "9050";
         private int _serverPort;
 
-        public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider,  INedClient nedClient)
+        public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider,  INetworkClient networkClient)
         {
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;
-            _nedClient = nedClient;
+            _networkClient = networkClient;
 
             _appSettingsProvider.Load();
-            _nedClient.Connected += NedClientConnectedHandler;
+            _networkClient.Connected += NetworkClientConnectedHandler;
 
             Window.Title = "UOStudio";
 
@@ -113,10 +113,10 @@ namespace UOStudio.Client.Engine
             base.Update(gameTime);
         }
 
-        private void NedClientConnectedHandler(EndPoint endPoint, int clientId)
+        private void NetworkClientConnectedHandler(EndPoint endPoint, int clientId)
         {
             _showLoginScreen = false;
-            _nedClient.SendMessage("Tadaaaa!");
+            _networkClient.SendMessage("Tadaaaa!");
         }
 
         private void DrawUi()
@@ -134,12 +134,13 @@ namespace UOStudio.Client.Engine
 
                         if (ImGui.MenuItem("Disconnect"))
                         {
-                            _nedClient.Disconnect();
+                            _networkClient.Disconnect();
                         }
 
                         ImGui.Separator();
                         if (ImGui.MenuItem("Quit"))
                         {
+                            _networkClient.Disconnect();
                             Exit();
                         }
 
@@ -178,7 +179,7 @@ namespace UOStudio.Client.Engine
                 if (ImGui.Button("Connect"))
                 {
                     _serverPort = int.TryParse(_serverPortText, out var port) ? port : 0;
-                    _nedClient.Connect(_serverName, _serverPort);
+                    _networkClient.Connect(_serverName, _serverPort);
                 }
 
                 ImGui.End();

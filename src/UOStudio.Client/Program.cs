@@ -33,7 +33,7 @@ namespace UOStudio.Client
             services.AddSingleton<IConfigurationLoader, ConfigurationLoader>();
             services.AddSingleton<IConfigurationSaver, ConfigurationSaver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
-            services.AddSingleton<INedClient, NedClient>();
+            services.AddSingleton<INetworkClient, NetworkClient>();
             services.AddSingleton<ClientGame>();
             return services.BuildServiceProvider();
         }

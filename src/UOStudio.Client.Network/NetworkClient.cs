@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -7,8 +8,8 @@ using Serilog;
 
 namespace UOStudio.Client.Network
 {
-    public class NedClient
-        : INedClient
+    public class NetworkClient
+        : INetworkClient
     {
         private readonly ILogger _logger;
         private readonly EventBasedNetListener _listener;
@@ -18,16 +19,46 @@ namespace UOStudio.Client.Network
 
         public event Action<EndPoint, int> Connected;
 
-        public NedClient(ILogger logger)
+        public NetworkClient(ILogger logger)
         {
             _logger = logger;
             _listener = new EventBasedNetListener();
             _client = new NetManager(_listener);
             _clientThread = new Thread(ClientThreadProc);
 
+            _listener.DeliveryEvent += DeliveryEventHandler;
+            _listener.ConnectionRequestEvent += ConnectionRequestEventHandler;
+            _listener.NetworkErrorEvent += NetworkErrorEventHandler;
+            _listener.NetworkLatencyUpdateEvent += NetworkLatencyUpdateEventHandler;
             _listener.NetworkReceiveEvent += NetworkReceiveEventHandler;
+            _listener.NetworkReceiveUnconnectedEvent += NetworkReceiveUnconnectedEventHandler;
             _listener.PeerConnectedEvent += PeerConnectedEventHandler;
             _listener.PeerDisconnectedEvent += PeerDisconnectedEventHandler;
+        }
+
+        private void NetworkReceiveUnconnectedEventHandler(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
+        {
+            _logger.Debug($"NetworkClient - UDP - {remoteEndPoint} {messageType}");
+        }
+
+        private void NetworkLatencyUpdateEventHandler(NetPeer peer, int latency)
+        {
+            _logger.Debug($"NetworkClient - LatencyUpdate - {latency}ms");
+        }
+
+        private void NetworkErrorEventHandler(IPEndPoint endpoint, SocketError socketError)
+        {
+            _logger.Error($"NetworkClient - Error - {socketError}");
+        }
+
+        private void ConnectionRequestEventHandler(ConnectionRequest request)
+        {
+            _logger.Debug($"NetworkClient - ConnectionRequest - {request.RemoteEndPoint}");
+        }
+
+        private void DeliveryEventHandler(NetPeer peer, object userdata)
+        {
+            _logger.Debug($"NetworkClient - Delivery {peer.Id}");
         }
 
         private void ClientThreadProc(object? obj)

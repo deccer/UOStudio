@@ -3,7 +3,7 @@ using System.Net;
 
 namespace UOStudio.Client.Network
 {
-    public interface INedClient
+    public interface INetworkClient
     {
         event Action<EndPoint, int> Connected;
 

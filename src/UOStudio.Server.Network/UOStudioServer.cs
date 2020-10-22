@@ -6,14 +6,14 @@ using UOStudio.Server.Core.Settings;
 
 namespace UOStudio.Server.Network
 {
-    public class NedServer
+    public class UOStudioServer
     {
         private readonly ILogger _logger;
         private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly EventBasedNetListener _listener;
         private readonly NetManager _server;
 
-        public NedServer(ILogger logger, IAppSettingsProvider appSettingsProvider)
+        public UOStudioServer(ILogger logger, IAppSettingsProvider appSettingsProvider)
         {
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;

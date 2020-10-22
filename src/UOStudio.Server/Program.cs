@@ -13,7 +13,7 @@ namespace UOStudio.Server
         {
             var serviceProvider = CreateCompositionRoot();
 
-            var nedServer = serviceProvider.GetService<NedServer>();
+            var nedServer = serviceProvider.GetService<UOStudioServer>();
 
             nedServer.Run();
         }
@@ -31,7 +31,7 @@ namespace UOStudio.Server
             services.AddSingleton<IConfigurationLoader, ConfigurationLoader>();
             services.AddSingleton<IConfigurationSaver, ConfigurationSaver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
-            services.AddSingleton<NedServer>();
+            services.AddSingleton<UOStudioServer>();
 
             return services.BuildServiceProvider();
         }

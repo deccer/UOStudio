@@ -10,6 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{774A4201-09BA-4748-9CF5-66437CAEF97B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{52639B27-FD09-4AC3-BC90-B33E61553CB8}"
+ProjectSection(SolutionItems) = preProject
+	docs\index.md = docs\index.md
+	docs\about.md = docs\about.md
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UOStudio.Client", "src\UOStudio.Client\UOStudio.Client.csproj", "{5ECE21F1-CC33-40ED-8273-2A83917A3418}"
 EndProject
@@ -28,6 +32,7 @@ ProjectSection(SolutionItems) = preProject
 	stylecop.json = stylecop.json
 	stylecop.ruleset = stylecop.ruleset
 	FNA.Settings.props = FNA.Settings.props
+	mkdocs.yml = mkdocs.yml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F7F1ADC3-234C-4238-AE34-72ADCB9917D0}"
