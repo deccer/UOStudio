@@ -1,0 +1,24 @@
+site_name: UO Studio
+repo_url: https://github.com/deccer/UOStudio
+nav:
+  - Home: index.md
+  - About: about.md
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: yellow
+    accent: pink
+  font:
+    code: Roboto Mono
+  language: en
+extra:
+  social:
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/tYeZh3f
+      name: UOStudio on discord
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed
