@@ -106,6 +106,7 @@ namespace UOStudio.Client.Engine
             _splashScreenTexture = Content.Load<Texture2D>("Content/splashscreen");
             _splashScreenTextureId = _guiRenderer.BindTexture(_splashScreenTexture);
 
+            /*
             var loadUltimaAssetsTask = _ultimaProvider.Load(_logger, GraphicsDevice);
             Task.WaitAll(loadUltimaAssetsTask);
 
@@ -114,13 +115,13 @@ namespace UOStudio.Client.Engine
                 var staticTexture = _ultimaProvider.ArtLoader.GetTexture(staticIndex);
                 if (staticTexture == null)
                 {
-                    //_logger.Warning($"StaticTexture null for {staticIndex}");
                     continue;
                 }
 
                 var textureHandle = _guiRenderer.BindTexture(staticTexture);
                 _staticsTexturesMap.Add(staticTexture, textureHandle);
             }
+            */
 
             _logger.Information("Content - Loading...Done");
         }
