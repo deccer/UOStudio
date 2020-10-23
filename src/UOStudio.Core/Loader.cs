@@ -3,15 +3,15 @@ using System.IO;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace UOStudio.Core.Settings
+namespace UOStudio.Core
 {
-    public sealed class ConfigurationLoader : IConfigurationLoader
+    public sealed class Loader : ILoader
     {
         private readonly ILogger _logger;
 
-        public ConfigurationLoader(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        public Loader(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        public T LoadConfiguration<T>(string fileName) where T : class
+        public T Load<T>(string fileName) where T : class
         {
             if (!File.Exists(fileName))
             {

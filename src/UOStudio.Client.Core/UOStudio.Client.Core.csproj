@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Ned.Core\Ned.Core.csproj" />
       <ProjectReference Include="..\UOStudio.Core\UOStudio.Core.csproj" />
     </ItemGroup>
 

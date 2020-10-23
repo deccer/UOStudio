@@ -4,7 +4,7 @@ using Serilog;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Network;
-using UOStudio.Core.Settings;
+using UOStudio.Core;
 
 namespace UOStudio.Client
 {
@@ -30,10 +30,11 @@ namespace UOStudio.Client
 
             var services = new ServiceCollection();
             services.AddSingleton<ILogger>(Log.Logger);
-            services.AddSingleton<IConfigurationLoader, ConfigurationLoader>();
-            services.AddSingleton<IConfigurationSaver, ConfigurationSaver>();
+            services.AddSingleton<ILoader, Loader>();
+            services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
             services.AddSingleton<INetworkClient, NetworkClient>();
+            services.AddSingleton<IUltimaProvider, UltimaProvider>();
             services.AddSingleton<ClientGame>();
             return services.BuildServiceProvider();
         }

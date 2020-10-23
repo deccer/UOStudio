@@ -5,11 +5,11 @@ using System.Threading;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using Serilog;
+using UOStudio.Client.Core;
 
 namespace UOStudio.Client.Network
 {
-    public class NetworkClient
-        : INetworkClient
+    public class NetworkClient : INetworkClient
     {
         private readonly ILogger _logger;
         private readonly EventBasedNetListener _listener;
@@ -17,7 +17,11 @@ namespace UOStudio.Client.Network
         private NetPeer _peerConnection;
         private readonly Thread _clientThread;
 
+        private Profile _profile;
+
         public event Action<EndPoint, int> Connected;
+
+        public bool IsConnected { get; private set; }
 
         public NetworkClient(ILogger logger)
         {
@@ -75,25 +79,38 @@ namespace UOStudio.Client.Network
         private void PeerDisconnectedEventHandler(NetPeer peer, DisconnectInfo disconnectinfo)
         {
             _logger.Debug($"NetworkClient - Disconnected: {peer.EndPoint}");
+            IsConnected = false;
         }
 
         private void PeerConnectedEventHandler(NetPeer peer)
         {
             _logger.Debug($"NetworkClient - Connected to {peer.EndPoint}");
             Connected?.Invoke(peer.EndPoint, peer.Id);
+            IsConnected = true;
+
+            var dataWriter = new NetDataWriter();
+            dataWriter.Put(1);
+            dataWriter.Put(_profile.AccountName);
+            dataWriter.Put(_profile.AccountPassword);
+            peer.Send(dataWriter, DeliveryMethod.ReliableOrdered);
         }
 
-        public void Connect(string address, int port)
+        public void Connect(Profile profile)
         {
-            _logger.Debug($"NetworkClient - Connecting to {address}:{port}...");
+            _profile = profile;
+            _logger.Debug($"NetworkClient - Connecting to {_profile.ServerName}:{_profile.ServerPort}...");
             _client.Start();
             _clientThread.Start();
-            _peerConnection = _client.Connect(address, port, "UOStudio");
+
+            _peerConnection = _client.Connect(_profile.ServerName, _profile.ServerPort, "UOStudio");
         }
 
         public void Disconnect()
         {
-            _client.DisconnectPeer(_peerConnection);
+            if (IsConnected)
+            {
+                _client.DisconnectPeer(_peerConnection);
+            }
         }
 
         public void SendMessage(string message)

@@ -10,7 +10,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Ned.Server.Core\Ned.Server.Core.csproj" />
       <ProjectReference Include="..\UOStudio.Server.Core\UOStudio.Server.Core.csproj" />
     </ItemGroup>
 

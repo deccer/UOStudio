@@ -2,18 +2,18 @@
 using Newtonsoft.Json;
 using Serilog;
 
-namespace UOStudio.Core.Settings
+namespace UOStudio.Core
 {
-    public sealed class ConfigurationSaver : IConfigurationSaver
+    public sealed class Saver : ISaver
     {
         private readonly ILogger _logger;
 
-        public ConfigurationSaver(ILogger logger)
+        public Saver(ILogger logger)
         {
             _logger = logger;
         }
 
-        public void SaveConfiguration<T>(string fileName, T configuration) where T : class
+        public void Save<T>(string fileName, T configuration) where T : class
         {
             _logger.Information($"Configuration - Writing to {fileName}...");
             File.WriteAllText(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));

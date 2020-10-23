@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Serilog;
+using UOStudio.Client.Core;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine.UI;
+using UOStudio.Client.Engine.Ultima;
 using UOStudio.Client.Network;
 using Num = System.Numerics;
 
@@ -17,6 +22,7 @@ namespace UOStudio.Client.Engine
         private readonly ILogger _logger;
         private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly INetworkClient _networkClient;
+        private readonly IUltimaProvider _ultimaProvider;
         private GraphicsDeviceManager _graphics;
         private ImGuiInputHandler _guiInputHandler;
         private ImGuiRenderer _guiRenderer;
@@ -28,17 +34,24 @@ namespace UOStudio.Client.Engine
         private Texture2D _splashScreenTexture;
         private IntPtr _splashScreenTextureId;
         private bool _showSplashScreen = true;
-        private bool _showLoginScreen;
+        private bool _showLoginScreen = false;
 
         private string _serverName = "localhost";
         private string _serverPortText = "9050";
-        private int _serverPort;
+        private bool _showChat = true;
+        private string _chatMessages = "";
+        private string _sendChatMessage = "";
+        private bool _showStatics;
+        private bool _showLandTiles;
 
-        public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider,  INetworkClient networkClient)
+        private readonly IDictionary<UltimaTexture, IntPtr> _staticsTexturesMap;
+
+        public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider, INetworkClient networkClient, IUltimaProvider ultimaProvider)
         {
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;
             _networkClient = networkClient;
+            _ultimaProvider = ultimaProvider;
 
             _appSettingsProvider.Load();
             _networkClient.Connected += NetworkClientConnectedHandler;
@@ -53,6 +66,8 @@ namespace UOStudio.Client.Engine
                 GraphicsProfile = GraphicsProfile.HiDef
             };
             _graphics.ApplyChanges();
+
+            _staticsTexturesMap = new Dictionary<UltimaTexture, IntPtr>(0x8000);
 
             IsMouseVisible = true;
         }
@@ -91,6 +106,22 @@ namespace UOStudio.Client.Engine
             _splashScreenTexture = Content.Load<Texture2D>("Content/splashscreen");
             _splashScreenTextureId = _guiRenderer.BindTexture(_splashScreenTexture);
 
+            var loadUltimaAssetsTask = _ultimaProvider.Load(_logger, GraphicsDevice);
+            Task.WaitAll(loadUltimaAssetsTask);
+
+            for (uint staticIndex = 0; staticIndex < _ultimaProvider.ArtLoader.Entries.Length; ++staticIndex)
+            {
+                var staticTexture = _ultimaProvider.ArtLoader.GetTexture(staticIndex);
+                if (staticTexture == null)
+                {
+                    //_logger.Warning($"StaticTexture null for {staticIndex}");
+                    continue;
+                }
+
+                var textureHandle = _guiRenderer.BindTexture(staticTexture);
+                _staticsTexturesMap.Add(staticTexture, textureHandle);
+            }
+
             _logger.Information("Content - Loading...Done");
         }
 
@@ -119,6 +150,8 @@ namespace UOStudio.Client.Engine
             _networkClient.SendMessage("Tadaaaa!");
         }
 
+        private bool _stretchStaticTextures = true;
+
         private void DrawUi()
         {
             if (ImGui.BeginMainMenuBar())
@@ -127,12 +160,12 @@ namespace UOStudio.Client.Engine
                 {
                     if (ImGui.BeginMenu("File"))
                     {
-                        if (ImGui.MenuItem("Connect..."))
+                        if (!_networkClient.IsConnected && ImGui.MenuItem("Connect..."))
                         {
                             _showLoginScreen = true;
                         }
 
-                        if (ImGui.MenuItem("Disconnect"))
+                        if (_networkClient.IsConnected && ImGui.MenuItem("Disconnect"))
                         {
                             _networkClient.Disconnect();
                         }
@@ -141,6 +174,7 @@ namespace UOStudio.Client.Engine
                         if (ImGui.MenuItem("Quit"))
                         {
                             _networkClient.Disconnect();
+
                             Exit();
                         }
 
@@ -149,6 +183,37 @@ namespace UOStudio.Client.Engine
 
                     if (ImGui.BeginMenu("Edit"))
                     {
+                        ImGui.EndMenu();
+                    }
+
+                    if (ImGui.BeginMenu("View"))
+                    {
+                        if (_networkClient.IsConnected)
+                        {
+                            ImGui.Checkbox("Chat", ref _showChat);
+                            ImGui.Separator();
+                        }
+
+                        ImGui.Checkbox("Statics", ref _showStatics);
+                        ImGui.Checkbox("Land Tiles", ref _showLandTiles);
+                        ImGui.EndMenu();
+                    }
+
+                    if (ImGui.BeginMenu("Extras"))
+                    {
+                        ImGui.EndMenu();
+                    }
+
+                    if (ImGui.BeginMenu("Help"))
+                    {
+                        if (ImGui.MenuItem("About"))
+                        {
+                            if (ImGui.BeginPopup("UO Studio"))
+                            {
+                                ImGui.Text("Habla Blablah");
+                                ImGui.EndPopup();
+                            }
+                        }
                         ImGui.EndMenu();
                     }
 
@@ -165,7 +230,7 @@ namespace UOStudio.Client.Engine
                 if (ImGui.ImageButton(_splashScreenTextureId, new Num.Vector2(_splashScreenTexture.Width, _splashScreenTexture.Height), Num.Vector2.Zero, Num.Vector2.One, 0))
                 {
                     _showSplashScreen = false;
-                    _showLoginScreen = true;
+                    //_showLoginScreen = true;
                 }
                 ImGui.PopStyleVar();
                 ImGui.End();
@@ -173,17 +238,83 @@ namespace UOStudio.Client.Engine
 
             if (_showLoginScreen && ImGui.Begin("Login", ImGuiWindowFlags.NoCollapse))
             {
-                ImGui.InputText("Server Name or Ip Address", ref _serverName, 64);
+                ImGui.InputText("Server", ref _serverName, 64);
                 ImGui.InputText("Port", ref _serverPortText, 5);
 
                 if (ImGui.Button("Connect"))
                 {
-                    _serverPort = int.TryParse(_serverPortText, out var port) ? port : 0;
-                    _networkClient.Connect(_serverName, _serverPort);
+                    var serverPort = int.TryParse(_serverPortText, out var port) ? port : 0;
+
+                    var profile = new Profile
+                    {
+                        ServerName = "localhost",
+                        ServerPort = serverPort,
+                        AccountName = "deccer",
+                        AccountPassword = "password"
+                    };
+                    _networkClient.Connect(profile);
                 }
 
                 ImGui.End();
             }
+
+            if (_showChat && ImGui.Begin("Chat"))
+            {
+                var currentItem = 0;
+                ImGui.Text(_chatMessages);
+                ImGui.ListBox("Users", ref currentItem, new[] { "User1", "User2" }, 2);
+                ImGui.InputText("Message: ", ref _sendChatMessage, 128);
+                ImGui.End();
+            }
+
+            if (_showStatics && ImGui.Begin("Statics"))
+            {
+                var windowViewport = ImGui.GetWindowViewport();
+                var windowSize = ImGui.GetWindowSize();
+                var windowPos = ImGui.GetWindowPos();
+                ImGui.Checkbox("Stretch", ref _stretchStaticTextures);
+
+                var drawList = ImGui.GetWindowDrawList();
+                var perRowIndex = 0;
+                ImGui.PushClipRect(windowPos, windowSize, true);
+                foreach (var staticTexture in _staticsTexturesMap)
+                {
+                    if (perRowIndex == (int)(windowViewport.Size.X / 88))
+                    {
+                        perRowIndex = 0;
+                    }
+
+                    if (_stretchStaticTextures)
+                    {
+                        if (ImGui.ImageButton(staticTexture.Value, new Num.Vector2(88, 166)))
+                        {
+                        }
+                    }
+                    else
+                    {
+                        if (ImGui.ImageButton(staticTexture.Value, new Num.Vector2(staticTexture.Key.Width, staticTexture.Key.Height)))
+                        {
+                        }
+                    }
+
+                    if (perRowIndex > 0)
+                    {
+                        ImGui.SameLine();
+                    }
+
+                    perRowIndex++;
+                }
+
+                ImGui.PopClipRect();
+                ImGui.End();
+            }
+
+            if (_showLandTiles && ImGui.Begin("Land Tiles"))
+            {
+                ImGui.End();
+            }
+
+            ImGui.ShowDemoWindow(ref _showLandTiles);
         }
     }
 }

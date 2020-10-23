@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using UOStudio.Core.Settings;
+using UOStudio.Core;
 using UOStudio.Server.Core.Settings;
 using UOStudio.Server.Network;
 
@@ -13,7 +13,7 @@ namespace UOStudio.Server
         {
             var serviceProvider = CreateCompositionRoot();
 
-            var nedServer = serviceProvider.GetService<UOStudioServer>();
+            var nedServer = serviceProvider.GetService<NetworkServer>();
 
             nedServer.Run();
         }
@@ -21,17 +21,18 @@ namespace UOStudio.Server
         private static IServiceProvider CreateCompositionRoot()
         {
             var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .WriteTo.File("client.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             var services = new ServiceCollection();
             services.AddSingleton<ILogger>(logger);
-            services.AddSingleton<IConfigurationLoader, ConfigurationLoader>();
-            services.AddSingleton<IConfigurationSaver, ConfigurationSaver>();
+            services.AddSingleton<ILoader, Loader>();
+            services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
-            services.AddSingleton<UOStudioServer>();
+            services.AddSingleton<IAccountStore, AccountStore>();
+            services.AddSingleton<NetworkServer>();
 
             return services.BuildServiceProvider();
         }

@@ -62,8 +62,8 @@ namespace UOStudio.Client.Engine.UI
         {
             var context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
-            var style = ImGui.GetStyle();
-            SetCherryStyle(style);
+            //var style = ImGui.GetStyle();
+            //SetCherryStyle(style);
 
             _imGuiInputHandler.Initialize(Game);
             return this;

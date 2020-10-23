@@ -1,20 +1,20 @@
-﻿using UOStudio.Core.Settings;
+﻿using UOStudio.Core;
 
 namespace UOStudio.Server.Core.Settings
 {
     public sealed class AppSettingsProvider : IAppSettingsProvider
     {
-        private readonly IConfigurationLoader _configurationLoader;
-        private readonly IConfigurationSaver _configurationSaver;
+        private readonly ILoader _loader;
+        private readonly ISaver _saver;
 
         private const string SettingsFileName = "settings.json";
 
         public AppSettingsProvider(
-            IConfigurationLoader configurationLoader,
-            IConfigurationSaver configurationSaver)
+            ILoader loader,
+            ISaver saver)
         {
-            _configurationLoader = configurationLoader;
-            _configurationSaver = configurationSaver;
+            _loader = loader;
+            _saver = saver;
             AppSettings = new AppSettings();
             Load();
         }
@@ -23,7 +23,7 @@ namespace UOStudio.Server.Core.Settings
 
         public void Load()
         {
-            AppSettings = _configurationLoader.LoadConfiguration<AppSettings>(SettingsFileName);
+            AppSettings = _loader.Load<AppSettings>(SettingsFileName);
             if (AppSettings == null)
             {
                 AppSettings = new AppSettings();
@@ -33,7 +33,7 @@ namespace UOStudio.Server.Core.Settings
 
         public void Save()
         {
-            _configurationSaver.SaveConfiguration(SettingsFileName, AppSettings);
+            _saver.Save(SettingsFileName, AppSettings);
         }
     }
 }

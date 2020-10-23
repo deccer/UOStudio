@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using UOStudio.Client.Core;
 
 namespace UOStudio.Client.Network
 {
@@ -7,7 +8,9 @@ namespace UOStudio.Client.Network
     {
         event Action<EndPoint, int> Connected;
 
-        void Connect(string address, int port);
+        bool IsConnected { get; }
+
+        void Connect(Profile profile);
 
         void Disconnect();
 
