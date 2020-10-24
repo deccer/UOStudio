@@ -19,29 +19,7 @@ Hop onto the discord if you want to find out more
 
 ## Development Setup
 
-### Windows
-
-```ps
-git clone --recursive https://github.com/deccer/UOStudio
-git submodule update --init --recursive --force
-cd UOStudio
-```
-
-open `UOStudio.sln` with Visual Studio, Visual Studio Code or Rider.
-For Visual Studio Code you have to install the "C#" extension.
-
-### Linux
-
-Ubuntu
-
-#### Prerequisites
-```bash
-sudo apt install libsdl2-dev
-```
-
-### OSX
-
-Not Supported, as I don't have a system to test/play with.
+[Setup Development Environment](https://deccer.github.io/UOStudio/)
 
 #### Disclaimer
 Ultima™ Online © 1997 Electronic Arts Inc. Ultima, the UO logo, Are You With Us?, ORIGIN, the ORIGIN logo and We create worlds are trademarks or registered trademarks of Electronic Arts Inc. in the U.S. and/or other countries. All rights reserved. ORIGIN™ is an Electronic Arts™ brand.
