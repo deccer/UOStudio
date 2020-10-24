@@ -110,12 +110,9 @@ namespace UOStudio.Client.Engine
 
             _artworkProvider = new ArtworkProvider(_logger, _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, false);
 
-            //var loadUltimaAssetsTask = _ultimaProvider.Load(_logger, GraphicsDevice);
-            //Task.WaitAll(loadUltimaAssetsTask);
-
             for (var staticIndex = 0; staticIndex < _artworkProvider.Length; ++staticIndex)
             {
-                var staticTexture = _artworkProvider.GetLand(GraphicsDevice, staticIndex);
+                var staticTexture = _artworkProvider.GetStatic(GraphicsDevice, staticIndex);
                 if (staticTexture == null)
                 {
                     continue;
