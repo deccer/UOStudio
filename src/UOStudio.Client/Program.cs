@@ -34,7 +34,6 @@ namespace UOStudio.Client
             services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
             services.AddSingleton<INetworkClient, NetworkClient>();
-            services.AddSingleton<IUltimaProvider, UltimaProvider>();
             services.AddSingleton<ClientGame>();
             return services.BuildServiceProvider();
         }

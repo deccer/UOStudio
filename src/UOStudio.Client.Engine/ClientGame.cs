@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,7 +9,6 @@ using Serilog;
 using UOStudio.Client.Core;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine.UI;
-using UOStudio.Client.Engine.Ultima;
 using UOStudio.Client.Network;
 using Num = System.Numerics;
 
@@ -21,7 +19,6 @@ namespace UOStudio.Client.Engine
         private readonly ILogger _logger;
         private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly INetworkClient _networkClient;
-        private readonly IUltimaProvider _ultimaProvider;
         private readonly GraphicsDeviceManager _graphics;
         private ImGuiRenderer _guiRenderer;
 
@@ -49,12 +46,11 @@ namespace UOStudio.Client.Engine
 
         private readonly IDictionary<Texture2D, IntPtr> _staticsTexturesMap;
 
-        public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider, INetworkClient networkClient, IUltimaProvider ultimaProvider)
+        public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider, INetworkClient networkClient)
         {
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;
             _networkClient = networkClient;
-            _ultimaProvider = ultimaProvider;
 
             _appSettingsProvider.Load();
             _networkClient.Connected += NetworkClientConnectedHandler;
