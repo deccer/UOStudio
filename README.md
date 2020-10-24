@@ -3,7 +3,7 @@
 ![Build-Debug](https://github.com/deccer/UOStudio/workflows/Build-Debug/badge.svg)
 ![.github/workflows/build-release.yml](https://github.com/deccer/UOStudio/workflows/.github/workflows/build-release.yml/badge.svg)
 
-UOStudio - the Ultima Online multiplayer world editor
+![UO Studio](https://github.com/deccer/UOStudio/blob/main/assets/client/splashscreen.png?raw=true)
 
 Complete rewrite of
 - [CentrED](https://redmine.aksdb.de/projects/centred/wiki/CentrED) made by Andreas Schneider
@@ -13,7 +13,9 @@ Complete rewrite of
 
 Hopefully with many useful additions.
 
-Hop onto the discord if you want to find out more - https://discord.gg/tYeZh3f
+Hop onto the discord if you want to find out more
+
+[![Discord](https://github.com/deccer/UOStudio/blob/main/assets/github/repo/discord-image.png?raw=true)](https://discord.gg/tYeZh3f)
 
 ## Development Setup
 
