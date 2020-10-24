@@ -33,7 +33,7 @@
 
     Clone repo
     ```bash
-    git clone --recursive https:/github.com/deccer/UOStudio
+    git clone --recursive https://github.com/deccer/UOStudio
     git submodule update --init --recursive --force
     ```
 
@@ -69,7 +69,7 @@
 
     Clone repo
     ```bash
-    git clone --recursive https:/github.com/deccer/UOStudio
+    git clone --recursive https://github.com/deccer/UOStudio
     git submodule update --init --recursive --force
     ```
 
@@ -91,7 +91,7 @@
 
     Clone repo
     ```bash
-    git clone --recursive https:/github.com/deccer/UOStudio
+    git clone --recursive https://github.com/deccer/UOStudio
     git submodule update --init --recursive --force
     ```
 
@@ -116,7 +116,7 @@
 
     Clone repo
     ```bash
-    git clone --recursive https:/github.com/deccer/UOStudio
+    git clone --recursive https://github.com/deccer/UOStudio
     git submodule update --init --recursive --force
     ```
 
@@ -144,7 +144,7 @@
 
     Clone repo
     ```bash
-    git clone --recursive https:/github.com/deccer/UOStudio
+    git clone --recursive https://github.com/deccer/UOStudio
     git submodule update --init --recursive --force
     ```
 
@@ -173,7 +173,7 @@
 
     Clone repo
     ```bash
-    git clone --recursive https:/github.com/deccer/UOStudio
+    git clone --recursive https://github.com/deccer/UOStudio
     git submodule update --init --recursive --force
     ```
 
