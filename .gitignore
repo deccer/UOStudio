@@ -355,3 +355,5 @@ MigrationBackup/
 # FNA libs
 !external/fnalibs/**/*.*
 
+# MkDocs
+site/
