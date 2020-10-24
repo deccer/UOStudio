@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -23,8 +22,7 @@ namespace UOStudio.Client.Engine
         private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly INetworkClient _networkClient;
         private readonly IUltimaProvider _ultimaProvider;
-        private GraphicsDeviceManager _graphics;
-        private ImGuiInputHandler _guiInputHandler;
+        private readonly GraphicsDeviceManager _graphics;
         private ImGuiRenderer _guiRenderer;
 
         private KeyboardState _currentKeyboardState;
@@ -43,8 +41,13 @@ namespace UOStudio.Client.Engine
         private string _sendChatMessage = "";
         private bool _showStatics;
         private bool _showLandTiles;
+        private int _selectedStatic;
+        private bool _stretchStaticTextures = true;
+        private Dictionary<IntPtr, int> _staticsIdMap;
 
-        private readonly IDictionary<UltimaTexture, IntPtr> _staticsTexturesMap;
+        private ArtworkProvider _artworkProvider;
+
+        private readonly IDictionary<Texture2D, IntPtr> _staticsTexturesMap;
 
         public ClientGame(ILogger logger, IAppSettingsProvider appSettingsProvider, INetworkClient networkClient, IUltimaProvider ultimaProvider)
         {
@@ -67,7 +70,8 @@ namespace UOStudio.Client.Engine
             };
             _graphics.ApplyChanges();
 
-            _staticsTexturesMap = new Dictionary<UltimaTexture, IntPtr>(0x8000);
+            _staticsTexturesMap = new Dictionary<Texture2D, IntPtr>(0x8000);
+            _staticsIdMap = new Dictionary<IntPtr, int>(8192);
 
             IsMouseVisible = true;
         }
@@ -78,10 +82,8 @@ namespace UOStudio.Client.Engine
             _currentKeyboardState = Keyboard.GetState();
             _currentMouseState = Mouse.GetState();
 
-            _guiInputHandler = new ImGuiInputHandler();
-            _guiRenderer = new ImGuiRenderer(this, _guiInputHandler)
-                .Initialize()
-                .RebuildFontAtlas();
+            _guiRenderer = new ImGuiRenderer(this);
+            _guiRenderer.RebuildFontAtlas();
 
             ImGui.GetIO().ConfigFlags = ImGuiConfigFlags.DockingEnable;
             base.Initialize();
@@ -106,22 +108,23 @@ namespace UOStudio.Client.Engine
             _splashScreenTexture = Content.Load<Texture2D>("Content/splashscreen");
             _splashScreenTextureId = _guiRenderer.BindTexture(_splashScreenTexture);
 
-            /*
-            var loadUltimaAssetsTask = _ultimaProvider.Load(_logger, GraphicsDevice);
-            Task.WaitAll(loadUltimaAssetsTask);
+            _artworkProvider = new ArtworkProvider(_logger, _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, false);
 
-            for (uint staticIndex = 0; staticIndex < _ultimaProvider.ArtLoader.Entries.Length; ++staticIndex)
+            //var loadUltimaAssetsTask = _ultimaProvider.Load(_logger, GraphicsDevice);
+            //Task.WaitAll(loadUltimaAssetsTask);
+
+            for (var staticIndex = 0; staticIndex < _artworkProvider.Length; ++staticIndex)
             {
-                var staticTexture = _ultimaProvider.ArtLoader.GetTexture(staticIndex);
+                var staticTexture = _artworkProvider.GetLand(GraphicsDevice, staticIndex);
                 if (staticTexture == null)
                 {
                     continue;
                 }
 
-                var textureHandle = _guiRenderer.BindTexture(staticTexture);
-                _staticsTexturesMap.Add(staticTexture, textureHandle);
+                var textureHandle = _guiRenderer.BindTexture((Texture2D)staticTexture);
+                _staticsTexturesMap.Add((Texture2D)staticTexture, textureHandle);
+                _staticsIdMap.Add(textureHandle, (int)staticIndex);
             }
-            */
 
             _logger.Information("Content - Loading...Done");
         }
@@ -141,7 +144,7 @@ namespace UOStudio.Client.Engine
             _currentKeyboardState = Keyboard.GetState();
             _currentMouseState = Mouse.GetState();
 
-            _guiInputHandler.Update(GraphicsDevice, ref _currentKeyboardState, ref _currentMouseState);
+            _guiRenderer.UpdateInput();
             base.Update(gameTime);
         }
 
@@ -150,8 +153,6 @@ namespace UOStudio.Client.Engine
             _showLoginScreen = false;
             _networkClient.SendMessage("Tadaaaa!");
         }
-
-        private bool _stretchStaticTextures = true;
 
         private void DrawUi()
         {
@@ -270,17 +271,19 @@ namespace UOStudio.Client.Engine
 
             if (_showStatics && ImGui.Begin("Statics"))
             {
-                var windowViewport = ImGui.GetWindowViewport();
                 var windowSize = ImGui.GetWindowSize();
-                var windowPos = ImGui.GetWindowPos();
+
                 ImGui.Checkbox("Stretch", ref _stretchStaticTextures);
 
-                var drawList = ImGui.GetWindowDrawList();
+                ImGui.BeginGroup();
+                ImGui.InputInt("Static Id", ref _selectedStatic);
+                ImGui.EndGroup();
+
+                ImGui.BeginGroup();
                 var perRowIndex = 0;
-                ImGui.PushClipRect(windowPos, windowSize, true);
                 foreach (var staticTexture in _staticsTexturesMap)
                 {
-                    if (perRowIndex == (int)(windowViewport.Size.X / 88))
+                    if (perRowIndex == (int)(windowSize.X / 88))
                     {
                         perRowIndex = 0;
                     }
@@ -289,12 +292,14 @@ namespace UOStudio.Client.Engine
                     {
                         if (ImGui.ImageButton(staticTexture.Value, new Num.Vector2(88, 166)))
                         {
+                            _selectedStatic = _staticsIdMap[staticTexture.Value];
                         }
                     }
                     else
                     {
                         if (ImGui.ImageButton(staticTexture.Value, new Num.Vector2(staticTexture.Key.Width, staticTexture.Key.Height)))
                         {
+                            _selectedStatic = _staticsIdMap[staticTexture.Value];
                         }
                     }
 
@@ -305,8 +310,7 @@ namespace UOStudio.Client.Engine
 
                     perRowIndex++;
                 }
-
-                ImGui.PopClipRect();
+                ImGui.EndGroup();
                 ImGui.End();
             }
 
