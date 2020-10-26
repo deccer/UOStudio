@@ -6,9 +6,14 @@ namespace UOStudio.Client.Engine.IO
     internal class MulFileIndex : FileIndexBase
     {
         private readonly string _indexPath;
+        private readonly FileInfo _fileInfo;
 
         public MulFileIndex(string idxFile, string mulFile)
-            : base(mulFile) => _indexPath = idxFile;
+            : base(mulFile)
+        {
+            _indexPath = idxFile;
+            _fileInfo = new FileInfo(_indexPath);
+        }
 
         public override bool FilesExist => File.Exists(_indexPath) && base.FilesExist;
 
@@ -16,7 +21,7 @@ namespace UOStudio.Client.Engine.IO
         {
             var entries = new List<FileIndexEntry>();
 
-            var length = (int)((new FileInfo(_indexPath).Length / 3) / 4);
+            var length = (int)(_fileInfo.Length / 3 / 4);
 
             using (var index = new FileStream(_indexPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {

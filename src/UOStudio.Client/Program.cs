@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine;
+using UOStudio.Client.Engine.Windows;
 using UOStudio.Client.Network;
 using UOStudio.Core;
 
@@ -33,6 +34,7 @@ namespace UOStudio.Client
             services.AddSingleton<ILoader, Loader>();
             services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
+            services.AddSingleton<IFileVersionProvider, FileVersionProvider>();
             services.AddSingleton<INetworkClient, NetworkClient>();
             services.AddSingleton<ClientGame>();
             return services.BuildServiceProvider();

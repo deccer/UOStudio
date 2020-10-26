@@ -38,4 +38,20 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\ResGeneral.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ResGeneral.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Resources\ResGeneral.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ResGeneral.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Windows\GumpEdit" />
+    </ItemGroup>
 </Project>

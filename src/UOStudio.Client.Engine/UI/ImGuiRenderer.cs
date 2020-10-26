@@ -241,8 +241,8 @@ namespace UOStudio.Client.Engine.UI
                 _vertexBuffer?.Dispose();
 
                 _vertexBufferSize = (int)(drawData.TotalVtxCount * 1.5f);
-                _vertexBuffer = new VertexBuffer(_graphicsDevice, DrawVertexDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
-                _vertexData = new byte[_vertexBufferSize * DrawVertexDeclaration.Size];
+                _vertexBuffer = new VertexBuffer(_graphicsDevice, ImGuiDrawVertexDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
+                _vertexData = new byte[_vertexBufferSize * ImGuiDrawVertexDeclaration.Size];
             }
 
             if (drawData.TotalIdxCount > _indexBufferSize)
@@ -262,11 +262,11 @@ namespace UOStudio.Client.Engine.UI
             {
                 ImDrawListPtr cmdList = drawData.CmdListsRange[n];
 
-                fixed (void* vtxDstPtr = &_vertexData[vtxOffset * DrawVertexDeclaration.Size])
+                fixed (void* vtxDstPtr = &_vertexData[vtxOffset * ImGuiDrawVertexDeclaration.Size])
                 {
                     fixed (void* idxDstPtr = &_indexData[idxOffset * sizeof(ushort)])
                     {
-                        Buffer.MemoryCopy((void*)cmdList.VtxBuffer.Data, vtxDstPtr, _vertexData.Length, cmdList.VtxBuffer.Size * DrawVertexDeclaration.Size);
+                        Buffer.MemoryCopy((void*)cmdList.VtxBuffer.Data, vtxDstPtr, _vertexData.Length, cmdList.VtxBuffer.Size * ImGuiDrawVertexDeclaration.Size);
                         Buffer.MemoryCopy((void*)cmdList.IdxBuffer.Data, idxDstPtr, _indexData.Length, cmdList.IdxBuffer.Size * sizeof(ushort));
                     }
                 }
@@ -276,7 +276,7 @@ namespace UOStudio.Client.Engine.UI
             }
 
             // Copy the managed byte arrays to the gpu vertex- and index buffers
-            _vertexBuffer.SetData(_vertexData, 0, drawData.TotalVtxCount * DrawVertexDeclaration.Size);
+            _vertexBuffer.SetData(_vertexData, 0, drawData.TotalVtxCount * ImGuiDrawVertexDeclaration.Size);
             _indexBuffer.SetData(_indexData, 0, drawData.TotalIdxCount * sizeof(ushort));
         }
 
@@ -379,7 +379,7 @@ namespace UOStudio.Client.Engine.UI
             style.Colors[(int)ImGuiCol.PlotHistogram] = Text(0.63f);
             style.Colors[(int)ImGuiCol.PlotHistogramHovered] = Medium(1.00f);
             style.Colors[(int)ImGuiCol.TextSelectedBg] = Medium(0.43f);
-            //style.Colors[ImGuiCol.ModalWindowDarkening]  = Background( 0.73f);
+            //style.Colors[ImGuiCol.ModalWindowDarkening]  = IsBackground( 0.73f);
 
             style.WindowPadding = new Num.Vector2(6, 4);
             style.WindowRounding = 0.0f;
@@ -399,6 +399,11 @@ namespace UOStudio.Client.Engine.UI
             style.Colors[(int)ImGuiCol.Border] = new Num.Vector4(0.539f, 0.479f, 0.255f, 0.162f);
             style.FrameBorderSize = 0.0f;
             style.WindowBorderSize = 1.0f;
+        }
+
+        public void EnableDocking()
+        {
+            ImGui.GetIO().ConfigFlags = ImGuiConfigFlags.DockingEnable;
         }
     }
 }

@@ -6,7 +6,7 @@ using UOStudio.Client.Engine.IO;
 
 namespace UOStudio.Client.Engine
 {
-    internal sealed class ArtworkProvider
+    internal sealed class ItemProvider
     {
         private readonly ILogger _logger;
         private bool _isInitialized;
@@ -14,7 +14,7 @@ namespace UOStudio.Client.Engine
         private readonly bool _isUOPFileIndex;
         private readonly string _clientPath;
 
-        public ArtworkProvider(ILogger logger, string ultimaOnlineBasePath, bool isUopFileIndex)
+        public ItemProvider(ILogger logger, string ultimaOnlineBasePath, bool isUopFileIndex)
         {
             _logger = logger;
             _isUOPFileIndex = isUopFileIndex;
@@ -27,8 +27,8 @@ namespace UOStudio.Client.Engine
         private void Initialize()
         {
             _fileIndex = _isUOPFileIndex
-                ? CreateFileIndex("artLegacyMUL.uop", 0x10000, false, ".tga")
-                : CreateFileIndex("artidx.mul", "art.mul");
+                ? CreateUopFileIndex("artLegacyMUL.uop", 0x10000, false, ".tga")
+                : CreateMulFileIndex("artidx.mul", "art.mul");
 
             _logger.Debug(_fileIndex.FilesExist.ToString());
 
@@ -47,7 +47,7 @@ namespace UOStudio.Client.Engine
             return filePath;
         }
 
-        private FileIndexBase CreateFileIndex(string uopFile, int length, bool hasExtra, string extension)
+        private FileIndexBase CreateUopFileIndex(string uopFile, int length, bool hasExtra, string extension)
         {
             uopFile = GetPath(uopFile);
 
@@ -63,17 +63,17 @@ namespace UOStudio.Client.Engine
             return fileIndex;
         }
 
-        private FileIndexBase CreateFileIndex(string idxFile, string mulFile)
+        private FileIndexBase CreateMulFileIndex(string indexFileName, string mulFileName)
         {
-            idxFile = GetPath(idxFile);
-            mulFile = GetPath(mulFile);
+            indexFileName = GetPath(indexFileName);
+            mulFileName = GetPath(mulFileName);
 
-            var fileIndex = new MulFileIndex(idxFile, mulFile);
+            var fileIndex = new MulFileIndex(indexFileName, mulFileName);
 
             if (!fileIndex.FilesExist)
             {
                 _logger.Error(
-                    $"FileIndex was created but 1 or more files do not exist.  Either {Path.GetFileName(idxFile)} or {Path.GetFileName(mulFile)} were missing from {_clientPath}"
+                    $"FileIndex was created but 1 or more files do not exist. Either {Path.GetFileName(indexFileName)} or {Path.GetFileName(mulFileName)} were missing from {_clientPath}"
                 );
             }
 
@@ -136,17 +136,55 @@ namespace UOStudio.Client.Engine
 
         public Task<Texture> GetLandAsync(GraphicsDevice graphicsDevice, int index) => Task.FromResult(GetLand(graphicsDevice, index));
 
+        private int GetIndexLength() => _fileIndex.Length / 12;
+
+        private ushort GetMaxItemId()
+        {
+            if (GetIndexLength() >= 0x13FDC)
+            {
+                return 0xFFFF;
+            }
+
+            if (GetIndexLength() == 0xC000)
+            {
+                return 0x7FFF;
+            }
+
+            return 0x3FFF;
+        }
+
+        public ushort GetLegalItemId(int itemId)
+        {
+            if (itemId < 0)
+            {
+                return 0;
+            }
+
+            int max = GetMaxItemId();
+            if (itemId > max)
+            {
+                return 0;
+            }
+
+            return (ushort)itemId;
+        }
+
         public unsafe Texture2D GetStatic(GraphicsDevice graphicsDevice, int index)
         {
+            index = GetLegalItemId(index);
             index += 0x4000;
-            index &= 0xFFFF;
+            //index &= 0xFFFF;
 
             using var stream = _fileIndex.Seek(index, out _, out _);
+            if (stream == null || index == 0)
+            {
+                return null;
+            }
             using var binaryReader = new BinaryReader(stream);
-            binaryReader.ReadInt32(); // Unknown
+            var unknown = binaryReader.ReadInt32(); // Unknown
 
-            int width = binaryReader.ReadInt16();
-            int height = binaryReader.ReadInt16();
+            var width = binaryReader.ReadInt16();
+            var height = binaryReader.ReadInt16();
 
             if (width <= 0 || height <= 0)
             {

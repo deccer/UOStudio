@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="MenuFileSettings" xml:space="preserve">
+        <value>Settings...</value>
+    </data>
+    <data name="MenuFile" xml:space="preserve">
+        <value>File</value>
+    </data>
+    <data name="WindowCaptionSettings" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="MenuFileQuit" xml:space="preserve">
+        <value>Quit</value>
+    </data>
+    <data name="MenuMap" xml:space="preserve">
+        <value>Map</value>
+    </data>
+    <data name="MenuMapLocal" xml:space="preserve">
+        <value>Local...</value>
+    </data>
+    <data name="MenuMapRemote" xml:space="preserve">
+        <value>Remote...</value>
+    </data>
+    <data name="MenuMapRemoteConnect" xml:space="preserve">
+        <value>Connect...</value>
+    </data>
+    <data name="MenuMapRemoteDisconnect" xml:space="preserve">
+        <value>Disconnect</value>
+    </data>
+    <data name="MenuEdit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="MenuView" xml:space="preserve">
+        <value>View</value>
+    </data>
+    <data name="MenuExtras" xml:space="preserve">
+        <value>Extras</value>
+    </data>
+    <data name="MenuHelp" xml:space="preserve">
+        <value>Help</value>
+    </data>
+    <data name="MenuHelpAbout" xml:space="preserve">
+        <value>About</value>
+    </data>
+</root>
