@@ -50,10 +50,58 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="..\..\assets\client\splashscreen.png">
-        <Link>Content\splashscreen.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Include="..\..\assets\client\splashscreen.png">
+            <Link>Content\splashscreen.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\map_setlocation_32.png">
+            <Link>Content\map_setlocation_32.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\map_setlocation_64.png">
+            <Link>Content\map_setlocation_64.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_auto_shore_32.png">
+            <Link>Content\tools_auto_shore_32.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_auto_shore_64.png">
+            <Link>Content\tools_auto_shore_64.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_layers_32.png">
+            <Link>Content\tools_layers_32.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_layers_64.png">
+            <Link>Content\tools_layers_64.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_terrain_floodfill_32.png">
+            <Link>Content\tools_terrain_floodfill_32.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_terrain_floodfill_64.png">
+            <Link>Content\tools_terrain_floodfill_64.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_terrain_lower_32.png">
+            <Link>Content\tools_terrain_lower_32.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_terrain_lower_64.png">
+            <Link>Content\tools_terrain_lower_64.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_terrain_raise_32.png">
+            <Link>Content\tools_terrain_raise_32.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\assets\client\mapedit\tools_terrain_raise_64.png">
+            <Link>Content\tools_terrain_raise_64.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="Build">
