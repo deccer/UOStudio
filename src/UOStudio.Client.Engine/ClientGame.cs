@@ -146,11 +146,22 @@ namespace UOStudio.Client.Engine
             _logger.Information("Content - Loading...");
             base.LoadContent();
 
-            _mapEditRenderTarget = new RenderTarget2D(GraphicsDevice, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            _mapEditRenderTarget = new RenderTarget2D(
+                GraphicsDevice,
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight,
+                false,
+                SurfaceFormat.Color,
+                DepthFormat.Depth24Stencil8);
 
             _gumpEditProjectWindowProvider = new GumpEditProjectWindowProvider(_appSettingsProvider, _fileVersionProvider);
             _gumpEditProjectWindowProvider.LoadContent(Content, _guiRenderer);
-            _mapEditProjectWindowProvider = new MapEditProjectWindowProvider(_appSettingsProvider, _fileVersionProvider, _mapEditState, _mapEditRenderTarget);
+            _mapEditProjectWindowProvider = new MapEditProjectWindowProvider(
+                _appSettingsProvider,
+                _fileVersionProvider,
+                _mapEditState,
+                _mapEditRenderTarget
+            );
             _mapEditProjectWindowProvider.LoadContent(Content, _guiRenderer);
 
             _itemProvider = new ItemProvider(_logger, _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, false);
@@ -302,6 +313,7 @@ namespace UOStudio.Client.Engine
                                 _gumpEditProjectWindowProvider.AboutWindow.Show();
                             }
                         }
+
                         ImGui.EndMenu();
                     }
 
@@ -374,6 +386,7 @@ namespace UOStudio.Client.Engine
 
                     perRowIndex++;
                 }
+
                 ImGui.EndGroup();
                 ImGui.End();
             }
@@ -423,6 +436,7 @@ namespace UOStudio.Client.Engine
 
                     perRowIndex++;
                 }
+
                 ImGui.EndGroup();
                 ImGui.End();
             }
@@ -436,6 +450,7 @@ namespace UOStudio.Client.Engine
                     {
                         ImGui.TextUnformatted(_selectedLandData.Name);
                     }
+
                     ImGui.NextColumn();
                     ImGui.TextUnformatted(TileDataProvider.LandFlagsToString(_selectedLandData));
                 }
@@ -445,9 +460,12 @@ namespace UOStudio.Client.Engine
                     {
                         ImGui.TextUnformatted(_selectedItemData.Name);
                     }
-                    ImGui.NextColumn();
-                    ImGui.TextUnformatted(TileDataProvider.ItemFlagsToString(_selectedItemData));
 
+                    foreach (var property in TileDataProvider.ItemFlagsToPropertyList(_selectedItemData))
+                    {
+                        ImGui.TextUnformatted(property);
+                        ImGui.NextColumn();
+                    }
                 }
 
                 ImGui.End();

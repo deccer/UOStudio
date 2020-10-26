@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -11,15 +12,15 @@ namespace UOStudio.Client.Engine
     {
         public unsafe LandData(NewLandTileDataMul mulStruct)
         {
-            TextureID = mulStruct.texID;
-            Flags = (TileFlag)mulStruct.flags;
-            Name = TileDataProvider.ReadNameString(mulStruct.name);
+            TextureID = mulStruct.TexID;
+            Flags = (TileFlag)mulStruct.Flags;
+            Name = TileDataProvider.ReadNameString(mulStruct.Name);
         }
 
         public unsafe LandData(OldLandTileDataMul mulStruct)
         {
-            TextureID = mulStruct.texID;
-            Flags = (TileFlag)mulStruct.flags;
+            TextureID = mulStruct.TexID;
+            Flags = (TileFlag)mulStruct.Flags;
             Name = TileDataProvider.ReadNameString(mulStruct.name);
         }
 
@@ -426,36 +427,36 @@ namespace UOStudio.Client.Engine
     {
         public unsafe ItemData(NewItemTileDataMul mulStruct)
         {
-            Name = TileDataProvider.ReadNameString(mulStruct.name);
-            Flags = (TileFlag)mulStruct.flags;
-            Weight = mulStruct.weight;
-            Quality = mulStruct.quality;
-            Quantity = mulStruct.quantity;
-            Value = mulStruct.value;
-            Height = mulStruct.height;
-            Animation = mulStruct.anim;
-            Hue = mulStruct.hue;
-            StackingOffset = mulStruct.stackingOffset;
-            MiscData = mulStruct.miscData;
-            Unknown2 = mulStruct.unk2;
-            Unknown3 = mulStruct.unk3;
+            Name = TileDataProvider.ReadNameString(mulStruct.Name);
+            Flags = (TileFlag)mulStruct.Flags;
+            Weight = mulStruct.Weight;
+            Quality = mulStruct.Quality;
+            Quantity = mulStruct.Quantity;
+            Value = mulStruct.Value;
+            Height = mulStruct.Height;
+            Animation = mulStruct.Anim;
+            Hue = mulStruct.Hue;
+            StackingOffset = mulStruct.StackingOffset;
+            MiscData = mulStruct.MiscData;
+            Unknown2 = mulStruct.Unknown2;
+            Unknown3 = mulStruct.Unknown3;
         }
 
         public unsafe ItemData(OldItemTileDataMul mulStruct)
         {
-            Name = TileDataProvider.ReadNameString(mulStruct.name);
-            Flags = (TileFlag)mulStruct.flags;
-            Weight = mulStruct.weight;
-            Quality = mulStruct.quality;
-            Quantity = mulStruct.quantity;
-            Value = mulStruct.value;
-            Height = mulStruct.height;
-            Animation = mulStruct.anim;
-            Hue = mulStruct.hue;
-            StackingOffset = mulStruct.stackingOffset;
-            MiscData = mulStruct.miscData;
-            Unknown2 = mulStruct.unk2;
-            Unknown3 = mulStruct.unk3;
+            Name = TileDataProvider.ReadNameString(mulStruct.Name);
+            Flags = (TileFlag)mulStruct.Flags;
+            Weight = mulStruct.Weight;
+            Quality = mulStruct.Quality;
+            Quantity = mulStruct.Quantity;
+            Value = mulStruct.Value;
+            Height = mulStruct.Height;
+            Animation = mulStruct.Anim;
+            Hue = mulStruct.Hue;
+            StackingOffset = mulStruct.StackingOffset;
+            MiscData = mulStruct.MiscData;
+            Unknown2 = mulStruct.Unknown2;
+            Unknown3 = mulStruct.Unknown3;
         }
 
         public string Name { get; set; }
@@ -1063,14 +1064,14 @@ namespace UOStudio.Client.Engine
                             currentPos += sizeof(NewItemTileDataMul);
                             var cur = (NewItemTileDataMul)Marshal.PtrToStructure(ptr, typeof(NewItemTileDataMul));
                             ItemTable[i + count] = new ItemData(cur);
-                            HeightTable[i + count] = cur.height;
+                            HeightTable[i + count] = cur.Height;
                         }
                         else
                         {
                             currentPos += sizeof(OldItemTileDataMul);
                             var cur = (OldItemTileDataMul)Marshal.PtrToStructure(ptr, typeof(OldItemTileDataMul));
                             ItemTable[i + count] = new ItemData(cur);
-                            HeightTable[i + count] = cur.height;
+                            HeightTable[i + count] = cur.Height;
                         }
                     }
                 }
@@ -1113,71 +1114,72 @@ namespace UOStudio.Client.Engine
             return result.ToString();
         }
 
-        public static string ItemFlagsToString(ItemData tile)
+        public static IReadOnlyCollection<string> ItemFlagsToPropertyList(ItemData tile)
         {
-            var result = new StringBuilder();
+            var result = new List<string>();
             var enumNames = Enum.GetNames(typeof(TileFlag));
             var enumValues = Enum.GetValues(typeof(TileFlag));
             //int maxLength = Art.IsUOAHS() ? enumValues.Length : (enumValues.Length / 2) + 1;
             var maxLength = enumValues.Length;
             for (int t = 1; t < maxLength; ++t)
             {
-                result.AppendLine($"{enumNames[t]}: {((tile.Flags & (TileFlag)enumValues.GetValue(t)) != 0 ? "yes" : "no")}");
+                result.Add(enumNames[t]);
+                result.Add($"{((tile.Flags & (TileFlag)enumValues.GetValue(t)) != 0 ? "yes" : "no")}");
             }
 
-            return result.ToString();
+            return result;
         }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct OldLandTileDataMul
     {
-        public readonly uint flags;
-        public readonly ushort texID;
+        public readonly uint Flags;
+        public readonly ushort TexID;
         public fixed byte name[20];
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct NewLandTileDataMul
     {
-        public readonly ulong flags;
-        public readonly ushort texID;
-        public fixed byte name[20];
+        public readonly ulong Flags;
+        public readonly ushort TexID;
+        public fixed byte Name[20];
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct OldItemTileDataMul
     {
-        public readonly uint flags;
-        public readonly byte weight;
-        public readonly byte quality;
-        public readonly short miscData;
-        public readonly byte unk2;
-        public readonly byte quantity;
-        public readonly short anim;
-        public readonly byte unk3;
-        public readonly byte hue;
-        public readonly byte stackingOffset;
-        public readonly byte value;
-        public readonly byte height;
-        public fixed byte name[20];
+        public readonly uint Flags;
+        public readonly byte Weight;
+        public readonly byte Quality;
+        public readonly short MiscData;
+        public readonly byte Unknown2;
+        public readonly byte Quantity;
+        public readonly short Anim;
+        public readonly byte Unknown3;
+        public readonly byte Hue;
+        public readonly byte StackingOffset;
+        public readonly byte Value;
+        public readonly byte Height;
+        public fixed byte Name[20];
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct NewItemTileDataMul
     {
-        public readonly ulong flags;
-        public readonly byte weight;
-        public readonly byte quality;
-        public readonly short miscData;
-        public readonly byte unk2;
-        public readonly byte quantity;
-        public readonly short anim;
-        public readonly byte unk3;
-        public readonly byte hue;
-        public readonly byte stackingOffset;
-        public readonly byte value;
-        public readonly byte height;
-        public fixed byte name[20];
+        public readonly ulong Flags;
+        public readonly byte Weight;
+        public readonly byte Quality;
+        public readonly short MiscData;
+        public readonly byte Unknown2;
+        public readonly byte Quantity;
+        public readonly short Anim;
+        public readonly byte Unknown3;
+        public readonly byte Hue;
+        public readonly byte StackingOffset;
+        public readonly byte Value;
+        public readonly byte Height;
+        public fixed byte Name[20];
     }
 }
