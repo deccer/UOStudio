@@ -8,6 +8,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BD33E662-3372-4172-8EC6-48B53C0FD7B0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{774A4201-09BA-4748-9CF5-66437CAEF97B}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\build-docs.yml = .github\workflows\build-docs.yml
+	.github\workflows\build-release.yml = .github\workflows\build-release.yml
+	.github\workflows\build-debug.yml = .github\workflows\build-debug.yml
+EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{52639B27-FD09-4AC3-BC90-B33E61553CB8}"
 ProjectSection(SolutionItems) = preProject
@@ -37,12 +42,6 @@ ProjectSection(SolutionItems) = preProject
 	directory.build.props = directory.build.props
 	version.props = version.props
 	fna.settings.props = fna.settings.props
-EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F7F1ADC3-234C-4238-AE34-72ADCB9917D0}"
-ProjectSection(SolutionItems) = preProject
-	.github\workflows\build-debug.yml = .github\workflows\build-debug.yml
-	.github\workflows\build-release.yml = .github\workflows\build-release.yml
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UOStudio.Server", "src\UOStudio.Server\UOStudio.Server.csproj", "{14DA5B0E-4A10-4013-A8D4-6DD1F9454B43}"
