@@ -24,12 +24,15 @@ namespace UOStudio.Client.Engine.Windows.General
             base.UnloadContent();
         }
 
-        protected override void LoadContentInternal(ContentManager contentManager, ImGuiRenderer imGuiRenderer)
+        protected override void LoadContentInternal(
+            GraphicsDevice graphicsDevice,
+            ContentManager contentManager,
+            ImGuiRenderer imGuiRenderer)
         {
             _splashScreenTexture = contentManager.Load<Texture2D>("Content/splashscreen");
             _splashScreenTextureId = imGuiRenderer.BindTexture(_splashScreenTexture);
 
-            base.LoadContentInternal(contentManager, imGuiRenderer);
+            base.LoadContentInternal(graphicsDevice, contentManager, imGuiRenderer);
         }
 
         protected override void DrawInternal()

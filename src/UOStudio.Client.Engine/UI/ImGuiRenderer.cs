@@ -11,8 +11,6 @@ namespace UOStudio.Client.Engine.UI
 {
     public sealed class ImGuiRenderer
     {
-        private readonly Game _game;
-
         private readonly GraphicsDevice _graphicsDevice;
 
         private BasicEffect _effect;
@@ -39,15 +37,11 @@ namespace UOStudio.Client.Engine.UI
             var context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
 
-            var style = ImGui.GetStyle();
-            SetCherryStyle(style);
-
-            _game = game ?? throw new ArgumentNullException(nameof(game));
             _graphicsDevice = game.GraphicsDevice;
 
             _loadedTextures = new Dictionary<IntPtr, Texture2D>();
 
-            _rasterizerState = new RasterizerState()
+            _rasterizerState = new RasterizerState
             {
                 CullMode = CullMode.None,
                 DepthBias = 0,
@@ -63,7 +57,7 @@ namespace UOStudio.Client.Engine.UI
         public unsafe void RebuildFontAtlas()
         {
             var io = ImGui.GetIO();
-            io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out int width, out int height, out int bytesPerPixel);
+            io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out var width, out var height, out var bytesPerPixel);
 
             // Copy the data to a managed array
             var pixels = new byte[width * height * bytesPerPixel];
@@ -163,7 +157,14 @@ namespace UOStudio.Client.Engine.UI
 
             _effect.World = Matrix.Identity;
             _effect.View = Matrix.Identity;
-            _effect.Projection = Matrix.CreateOrthographicOffCenter(offset, io.DisplaySize.X + offset, io.DisplaySize.Y + offset, offset, -1f, 1f);
+            _effect.Projection = Matrix.CreateOrthographicOffCenter(
+                offset,
+                io.DisplaySize.X + offset,
+                io.DisplaySize.Y + offset,
+                offset,
+                -1f,
+                1f
+            );
             _effect.TextureEnabled = true;
             _effect.Texture = texture;
             _effect.VertexColorEnabled = true;
@@ -178,7 +179,7 @@ namespace UOStudio.Client.Engine.UI
             var mouse = Mouse.GetState();
             var keyboard = Keyboard.GetState();
 
-            for (int i = 0; i < _keys.Count; i++)
+            for (var i = 0; i < _keys.Count; i++)
             {
                 io.KeysDown[_keys[i]] = keyboard.IsKeyDown((Keys)_keys[i]);
             }
@@ -188,7 +189,10 @@ namespace UOStudio.Client.Engine.UI
             io.KeyAlt = keyboard.IsKeyDown(Keys.LeftAlt) || keyboard.IsKeyDown(Keys.RightAlt);
             io.KeySuper = keyboard.IsKeyDown(Keys.LeftWindows) || keyboard.IsKeyDown(Keys.RightWindows);
 
-            io.DisplaySize = new System.Numerics.Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
+            io.DisplaySize = new System.Numerics.Vector2(
+                _graphicsDevice.PresentationParameters.BackBufferWidth,
+                _graphicsDevice.PresentationParameters.BackBufferHeight
+            );
             io.DisplayFramebufferScale = new System.Numerics.Vector2(1f, 1f);
 
             io.MousePos = new System.Numerics.Vector2(mouse.X, mouse.Y);
@@ -198,7 +202,8 @@ namespace UOStudio.Client.Engine.UI
             io.MouseDown[2] = mouse.MiddleButton == ButtonState.Pressed;
 
             var scrollDelta = mouse.ScrollWheelValue - _scrollWheelValue;
-            io.MouseWheel = scrollDelta > 0 ? 1 : scrollDelta < 0 ? -1 : 0;
+            io.MouseWheel = scrollDelta > 0 ? 1 :
+                scrollDelta < 0 ? -1 : 0;
             _scrollWheelValue = mouse.ScrollWheelValue;
         }
 
@@ -217,7 +222,12 @@ namespace UOStudio.Client.Engine.UI
             drawData.ScaleClipRects(ImGui.GetIO().DisplayFramebufferScale);
 
             // Setup projection
-            _graphicsDevice.Viewport = new Viewport(0, 0, _graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
+            _graphicsDevice.Viewport = new Viewport(
+                0,
+                0,
+                _graphicsDevice.PresentationParameters.BackBufferWidth,
+                _graphicsDevice.PresentationParameters.BackBufferHeight
+            );
 
             UpdateBuffers(drawData);
 
@@ -241,7 +251,12 @@ namespace UOStudio.Client.Engine.UI
                 _vertexBuffer?.Dispose();
 
                 _vertexBufferSize = (int)(drawData.TotalVtxCount * 1.5f);
-                _vertexBuffer = new VertexBuffer(_graphicsDevice, ImGuiDrawVertexDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
+                _vertexBuffer = new VertexBuffer(
+                    _graphicsDevice,
+                    ImGuiDrawVertexDeclaration.Declaration,
+                    _vertexBufferSize,
+                    BufferUsage.None
+                );
                 _vertexData = new byte[_vertexBufferSize * ImGuiDrawVertexDeclaration.Size];
             }
 
@@ -255,19 +270,29 @@ namespace UOStudio.Client.Engine.UI
             }
 
             // Copy ImGui's vertices and indices to a set of managed byte arrays
-            int vtxOffset = 0;
-            int idxOffset = 0;
+            var vtxOffset = 0;
+            var idxOffset = 0;
 
-            for (int n = 0; n < drawData.CmdListsCount; n++)
+            for (var n = 0; n < drawData.CmdListsCount; n++)
             {
-                ImDrawListPtr cmdList = drawData.CmdListsRange[n];
+                var cmdList = drawData.CmdListsRange[n];
 
                 fixed (void* vtxDstPtr = &_vertexData[vtxOffset * ImGuiDrawVertexDeclaration.Size])
                 {
                     fixed (void* idxDstPtr = &_indexData[idxOffset * sizeof(ushort)])
                     {
-                        Buffer.MemoryCopy((void*)cmdList.VtxBuffer.Data, vtxDstPtr, _vertexData.Length, cmdList.VtxBuffer.Size * ImGuiDrawVertexDeclaration.Size);
-                        Buffer.MemoryCopy((void*)cmdList.IdxBuffer.Data, idxDstPtr, _indexData.Length, cmdList.IdxBuffer.Size * sizeof(ushort));
+                        Buffer.MemoryCopy(
+                            (void*)cmdList.VtxBuffer.Data,
+                            vtxDstPtr,
+                            _vertexData.Length,
+                            cmdList.VtxBuffer.Size * ImGuiDrawVertexDeclaration.Size
+                        );
+                        Buffer.MemoryCopy(
+                            (void*)cmdList.IdxBuffer.Data,
+                            idxDstPtr,
+                            _indexData.Length,
+                            cmdList.IdxBuffer.Size * sizeof(ushort)
+                        );
                     }
                 }
 
@@ -285,20 +310,22 @@ namespace UOStudio.Client.Engine.UI
             _graphicsDevice.SetVertexBuffer(_vertexBuffer);
             _graphicsDevice.Indices = _indexBuffer;
 
-            int vtxOffset = 0;
-            int idxOffset = 0;
+            var vtxOffset = 0;
+            var idxOffset = 0;
 
-            for (int n = 0; n < drawData.CmdListsCount; n++)
+            for (var n = 0; n < drawData.CmdListsCount; n++)
             {
-                ImDrawListPtr cmdList = drawData.CmdListsRange[n];
+                var cmdList = drawData.CmdListsRange[n];
 
-                for (int cmdi = 0; cmdi < cmdList.CmdBuffer.Size; cmdi++)
+                for (var cmdi = 0; cmdi < cmdList.CmdBuffer.Size; cmdi++)
                 {
-                    ImDrawCmdPtr drawCmd = cmdList.CmdBuffer[cmdi];
+                    var drawCmd = cmdList.CmdBuffer[cmdi];
 
                     if (!_loadedTextures.ContainsKey(drawCmd.TextureId))
                     {
-                        throw new InvalidOperationException($"Could not find a texture with id '{drawCmd.TextureId}', please check your bindings");
+                        throw new InvalidOperationException(
+                            $"Could not find a texture with id '{drawCmd.TextureId}', please check your bindings"
+                        );
                     }
 
                     _graphicsDevice.ScissorRectangle = new Rectangle(
@@ -401,9 +428,47 @@ namespace UOStudio.Client.Engine.UI
             style.WindowBorderSize = 1.0f;
         }
 
-        public void EnableDocking()
+        private static void SetVorspireStyle(ImGuiStylePtr style)
+        {
+            static Num.Vector4 Hi(float v) => new Num.Vector4(0.502f, 0.075f, 0.256f, v);
+            static Num.Vector4 Medium(float v) => new Num.Vector4(0.455f, 0.198f, 0.301f, v);
+            static Num.Vector4 Low(float v) => new Num.Vector4(0.232f, 0.201f, 0.271f, v);
+            static Num.Vector4 Background(float v) => new Num.Vector4(54 / 255.0f, 57 / 255.0f, 63 / 255.0f, v);
+            static Num.Vector4 Text(float v) => new Num.Vector4(0.860f, 0.930f, 0.890f, v);
+
+            style.Colors[(int)ImGuiCol.WindowBg] = Background(1.00f);
+            style.Colors[(int)ImGuiCol.ChildBg] = Background(0.58f);
+            style.Colors[(int)ImGuiCol.PopupBg] = Background(0.9f);
+            style.Colors[(int)ImGuiCol.FrameBg] = Background(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgCollapsed] = Background(0.75f);
+            style.Colors[(int)ImGuiCol.MenuBarBg] = Background(0.47f);
+            style.Colors[(int)ImGuiCol.ScrollbarBg] = Background(1.00f);
+        }
+
+        public static void EnableDocking()
         {
             ImGui.GetIO().ConfigFlags = ImGuiConfigFlags.DockingEnable;
+        }
+
+        public static void SetStyle(UiStyle uiStyle)
+        {
+            var style = ImGui.GetStyle();
+            switch (uiStyle)
+            {
+                case UiStyle.Dark:
+                    ImGui.StyleColorsDark();
+                    break;
+                case UiStyle.Light:
+                    ImGui.StyleColorsLight();
+                    break;
+                case UiStyle.Discord:
+                    ImGui.StyleColorsDark();
+                    SetVorspireStyle(style);
+                    break;
+                case UiStyle.Cherry:
+                    SetCherryStyle(style);
+                    break;
+            }
         }
     }
 }

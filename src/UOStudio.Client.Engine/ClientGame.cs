@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Resources;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Serilog;
-using UOStudio.Client.Core;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine.Resources;
 using UOStudio.Client.Engine.UI;
@@ -17,6 +15,14 @@ using Num = System.Numerics;
 
 namespace UOStudio.Client.Engine
 {
+    public enum UiStyle
+    {
+        Light,
+        Dark,
+        Discord,
+        Cherry
+    }
+
     public class ClientGame : Game
     {
         private readonly ILogger _logger;
@@ -32,25 +38,9 @@ namespace UOStudio.Client.Engine
         private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f);
 
         private bool _showChat = true;
-        private string _chatMessages = "";
-        private string _sendChatMessage = "";
-        private bool _showStatics;
-        private bool _showLandTiles;
-        private int _selectedStatic;
-        private ItemData _selectedItemData;
-        private int _selectedLandTile;
-        private LandData _selectedLandData;
-        private bool _stretchStaticTextures = true;
-        private bool _stretchLandTextures = true;
-        private bool _isLandSelected = false;
-        private readonly Dictionary<IntPtr, int> _staticsIdMap;
-        private readonly Dictionary<IntPtr, int> _landIdMap;
 
         private ItemProvider _itemProvider;
         private TileDataProvider _tileDataProvider;
-
-        private readonly IDictionary<Texture2D, IntPtr> _staticsTexturesMap;
-        private readonly IDictionary<Texture2D, IntPtr> _landTexturesMap;
 
         private ProjectType _projectType;
         private GumpEditProjectWindowProvider _gumpEditProjectWindowProvider;
@@ -58,6 +48,8 @@ namespace UOStudio.Client.Engine
 
         private RenderTarget2D _mapEditRenderTarget;
         private MapEditState _mapEditState;
+
+        private UiStyle _uiStyle = UiStyle.Light;
 
         public ClientGame(
             ILogger logger,
@@ -74,6 +66,7 @@ namespace UOStudio.Client.Engine
             _networkClient.Connected += NetworkClientConnectedHandler;
 
             Window.Title = "UOStudio";
+            Window.AllowUserResizing = true;
 
             _graphics = new GraphicsDeviceManager(this)
             {
@@ -83,11 +76,6 @@ namespace UOStudio.Client.Engine
                 GraphicsProfile = GraphicsProfile.HiDef
             };
             _graphics.ApplyChanges();
-
-            _staticsTexturesMap = new Dictionary<Texture2D, IntPtr>(0x8000);
-            _landTexturesMap = new Dictionary<Texture2D, IntPtr>(0x8000);
-            _staticsIdMap = new Dictionary<IntPtr, int>(8192);
-            _landIdMap = new Dictionary<IntPtr, int>(8192);
 
             _mapEditState = new MapEditState();
             _projectType = ProjectType.Map;
@@ -119,7 +107,7 @@ namespace UOStudio.Client.Engine
             _currentMouseState = Mouse.GetState();
 
             _guiRenderer = new ImGuiRenderer(this);
-            _guiRenderer.EnableDocking();
+            ImGuiRenderer.EnableDocking();
             _guiRenderer.RebuildFontAtlas();
 
             ImGui.GetIO().ConfigFlags = ImGuiConfigFlags.DockingEnable;
@@ -154,17 +142,20 @@ namespace UOStudio.Client.Engine
                 SurfaceFormat.Color,
                 DepthFormat.Depth24Stencil8);
 
+            _itemProvider = new ItemProvider(_logger, _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, false);
+            _tileDataProvider = new TileDataProvider(_appSettingsProvider, false);
+
             _gumpEditProjectWindowProvider = new GumpEditProjectWindowProvider(_appSettingsProvider, _fileVersionProvider);
-            _gumpEditProjectWindowProvider.LoadContent(Content, _guiRenderer);
+            _gumpEditProjectWindowProvider.LoadContent(GraphicsDevice, Content, _guiRenderer);
             _mapEditProjectWindowProvider = new MapEditProjectWindowProvider(
                 _appSettingsProvider,
                 _fileVersionProvider,
+                _itemProvider,
+                _tileDataProvider,
                 _mapEditState,
                 _mapEditRenderTarget
             );
-            _mapEditProjectWindowProvider.LoadContent(Content, _guiRenderer);
-
-            _itemProvider = new ItemProvider(_logger, _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, false);
+            _mapEditProjectWindowProvider.LoadContent(GraphicsDevice, Content, _guiRenderer);
 
             // for (var staticIndex = 0; staticIndex < _itemProvider.Length; ++staticIndex)
             // {
@@ -179,20 +170,6 @@ namespace UOStudio.Client.Engine
             //     _staticsIdMap.Add(textureHandle, (int)staticIndex);
             // }
             //
-            // for (var landIndex = 0; landIndex < _itemProvider.Length; ++landIndex)
-            // {
-            //     var landTexture = _itemProvider.GetLand(GraphicsDevice, landIndex);
-            //     if (landTexture == null)
-            //     {
-            //         continue;
-            //     }
-            //
-            //     var textureHandle = _guiRenderer.BindTexture((Texture2D)landTexture);
-            //     _landTexturesMap.Add((Texture2D)landTexture, textureHandle);
-            //     _landIdMap.Add(textureHandle, (int)landIndex);
-            // }
-
-            _tileDataProvider = new TileDataProvider(_appSettingsProvider, false);
 
             _logger.Information("Content - Loading...Done");
         }
@@ -290,13 +267,55 @@ namespace UOStudio.Client.Engine
                             ImGui.Separator();
                         }
 
-                        ImGui.Checkbox("Statics", ref _showStatics);
-                        ImGui.Checkbox("Land Tiles", ref _showLandTiles);
-                        ImGui.EndMenu();
-                    }
+                        var showToolbarWindow = _mapEditProjectWindowProvider.MapToolbarWindow.IsVisible;
+                        if (ImGui.Checkbox("Tools", ref showToolbarWindow))
+                        {
+                            _mapEditProjectWindowProvider.MapToolbarWindow.ToggleVisibility();
+                        }
 
-                    if (ImGui.BeginMenu(ResGeneral.MenuExtras))
-                    {
+                        var showItemsWindow = _mapEditProjectWindowProvider.MapItemBrowserWindow.IsVisible;
+                        if (ImGui.Checkbox("Items", ref showItemsWindow))
+                        {
+                            _mapEditProjectWindowProvider.MapItemBrowserWindow.ToggleVisibility();
+                        }
+
+                        var showLandsWindow = _mapEditProjectWindowProvider.MapLandBrowserWindow.IsVisible;
+                        if (ImGui.Checkbox("Land Tiles", ref showLandsWindow))
+                        {
+                            _mapEditProjectWindowProvider.MapLandBrowserWindow.ToggleVisibility();
+                        }
+
+                        var showItemDetail = _mapEditProjectWindowProvider.MapTileDetailWindow.IsVisible;
+                        if (ImGui.Checkbox("Details", ref showItemDetail))
+                        {
+                            _mapEditProjectWindowProvider.MapTileDetailWindow.ToggleVisibility();
+                        }
+
+                        ImGui.Separator();
+
+                        var styleSelected = (int)_uiStyle;
+                        if (ImGui.RadioButton("Light", ref styleSelected, 0))
+                        {
+                            _uiStyle = UiStyle.Light;
+                            ImGuiRenderer.SetStyle(_uiStyle);
+                        }
+                        if (ImGui.RadioButton("Dark", ref styleSelected, 1))
+                        {
+                            _uiStyle = UiStyle.Dark;
+                            ImGuiRenderer.SetStyle(_uiStyle);
+                        }
+                        if (ImGui.RadioButton("Discord", ref styleSelected, 2))
+                        {
+                            _uiStyle = UiStyle.Discord;
+                            ImGuiRenderer.SetStyle(_uiStyle);
+                        }
+                        if (ImGui.RadioButton("Cherry", ref styleSelected, 3))
+                        {
+                            _uiStyle = UiStyle.Cherry;
+                            ImGuiRenderer.SetStyle(_uiStyle);
+                        }
+
+
                         ImGui.EndMenu();
                     }
 
@@ -334,140 +353,6 @@ namespace UOStudio.Client.Engine
 
             if (_showChat && ImGui.Begin("Chat"))
             {
-                var currentItem = 0;
-                ImGui.Text(_chatMessages);
-                ImGui.ListBox("Users", ref currentItem, new[] { "User1", "User2" }, 2);
-                ImGui.InputText("Message: ", ref _sendChatMessage, 128);
-                ImGui.End();
-            }
-
-            if (_showStatics && ImGui.Begin("Statics"))
-            {
-                var windowSize = ImGui.GetWindowSize();
-
-                ImGui.Checkbox("Stretch", ref _stretchStaticTextures);
-
-                ImGui.BeginGroup();
-                ImGui.InputInt("Static Id", ref _selectedStatic);
-                ImGui.EndGroup();
-
-                ImGui.BeginGroup();
-                var perRowIndex = 0;
-                foreach (var staticTexture in _staticsTexturesMap)
-                {
-                    if (perRowIndex == (int)(windowSize.X / (_stretchStaticTextures ? 88 : 44)) + 44)
-                    {
-                        perRowIndex = 0;
-                    }
-
-                    if (_stretchStaticTextures)
-                    {
-                        if (ImGui.ImageButton(staticTexture.Value, new Num.Vector2(88, 166)))
-                        {
-                            _selectedStatic = _staticsIdMap[staticTexture.Value];
-                            _selectedItemData = _tileDataProvider.ItemTable[_selectedStatic];
-                            _isLandSelected = false;
-                        }
-                    }
-                    else
-                    {
-                        if (ImGui.ImageButton(staticTexture.Value, new Num.Vector2(staticTexture.Key.Width, staticTexture.Key.Height)))
-                        {
-                            _selectedStatic = _staticsIdMap[staticTexture.Value];
-                            _selectedItemData = _tileDataProvider.ItemTable[_selectedStatic];
-                            _isLandSelected = false;
-                        }
-                    }
-
-                    if (perRowIndex > 0)
-                    {
-                        ImGui.SameLine();
-                    }
-
-                    perRowIndex++;
-                }
-
-                ImGui.EndGroup();
-                ImGui.End();
-            }
-
-            if (_showLandTiles && ImGui.Begin("Land Tiles"))
-            {
-                var windowSize = ImGui.GetWindowSize();
-
-                ImGui.Checkbox("Stretch", ref _stretchLandTextures);
-
-                ImGui.BeginGroup();
-                ImGui.InputInt("Land Id", ref _selectedLandTile);
-                ImGui.EndGroup();
-
-                ImGui.BeginGroup();
-                var perRowIndex = 0;
-                foreach (var landTexture in _landTexturesMap)
-                {
-                    if (perRowIndex == (int)(windowSize.X / (_stretchLandTextures ? 88 : 44)) + 1)
-                    {
-                        perRowIndex = 0;
-                    }
-
-                    if (_stretchLandTextures)
-                    {
-                        if (ImGui.ImageButton(landTexture.Value, new Num.Vector2(88, 166)))
-                        {
-                            _selectedLandTile = _landIdMap[landTexture.Value];
-                            _selectedLandData = _tileDataProvider.LandTable[_selectedLandTile];
-                            _isLandSelected = true;
-                        }
-                    }
-                    else
-                    {
-                        if (ImGui.ImageButton(landTexture.Value, new Num.Vector2(landTexture.Key.Width, landTexture.Key.Height)))
-                        {
-                            _selectedLandTile = _landIdMap[landTexture.Value];
-                            _selectedLandData = _tileDataProvider.LandTable[_selectedLandTile];
-                            _isLandSelected = true;
-                        }
-                    }
-
-                    if (perRowIndex > 0)
-                    {
-                        ImGui.SameLine();
-                    }
-
-                    perRowIndex++;
-                }
-
-                ImGui.EndGroup();
-                ImGui.End();
-            }
-
-            if (ImGui.Begin("Item Details"))
-            {
-                ImGui.Columns(2);
-                if (_isLandSelected)
-                {
-                    if (!string.IsNullOrEmpty(_selectedLandData.Name))
-                    {
-                        ImGui.TextUnformatted(_selectedLandData.Name);
-                    }
-
-                    ImGui.NextColumn();
-                    ImGui.TextUnformatted(TileDataProvider.LandFlagsToString(_selectedLandData));
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(_selectedItemData.Name))
-                    {
-                        ImGui.TextUnformatted(_selectedItemData.Name);
-                    }
-
-                    foreach (var property in TileDataProvider.ItemFlagsToPropertyList(_selectedItemData))
-                    {
-                        ImGui.TextUnformatted(property);
-                        ImGui.NextColumn();
-                    }
-                }
-
                 ImGui.End();
             }
         }

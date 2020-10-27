@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Engine.Windows;
@@ -32,12 +33,12 @@ namespace UOStudio.Client.Engine
             Settings.Draw();
         }
 
-        public virtual void LoadContent(ContentManager contentManager, ImGuiRenderer guiRenderer)
+        public virtual void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer guiRenderer)
         {
-            SplashScreenWindow.LoadContent(contentManager, guiRenderer);
-            AboutWindow.LoadContent(contentManager, guiRenderer);
-            FrameTimeOverlayWindow.LoadContent(contentManager, guiRenderer);
-            Settings.LoadContent(contentManager, guiRenderer);
+            SplashScreenWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
+            AboutWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
+            FrameTimeOverlayWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
+            Settings.LoadContent(graphicsDevice, contentManager, guiRenderer);
         }
 
         public virtual void UnloadContent()

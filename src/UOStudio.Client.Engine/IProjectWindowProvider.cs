@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using UOStudio.Client.Engine.UI;
 
 namespace UOStudio.Client.Engine
@@ -7,7 +8,7 @@ namespace UOStudio.Client.Engine
     {
         void Draw();
 
-        void LoadContent(ContentManager contentManager, ImGuiRenderer guiRenderer);
+        void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer guiRenderer);
 
         void UnloadContent();
     }

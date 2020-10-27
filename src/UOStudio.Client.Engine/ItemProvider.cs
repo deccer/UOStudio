@@ -7,6 +7,7 @@ using UOStudio.Client.Engine.IO;
 namespace UOStudio.Client.Engine
 {
     internal sealed class ItemProvider
+        : IItemProvider
     {
         private readonly ILogger _logger;
         private bool _isInitialized;
@@ -91,6 +92,7 @@ namespace UOStudio.Client.Engine
             {
                 return null;
             }
+
             using var binaryReader = new BinaryReader(stream);
             var texture = new Texture2D(graphicsDevice, 44, 44, false, SurfaceFormat.Bgra5551);
             var buffer = new ushort[44 * 44];

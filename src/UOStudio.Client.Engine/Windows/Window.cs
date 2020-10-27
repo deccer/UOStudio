@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using UOStudio.Client.Engine.UI;
 
 namespace UOStudio.Client.Engine.Windows
@@ -30,13 +31,13 @@ namespace UOStudio.Client.Engine.Windows
 
         protected abstract void DrawInternal();
 
-        protected virtual void LoadContentInternal(ContentManager contentManager, ImGuiRenderer imGuiRenderer)
+        protected virtual void LoadContentInternal(GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer imGuiRenderer)
         {
         }
 
-        public void LoadContent(ContentManager contentManager, ImGuiRenderer imGuiRenderer)
+        public void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer imGuiRenderer)
         {
-            LoadContentInternal(contentManager, imGuiRenderer);
+            LoadContentInternal(graphicsDevice, contentManager, imGuiRenderer);
         }
 
         public virtual void UnloadContent()
