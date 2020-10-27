@@ -357,3 +357,6 @@ MigrationBackup/
 
 # MkDocs
 site/
+
+# Project build output
+build/
