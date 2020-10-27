@@ -1,0 +1,28 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Defines common/shared assembly and NuGet package metadata. Typical
+    properties are:
+          $(Product)
+          $(Company)
+          $(Copyright)
+    -->
+    <PropertyGroup>
+        <Product>UO Studio</Product>
+        <Copyright>(c) 2020 deccer</Copyright>
+    </PropertyGroup>
+
+    <!-- Defines properties which help customize the version update process. -->
+    <PropertyGroup>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <GenerateReleaseNotes Condition="'$(GenerateReleaseNotes)' == ''">false</GenerateReleaseNotes>
+        <GenerateAssemblyBuildDateAttribute Condition="'$(GenerateAssemblyBuildDateAttribute)' == ''">true</GenerateAssemblyBuildDateAttribute>
+        <VersionStrategy Condition="'$(VersionStrategy)' == ''">ShortDate</VersionStrategy>
+    </PropertyGroup>
+
+    <!-- The UpdateReleaseNotes target expects a single XML file as input and
+      one or more destination folders as output, as defined by the ItemGroup.
+      Uncomment this item group and change the path as necessary. -->
+    <ItemGroup Condition="'$(GenerateReleaseNotes)' == 'true'">
+        <ReleaseNotes Include="$(SolutionDir)/ReleaseNotes.xml"/>
+        <DestinationFolders Include="$(SolutionDir)/build"/>
+    </ItemGroup>
+</Project>

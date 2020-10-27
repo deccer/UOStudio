@@ -10,4 +10,19 @@
       <PackageReference Include="Serilog" Version="2.10.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="CompilationDate.t4">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>CompilationDate.g.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="CompilationDate.g.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+        <DependentUpon>CompilationDate.t4</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

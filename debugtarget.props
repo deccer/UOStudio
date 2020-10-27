@@ -1,0 +1,18 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Enables or disables the DebugEcho target -->
+    <PropertyGroup>
+      <DebugMessages>false</DebugMessages>
+    </PropertyGroup>
+
+    <!-- Add DebugEchoTarget items here to specify what projects should
+    cause the target to run. -->
+    <ItemGroup>
+    </ItemGroup>
+
+    <!-- Additional properties to change the behavior. -->
+    <PropertyGroup>
+      <DebugMessageImportance>high</DebugMessageImportance>
+      <DebugMessagesBeforeTargets>BeforeBuild</DebugMessagesBeforeTargets>
+      <DebugMessagesDependsOnTargets></DebugMessagesDependsOnTargets>
+    </PropertyGroup>
+  </Project>

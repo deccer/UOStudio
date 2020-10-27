@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <VersionMajor>0</VersionMajor>
+        <VersionMinor>1</VersionMinor>
+        <VersionSuffix>dev</VersionSuffix>
+    </PropertyGroup>
+</Project>
