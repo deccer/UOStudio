@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +18,8 @@ namespace UOStudio.Client.Engine
         Light,
         Dark,
         Discord,
+        DiscordDarker,
+        DiscordDark,
         Cherry
     }
 
@@ -157,19 +157,9 @@ namespace UOStudio.Client.Engine
             );
             _mapEditProjectWindowProvider.LoadContent(GraphicsDevice, Content, _guiRenderer);
 
-            // for (var staticIndex = 0; staticIndex < _itemProvider.Length; ++staticIndex)
-            // {
-            //     var staticTexture = _itemProvider.GetStatic(GraphicsDevice, staticIndex);
-            //     if (staticTexture == null)
-            //     {
-            //         continue;
-            //     }
-            //
-            //     var textureHandle = _guiRenderer.BindTexture((Texture2D)staticTexture);
-            //     _staticsTexturesMap.Add((Texture2D)staticTexture, textureHandle);
-            //     _staticsIdMap.Add(textureHandle, (int)staticIndex);
-            // }
-            //
+            //string GetFile(string fileName) => Path.Combine(_appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, fileName);
+            //var tileDataMul = GetFile("tiledata.mul");
+            //var tileDataProvider = new UOStudio.Core.Ultima.TileDataProvider(tileDataMul, true);
 
             _logger.Information("Content - Loading...Done");
         }
@@ -309,7 +299,17 @@ namespace UOStudio.Client.Engine
                             _uiStyle = UiStyle.Discord;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
-                        if (ImGui.RadioButton("Cherry", ref styleSelected, 3))
+                        if (ImGui.RadioButton("Discord Darker", ref styleSelected, 3))
+                        {
+                            _uiStyle = UiStyle.DiscordDarker;
+                            ImGuiRenderer.SetStyle(_uiStyle);
+                        }
+                        if (ImGui.RadioButton("Discord Dark", ref styleSelected, 4))
+                        {
+                            _uiStyle = UiStyle.DiscordDark;
+                            ImGuiRenderer.SetStyle(_uiStyle);
+                        }
+                        if (ImGui.RadioButton("Cherry", ref styleSelected, 5))
                         {
                             _uiStyle = UiStyle.Cherry;
                             ImGuiRenderer.SetStyle(_uiStyle);
@@ -331,6 +331,13 @@ namespace UOStudio.Client.Engine
                             {
                                 _gumpEditProjectWindowProvider.AboutWindow.Show();
                             }
+                        }
+
+                        if (ImGui.MenuItem("Style Editor"))
+                        {
+                            var currentStyle = ImGui.GetStyle();
+                            ImGui.ShowStyleEditor(currentStyle);
+                            ImGui.ShowStyleSelector("Style Selector");
                         }
 
                         ImGui.EndMenu();

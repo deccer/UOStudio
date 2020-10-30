@@ -19,10 +19,11 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
         protected override void DrawInternal()
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.IndentSpacing, new Vector2(0, 0));
-            ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, new Vector2(0, 0));
+            var padding = ImGui.GetStyle().WindowPadding;
+            var itemSpacing = ImGui.GetStyle().ItemSpacing;
+            var itemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
+            ImGui.SetCursorPos(-(padding + itemSpacing + itemInnerSpacing));
             ImGui.Image(_mapViewTextureId, new Vector2(400, 300));
-            ImGui.PopStyleVar();
         }
     }
 }

@@ -16,16 +16,17 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
         protected override void DrawInternal()
         {
-            var currentToolGroup = ToolGroup.Selection;
+            var currentToolGroup = ToolGroup.Control;
             foreach (var toolDescription in _toolDescriptions)
             {
                 if (currentToolGroup != toolDescription.Group)
                 {
-                    ImGui.Separator();
+                    ImGui.Dummy(new Vector2(4, toolDescription.Size));
+                    ImGui.SameLine();
                 }
                 currentToolGroup = toolDescription.Group;
 
-                ImGui.ImageButton(toolDescription.TextureHandle, new Vector2(32, 32));
+                ImGui.ImageButton(toolDescription.TextureHandle, new Vector2(toolDescription.Size, toolDescription.Size));
                 ImGui.SameLine();
             }
         }

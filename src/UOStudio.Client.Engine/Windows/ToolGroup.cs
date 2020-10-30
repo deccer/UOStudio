@@ -2,6 +2,7 @@
 {
     public enum ToolGroup
     {
+        Control,
         Selection,
         Drawing,
         Terrain

@@ -9,5 +9,7 @@ namespace UOStudio.Client.Engine.Windows
         public IntPtr TextureHandle { get; set; }
 
         public ToolGroup Group { get; set; }
+
+        public int Size { get; set; }
     }
 }

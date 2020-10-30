@@ -46,5 +46,9 @@ namespace UOStudio.Client.Engine.Windows.General
             }
             ImGui.PopStyleVar();
         }
+
+        protected override ImGuiWindowFlags SetWindowFlags() =>
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove |
+            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize;
     }
 }

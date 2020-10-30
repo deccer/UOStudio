@@ -19,5 +19,9 @@ namespace UOStudio.Client.Engine.Windows.General
             ImGui.TextUnformatted($"Edit Maps");
             ImGui.TextUnformatted($"Edit Gumps");
         }
+
+        protected override ImGuiWindowFlags SetWindowFlags() =>
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove |
+            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize;
     }
 }

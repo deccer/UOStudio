@@ -14,10 +14,17 @@ namespace UOStudio.Client.Engine.Windows
         private readonly MapEditState _mapEditState;
         private readonly RenderTarget2D _mapEditRenderTarget;
 
-        private Texture2D _mapToolTerrainRaise;
+        private Texture2D _mapControlLogin;
+        private Texture2D _mapControlLogout;
+
+        private Texture2D _mapToolTerrainElevate;
         private Texture2D _mapToolTerrainLower;
-        private Texture2D _mapToolTerrainFloodfill;
-        private Texture2D _mapToolTerrainAutoShore;
+        private Texture2D _mapToolTerrainAdd;
+        private Texture2D _mapToolTerrainSubtract;
+        private Texture2D _mapToolTerrainCoast;
+        private Texture2D _mapToolTerrainFlatten;
+        private Texture2D _mapToolTerrainPaint;
+        private Texture2D _mapToolTerrainSmooth;
 
         public MapEditProjectWindowProvider(
             IAppSettingsProvider appSettingsProvider,
@@ -68,23 +75,46 @@ namespace UOStudio.Client.Engine.Windows
         {
             base.LoadContent(graphicsDevice, contentManager, guiRenderer);
 
-            _mapToolTerrainLower = contentManager.Load<Texture2D>("Content/tools_terrain_lower_32");
-            _mapToolTerrainRaise = contentManager.Load<Texture2D>("Content/tools_terrain_raise_32");
-            _mapToolTerrainFloodfill = contentManager.Load<Texture2D>("Content/tools_terrain_floodfill_32");
-            _mapToolTerrainAutoShore = contentManager.Load<Texture2D>("Content/tools_auto_shore_32");
+            const int size = 32;
 
+            _mapControlLogin = contentManager.Load<Texture2D>($"Content/Controls/control-login-{size}");
+            _mapControlLogout = contentManager.Load<Texture2D>($"Content/Controls/control-logout-{size}");
+
+            _mapToolTerrainElevate = contentManager.Load<Texture2D>($"Content/Tools/terrain-elevate-{size}");
+            _mapToolTerrainLower = contentManager.Load<Texture2D>($"Content/Tools/terrain-lower-{size}");
+            _mapToolTerrainAdd = contentManager.Load<Texture2D>($"Content/Tools/terrain-add-{size}");
+            _mapToolTerrainSubtract = contentManager.Load<Texture2D>($"Content/Tools/terrain-subtract-{size}");
+            _mapToolTerrainCoast = contentManager.Load<Texture2D>($"Content/Tools/terrain-coast-{size}");
+            _mapToolTerrainFlatten = contentManager.Load<Texture2D>($"Content/Tools/terrain-flatten-{size}");
+            _mapToolTerrainPaint = contentManager.Load<Texture2D>($"Content/Tools/terrain-paint-{size}");
+            _mapToolTerrainSmooth = contentManager.Load<Texture2D>($"Content/Tools/terrain-smooth-{size}");
+
+            var mapControlLogin = guiRenderer.BindTexture(_mapControlLogin);
+            var mapControlLogout = guiRenderer.BindTexture(_mapControlLogout);
+
+            var mapToolTerrainElevate = guiRenderer.BindTexture(_mapToolTerrainElevate);
             var mapToolTerrainLower = guiRenderer.BindTexture(_mapToolTerrainLower);
-            var mapToolTerrainRaise = guiRenderer.BindTexture(_mapToolTerrainRaise);
-            var mapToolTerrainFloodFill = guiRenderer.BindTexture(_mapToolTerrainFloodfill);
-            var mapToolTerrainAutoShore = guiRenderer.BindTexture(_mapToolTerrainAutoShore);
+            var mapToolTerrainAdd = guiRenderer.BindTexture(_mapToolTerrainAdd);
+            var mapToolTerrainSubtract = guiRenderer.BindTexture(_mapToolTerrainSubtract);
+            var mapToolTerrainCoast = guiRenderer.BindTexture(_mapToolTerrainCoast);
+            var mapToolTerrainFlatten = guiRenderer.BindTexture(_mapToolTerrainFlatten);
+            var mapToolTerrainPaint = guiRenderer.BindTexture(_mapToolTerrainPaint);
+            var mapToolTerrainSmooth = guiRenderer.BindTexture(_mapToolTerrainSmooth);
 
             var mapToolDescriptions = new[]
             {
-                new ToolDescription { Group = ToolGroup.Selection, Name = "Lower Terrain", TextureHandle = mapToolTerrainLower },
-                new ToolDescription { Group = ToolGroup.Selection, Name = "Raise Terrain", TextureHandle = mapToolTerrainRaise },
-                new ToolDescription { Group = ToolGroup.Selection, Name = "Flood Fill", TextureHandle = mapToolTerrainFloodFill },
-                new ToolDescription { Group = ToolGroup.Selection, Name = "Auto Shore", TextureHandle = mapToolTerrainAutoShore },
+                new ToolDescription { Group = ToolGroup.Control, Name = "Login", TextureHandle = mapControlLogin, Size = size },
+                new ToolDescription { Group = ToolGroup.Control, Name = "Logout", TextureHandle = mapControlLogout, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Elevate", TextureHandle = mapToolTerrainElevate, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Lower", TextureHandle = mapToolTerrainLower, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Add", TextureHandle = mapToolTerrainAdd, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Subtract", TextureHandle = mapToolTerrainSubtract, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Coast", TextureHandle = mapToolTerrainCoast, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Flatten", TextureHandle = mapToolTerrainFlatten, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Paint", TextureHandle = mapToolTerrainPaint, Size = size },
+                new ToolDescription { Group = ToolGroup.Selection, Name = "Smooth", TextureHandle = mapToolTerrainSmooth, Size = size },
             };
+
             MapToolbarWindow = new MapToolbarWindow(mapToolDescriptions);
 
             var renderTargetId = guiRenderer.BindTexture(_mapEditRenderTarget);
@@ -99,6 +129,21 @@ namespace UOStudio.Client.Engine.Windows
             MapLandBrowserWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
             MapItemBrowserWindow = new MapItemBrowserWindow(_itemProvider, _tileDataProvider, MapTileDetailWindow, MapTilePreviewWindow);
             MapItemBrowserWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
+        }
+
+        public override void UnloadContent()
+        {
+            _mapControlLogin.Dispose();
+            _mapControlLogout.Dispose();
+            _mapToolTerrainAdd.Dispose();
+            _mapToolTerrainCoast.Dispose();
+            _mapToolTerrainElevate.Dispose();
+            _mapToolTerrainFlatten.Dispose();
+            _mapToolTerrainLower.Dispose();
+            _mapToolTerrainPaint.Dispose();
+            _mapToolTerrainSmooth.Dispose();
+            _mapToolTerrainSubtract.Dispose();
+            base.UnloadContent();
         }
     }
 }
