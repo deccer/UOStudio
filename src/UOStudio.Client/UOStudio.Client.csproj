@@ -62,54 +62,105 @@
             <Link>Content\splashscreen.png</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Include="..\..\assets\client\mapedit\map_setlocation_32.png">
-            <Link>Content\map_setlocation_32.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\map_setlocation_64.png">
-            <Link>Content\map_setlocation_64.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_auto_shore_32.png">
-            <Link>Content\tools_auto_shore_32.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_auto_shore_64.png">
-            <Link>Content\tools_auto_shore_64.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_layers_32.png">
-            <Link>Content\tools_layers_32.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_layers_64.png">
-            <Link>Content\tools_layers_64.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_terrain_floodfill_32.png">
-            <Link>Content\tools_terrain_floodfill_32.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_terrain_floodfill_64.png">
-            <Link>Content\tools_terrain_floodfill_64.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_terrain_lower_32.png">
-            <Link>Content\tools_terrain_lower_32.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_terrain_lower_64.png">
-            <Link>Content\tools_terrain_lower_64.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_terrain_raise_32.png">
-            <Link>Content\tools_terrain_raise_32.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\assets\client\mapedit\tools_terrain_raise_64.png">
-            <Link>Content\tools_terrain_raise_64.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\assets\client\controls\control-login-16.png">
+        <Link>Content\Controls\control-login-16.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\controls\control-login-24.png">
+        <Link>Content\Controls\control-login-24.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\controls\control-login-32.png">
+        <Link>Content\Controls\control-login-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\controls\control-login-64.png">
+        <Link>Content\Controls\control-login-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\controls\control-logout-16.png">
+        <Link>Content\Controls\control-logout-16.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\controls\control-logout-24.png">
+        <Link>Content\Controls\control-logout-24.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\controls\control-logout-32.png">
+        <Link>Content\Controls\control-logout-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\controls\control-logout-64.png">
+        <Link>Content\Controls\control-logout-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-add-32.png">
+        <Link>Content\Tools\terrain-add-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-add-64.png">
+        <Link>Content\Tools\terrain-add-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-coast-32.png">
+        <Link>Content\Tools\terrain-coast-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-coast-64.png">
+        <Link>Content\Tools\terrain-coast-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-elevate-32.png">
+        <Link>Content\Tools\terrain-elevate-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-elevate-64.png">
+        <Link>Content\Tools\terrain-elevate-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-flatten-32.png">
+        <Link>Content\Tools\terrain-flatten-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-flatten-64.png">
+        <Link>Content\Tools\terrain-flatten-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-lower-32.png">
+        <Link>Content\Tools\terrain-lower-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-lower-64.png">
+        <Link>Content\Tools\terrain-lower-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-paint-32.png">
+        <Link>Content\Tools\terrain-paint-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-paint-64.png">
+        <Link>Content\Tools\terrain-paint-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-smooth-32.png">
+        <Link>Content\Tools\terrain-smooth-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-smooth-64.png">
+        <Link>Content\Tools\terrain-smooth-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-subtract-32.png">
+        <Link>Content\Tools\terrain-subtract-32.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\mapedit\terrain-subtract-64.png">
+        <Link>Content\Tools\terrain-subtract-64.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="Build">
