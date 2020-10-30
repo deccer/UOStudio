@@ -395,9 +395,6 @@ namespace UOStudio.Client.Engine.UI
             style.Colors[(int)ImGuiCol.Header] = Medium(0.76f);
             style.Colors[(int)ImGuiCol.HeaderHovered] = Medium(0.86f);
             style.Colors[(int)ImGuiCol.HeaderActive] = Hi(1.00f);
-            //style.Colors[(int)ImGuiCol.Column]                = new Vector4(0.14f, 0.16f, 0.19f, 1.00f);
-            //style.Colors[(int)ImGuiCol.ColumnHovered]         = Medium( 0.78f);
-            //style.Colors[(int)ImGuiCol.ColumnActive]          = Medium( 1.00f);
             style.Colors[(int)ImGuiCol.ResizeGrip] = new Num.Vector4(0.47f, 0.77f, 0.83f, 0.04f);
             style.Colors[(int)ImGuiCol.ResizeGripHovered] = Medium(0.78f);
             style.Colors[(int)ImGuiCol.ResizeGripActive] = Medium(1.00f);
@@ -406,7 +403,6 @@ namespace UOStudio.Client.Engine.UI
             style.Colors[(int)ImGuiCol.PlotHistogram] = Text(0.63f);
             style.Colors[(int)ImGuiCol.PlotHistogramHovered] = Medium(1.00f);
             style.Colors[(int)ImGuiCol.TextSelectedBg] = Medium(0.43f);
-            //style.Colors[ImGuiCol.ModalWindowDarkening]  = IsBackground( 0.73f);
 
             style.WindowPadding = new Num.Vector2(6, 4);
             style.WindowRounding = 0.0f;
@@ -428,10 +424,10 @@ namespace UOStudio.Client.Engine.UI
             style.WindowBorderSize = 1.0f;
         }
 
-        private static void SetVorspireStyle(ImGuiStylePtr style)
+        private static void SetDiscordStyle(ImGuiStylePtr style)
         {
             static Num.Vector4 Hi(float v) => new Num.Vector4(0.502f, 0.075f, 0.256f, v);
-            static Num.Vector4 Medium(float v) => new Num.Vector4(0.455f, 0.198f, 0.301f, v);
+            static Num.Vector4 Medium(float v) => new Num.Vector4(0.2f, 0.2f, 0.301f, v);
             static Num.Vector4 Low(float v) => new Num.Vector4(0.232f, 0.201f, 0.271f, v);
             static Num.Vector4 Background(float v) => new Num.Vector4(54 / 255.0f, 57 / 255.0f, 63 / 255.0f, v);
             static Num.Vector4 Text(float v) => new Num.Vector4(0.860f, 0.930f, 0.890f, v);
@@ -440,7 +436,47 @@ namespace UOStudio.Client.Engine.UI
             style.Colors[(int)ImGuiCol.ChildBg] = Background(0.58f);
             style.Colors[(int)ImGuiCol.PopupBg] = Background(0.9f);
             style.Colors[(int)ImGuiCol.FrameBg] = Background(1.00f);
-            style.Colors[(int)ImGuiCol.TitleBgCollapsed] = Background(0.75f);
+            style.Colors[(int)ImGuiCol.TitleBg] = Medium(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgActive] = Medium(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgCollapsed] = Medium(0.75f);
+            style.Colors[(int)ImGuiCol.MenuBarBg] = Background(0.47f);
+            style.Colors[(int)ImGuiCol.ScrollbarBg] = Background(1.00f);
+        }
+
+        private static void SetDiscordDarkerStyle(ImGuiStylePtr style)
+        {
+            static Num.Vector4 Hi(float v) => new Num.Vector4(0.502f, 0.075f, 0.256f, v);
+            static Num.Vector4 Medium(float v) => new Num.Vector4(0.455f, 0.198f, 0.301f, v);
+            static Num.Vector4 Low(float v) => new Num.Vector4(0.232f, 0.201f, 0.271f, v);
+            static Num.Vector4 Background(float v) => new Num.Vector4(47 / 255.0f, 49 / 255.0f, 54 / 255.0f, v);
+            static Num.Vector4 Text(float v) => new Num.Vector4(0.860f, 0.930f, 0.890f, v);
+
+            style.Colors[(int)ImGuiCol.WindowBg] = Background(1.00f);
+            style.Colors[(int)ImGuiCol.ChildBg] = Background(0.58f);
+            style.Colors[(int)ImGuiCol.PopupBg] = Background(0.9f);
+            style.Colors[(int)ImGuiCol.FrameBg] = Background(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBg] = Medium(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgActive] = Medium(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgCollapsed] = Medium(0.75f);
+            style.Colors[(int)ImGuiCol.MenuBarBg] = Background(0.47f);
+            style.Colors[(int)ImGuiCol.ScrollbarBg] = Background(1.00f);
+        }
+
+        private static void SetDiscordDarkStyle(ImGuiStylePtr style)
+        {
+            static Num.Vector4 Hi(float v) => new Num.Vector4(0.502f, 0.075f, 0.256f, v);
+            static Num.Vector4 Medium(float v) => new Num.Vector4(0.455f, 0.198f, 0.301f, v);
+            static Num.Vector4 Low(float v) => new Num.Vector4(0.232f, 0.201f, 0.271f, v);
+            static Num.Vector4 Background(float v) => new Num.Vector4(32 / 255.0f, 34 / 255.0f, 37 / 255.0f, v);
+            static Num.Vector4 Text(float v) => new Num.Vector4(0.860f, 0.930f, 0.890f, v);
+
+            style.Colors[(int)ImGuiCol.WindowBg] = Background(1.00f);
+            style.Colors[(int)ImGuiCol.ChildBg] = Background(0.58f);
+            style.Colors[(int)ImGuiCol.PopupBg] = Background(0.9f);
+            style.Colors[(int)ImGuiCol.FrameBg] = Background(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBg] = Medium(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgActive] = Medium(1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgCollapsed] = Medium(0.75f);
             style.Colors[(int)ImGuiCol.MenuBarBg] = Background(0.47f);
             style.Colors[(int)ImGuiCol.ScrollbarBg] = Background(1.00f);
         }
@@ -463,8 +499,17 @@ namespace UOStudio.Client.Engine.UI
                     break;
                 case UiStyle.Discord:
                     ImGui.StyleColorsDark();
-                    SetVorspireStyle(style);
+                    SetDiscordStyle(style);
                     break;
+                case UiStyle.DiscordDarker:
+                    ImGui.StyleColorsDark();
+                    SetDiscordDarkerStyle(style);
+                    break;
+                case UiStyle.DiscordDark:
+                    ImGui.StyleColorsDark();
+                    SetDiscordDarkStyle(style);
+                    break;
+
                 case UiStyle.Cherry:
                     SetCherryStyle(style);
                     break;
