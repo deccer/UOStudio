@@ -361,3 +361,5 @@ site/
 # Project build output
 build/
 src/UOStudio.Core/CompilationDate.g.cs
+
+dist/
