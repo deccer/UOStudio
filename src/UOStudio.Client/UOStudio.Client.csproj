@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <OutputType>Exe</OutputType>
@@ -28,18 +27,21 @@
 
     <PropertyGroup>
         <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
+        <InProject>false</InProject>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <OutputPath>$(SolutionDir)build\Client\</OutputPath>
+        <OutputPath>$(ProjectDir)..\..\build\Client\</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <OutputPath>$(SolutionDir)build\Client\</OutputPath>
+        <OutputPath>$(ProjectDir)..\..\build\Client\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="..\..\stylecop.json" />
+        <AdditionalFiles Include="..\..\stylecop.json">
+            <InProject>false</InProject>
+        </AdditionalFiles>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
@@ -50,11 +52,31 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\32bit\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true' " />
-        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\64bit\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false' " />
-        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\osx\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
-        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\vulkan\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
-        <ThirdPartyLibraries Include="$(SolutionDir)external\fnalibs\lib64\**\*.*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false' " />
+        <None Include="$(ProjectDir)..\..\external\fnalibs\32bit\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'win-x86' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true') ">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <InProject>false</InProject>
+        </None>
+        <None Include="$(ProjectDir)..\..\external\fnalibs\64bit\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'win-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false') ">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <InProject>false</InProject>
+        </None>
+        <None Include="$(ProjectDir)..\..\external\fnalibs\osx\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'osx-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false') ">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <InProject>false</InProject>
+        </None>
+        <None Include="$(ProjectDir)..\..\external\fnalibs\vulkan\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'osx-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false') ">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <InProject>false</InProject>
+        </None>
+        <None Include="$(ProjectDir)..\..\external\fnalibs\lib64\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'linux-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false') ">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <InProject>false</InProject>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -162,12 +184,4 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
-
-    <Target Name="PostBuild" AfterTargets="Build">
-        <Message Text="Copying ThirdPartyLibraries" />
-        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true' " />
-        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false' " />
-        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false' " />
-        <Copy SourceFiles="@(ThirdPartyLibraries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false' " />
-    </Target>
 </Project>
