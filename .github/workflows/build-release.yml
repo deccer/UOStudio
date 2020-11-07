@@ -45,39 +45,30 @@ jobs:
         with:
           dotnet-version: 3.1.402
 
-      - run: dotnet test -c Release
+      - name: Test
+        run: dotnet test -c Release
 
       - name: Publish Client for ${{ matrix.os }}
       - if: ${{ contains(matrix.runs-on, 'windows') }}
         run: |
              dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./dist/client/windows
              zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/windows*
-
-      - name: Publish Client for ${{ matrix.os }}
       - if: ${{ contains(matrix.runs-on, 'macos') }}
       - run: |
              dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/client/osx
              zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/osx*
-
-      - name: Publish Client for ${{ matrix.os }}
       - if: ${{ contains(matrix.runs-on, 'ubuntu') }}
       - run: |
              dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/client/linux
              zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/linux*
-
-      - name: Publish Client for ${{ matrix.os }}
       - if: ${{ contains(matrix.runs-on, 'windows') }}
         run: |
           dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./dist/server/windows
           zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/windows*
-
-      - name: Publish Client for ${{ matrix.os }}
       - if: ${{ contains(matrix.runs-on, 'macos') }}
       - run: |
           dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/server/osx
           zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/osx*
-
-      - name: Publish Client for ${{ matrix.os }}
       - if: ${{ contains(matrix.runs-on, 'ubuntu') }}
       - run: |
           dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/server/linux
