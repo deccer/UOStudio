@@ -31,6 +31,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Check output
+        env:
+          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
 
       - name: Checkout submodules
         run: git submodule update --init --recursive
@@ -39,29 +45,50 @@ jobs:
         with:
           dotnet-version: 3.1.402
 
-      - uses: dotnet/nbgv@master
-        id: nbgv
+      - run: dotnet test -c Release
 
       - if: ${{ contains(matrix.runs-on, 'windows') }}
-      - run: dotnet build -c Release -p:Version=${{ env.GIT_TAG2 }}
-      - if: ${{ contains(matrix.runs-on, 'macos') || contains(matrix.runs-on, 'ubuntu') }}
-      - run: dotnet build -c Release -p:Version=${{ env.GIT_TAG }}
+        run: |
+             dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./dist/client/windows
+             zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/windows*
 
-      - run: dotnet test -c Release --no-build
-      - if: ${{ contains(matrix.runs-on, 'windows') }}
-      - run: dotnet publish ./src/NCentrED/NCentrED.csproj -r ${{ matrix.runs-on }} -c Release --no-build -o ./build/windows -p:Version=${{ env.GIT_TAG2 }}
       - if: ${{ contains(matrix.runs-on, 'macos') }}
-      - run: dotnet publish ./src/NCentrED/NCentrED.csproj -r ${{ matrix.runs-on }} -c Release --no-build -o ./build/macos -p:Version=${{ env.GIT_TAG }}
+      - run: |
+             dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/client/osx
+             zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/osx*
+
       - if: ${{ contains(matrix.runs-on, 'ubuntu') }}
-      - run: dotnet publish ./src/NCentrED/NCentrED.csproj -r ${{ matrix.runs-on }} -c Release --no-build -o ./build/ubuntu -p:Version=${{ env.GIT_TAG }}
+      - run: |
+             dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/client/linux
+             zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/linux*
 
-      - name: Create Artifact
-        run: rm -rf ./src/*/bin && rm -rf ./src/*/obj && zip -9 -r NCentrED.zip ./*
+      - if: ${{ contains(matrix.runs-on, 'windows') }}
+        run: |
+          dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./dist/server/windows
+          zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/windows*
 
-      - name: Upload Release
+      - if: ${{ contains(matrix.runs-on, 'macos') }}
+      - run: |
+          dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/server/osx
+          zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/osx*
+
+      - if: ${{ contains(matrix.runs-on, 'ubuntu') }}
+      - run: |
+          dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/server/linux
+          zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/linux*
+
+      - name: Upload Client Release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./NCentrED.zip
-          asset_name: NCentrED-${{ matrix.os }}-x64-${{ steps.nbgv.outputs.Version }}.zip
+          asset_path: ./uostudio.client.${{ matrix.os }}.zip
+          asset_name: UOStudio-Client-${{ matrix.os }}-x64-${{ steps.vars.outputs.tag }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload Server Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./uostudio.server.${{ matrix.os }}.zip
+          asset_name: UOStudio-Server-${{ matrix.os }}-x64-${{ steps.vars.outputs.tag }}.zip
           asset_content_type: application/zip
