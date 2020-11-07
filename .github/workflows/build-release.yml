@@ -54,11 +54,11 @@ jobs:
              dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./dist/client/windows
              zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/windows*
       - if: ${{ contains(matrix.runs-on, 'macos') }}
-      - run: |
+        run: |
              dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/client/osx
              zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/osx*
       - if: ${{ contains(matrix.runs-on, 'ubuntu') }}
-      - run: |
+        run: |
              dotnet publish ./src/UOStudio.Client/UOStudio.Client.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/client/linux
              zip -9 -r uostudio.client.${{ matrix.os }}.zip ./dist/client/linux*
       - if: ${{ contains(matrix.runs-on, 'windows') }}
@@ -66,11 +66,11 @@ jobs:
           dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./dist/server/windows
           zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/windows*
       - if: ${{ contains(matrix.runs-on, 'macos') }}
-      - run: |
+        run: |
           dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/server/osx
           zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/osx*
       - if: ${{ contains(matrix.runs-on, 'ubuntu') }}
-      - run: |
+        run: |
           dotnet publish ./src/UOStudio.Server/UOStudio.Server.csproj -r ${{ matrix.runs-on }} -c Release -o ./build/server/linux
           zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/server/linux*
 
