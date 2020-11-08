@@ -48,6 +48,17 @@ jobs:
       - name: Zip server package
         run: zip -9 -r uostudio.server.${{ matrix.os }}.zip ./dist/${{ matrix.os }}-x64/server/*
 
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: ${{ steps.vars.outputs.tag }}
+            release_name: Release ${{ steps.vars.outputs.tag }}
+            draft: false
+            prerelease: false
+
       - name: Upload Client Release
         uses: actions/upload-release-asset@v1
         with:
