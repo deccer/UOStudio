@@ -12,6 +12,8 @@ ProjectSection(SolutionItems) = preProject
 	.github\workflows\build-docs.yml = .github\workflows\build-docs.yml
 	.github\workflows\build-release.yml = .github\workflows\build-release.yml
 	.github\workflows\build-debug.yml = .github\workflows\build-debug.yml
+	publish.cmd = publish.cmd
+	publish.sh = publish.sh
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{52639B27-FD09-4AC3-BC90-B33E61553CB8}"
