@@ -13,19 +13,10 @@ env:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        runs-on:
-          [
-              macos-10.15,
-              ubuntu-16.04,
-              ubuntu-18.04,
-              windows-2016,
-              windows-2019,
-          ]
-    name: ${{ matrix.runs-on }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [win, ubuntu.16.04, ubuntu.18.04, ubuntu.20.04, debian.9, debian.10, centos.7, centos.8, osx]
 
     steps:
       - name: Checkout
