@@ -157,10 +157,6 @@ namespace UOStudio.Client.Engine
             );
             _mapEditProjectWindowProvider.LoadContent(GraphicsDevice, Content, _guiRenderer);
 
-            //string GetFile(string fileName) => Path.Combine(_appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, fileName);
-            //var tileDataMul = GetFile("tiledata.mul");
-            //var tileDataProvider = new UOStudio.Core.Ultima.TileDataProvider(tileDataMul, true);
-
             _logger.Information("Content - Loading...Done");
         }
 
@@ -230,7 +226,6 @@ namespace UOStudio.Client.Engine
                         {
                             if (!_networkClient.IsConnected && ImGui.MenuItem(ResGeneral.MenuMapRemoteConnect))
                             {
-                                //_windowProvider.LoginWindow.Show();
                             }
 
                             if (_networkClient.IsConnected && ImGui.MenuItem(ResGeneral.MenuMapRemoteDisconnect))
@@ -314,7 +309,6 @@ namespace UOStudio.Client.Engine
                             _uiStyle = UiStyle.Cherry;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
-
 
                         ImGui.EndMenu();
                     }

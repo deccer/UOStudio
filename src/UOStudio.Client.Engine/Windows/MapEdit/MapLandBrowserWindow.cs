@@ -50,7 +50,6 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         {
             var windowSize = ImGui.GetWindowSize();
 
-            //ImGui.Checkbox("Stretch", ref _stretchLandTextures);
             ImGui.TextUnformatted("Filter");
             ImGui.SameLine();
             ImGui.InputText("##hidelabel", ref _landNameFilter, 20);

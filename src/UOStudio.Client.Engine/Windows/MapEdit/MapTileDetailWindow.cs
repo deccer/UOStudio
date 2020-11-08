@@ -66,7 +66,6 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                     ImGui.NextColumn();
                 }
             }
-
         }
     }
 }

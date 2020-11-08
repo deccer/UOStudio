@@ -137,7 +137,6 @@ namespace UOStudio.Client.Engine
             return result;
         }
 
-
         public static IReadOnlyCollection<string> LandFlagsToPropertyList(LandData tile)
         {
             var result = new List<string>();

@@ -61,7 +61,7 @@ namespace UOStudio.Client.Engine.Windows.General
         {
             var io = ImGui.GetIO();
 
-            ImGui.Text($"Average \n{(int)(1000.0f / ImGui.GetIO().Framerate)} ms/frame ({(int)(ImGui.GetIO().Framerate)} FPS)");
+            ImGui.Text($"Average \n{(int)(1000.0f / ImGui.GetIO().Framerate)} ms/frame ({(int)ImGui.GetIO().Framerate} FPS)");
             ImGui.Separator();
             ImGui.Text(ImGui.IsMousePosValid()
                 ? $"Mouse Position: ({io.MousePos.X},{io.MousePos.Y})"

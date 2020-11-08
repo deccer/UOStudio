@@ -64,7 +64,6 @@ namespace UOStudio.Client.Engine.Windows
             ImGui.SameLine();
             ImGui.InputText("##hidelabel", ref _serverPort, 5);
 
-
             ImGui.TextUnformatted("Username");
             ImGui.SameLine();
             ImGui.InputText("##hidelabel", ref _userName, 5);

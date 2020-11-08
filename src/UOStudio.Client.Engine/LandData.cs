@@ -223,12 +223,6 @@ namespace UOStudio.Client.Engine
                 Flags |= TileFlag.StairRight;
             }
 
-            // Read new flags if file format support them
-            //if (!Art.IsUOAHS())
-            //{
-            //    return;
-            //}
-
             temp = Convert.ToByte(split[i++]);
             if (temp != 0)
             {

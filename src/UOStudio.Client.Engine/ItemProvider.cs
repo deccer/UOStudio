@@ -10,7 +10,6 @@ namespace UOStudio.Client.Engine
         : IItemProvider
     {
         private readonly ILogger _logger;
-        private bool _isInitialized;
         private FileIndexBase _fileIndex;
         private readonly bool _isUOPFileIndex;
         private readonly string _clientPath;
@@ -32,8 +31,6 @@ namespace UOStudio.Client.Engine
                 : CreateMulFileIndex("artidx.mul", "art.mul");
 
             _logger.Debug(_fileIndex.FilesExist.ToString());
-
-            _isInitialized = true;
         }
 
         private string GetPath(string filename, params object[] args)
@@ -175,7 +172,6 @@ namespace UOStudio.Client.Engine
         {
             index = GetLegalItemId(index);
             index += 0x4000;
-            //index &= 0xFFFF;
 
             using var stream = _fileIndex.Seek(index, out _, out _);
             if (stream == null || index == 0)
