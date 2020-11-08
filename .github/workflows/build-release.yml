@@ -38,6 +38,8 @@ jobs:
       - name: Check output
         env:
           RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+        run: echo ${{ steps.vars.outputs.tag }}
+
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
