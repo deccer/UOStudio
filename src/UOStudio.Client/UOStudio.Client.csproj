@@ -30,14 +30,6 @@
         <InProject>false</InProject>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <OutputPath>$(ProjectDir)..\..\build\Client\</OutputPath>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <OutputPath>$(ProjectDir)..\..\build\Client\</OutputPath>
-    </PropertyGroup>
-
     <ItemGroup>
         <AdditionalFiles Include="..\..\stylecop.json">
             <InProject>false</InProject>

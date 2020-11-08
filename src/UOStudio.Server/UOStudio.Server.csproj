@@ -30,14 +30,6 @@
         <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <OutputPath>$(ProjectDir)..\..\build\Server\</OutputPath>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <OutputPath>$(ProjectDir)..\..\build\Server\</OutputPath>
-    </PropertyGroup>
-
     <ItemGroup>
         <AdditionalFiles Include="..\..\stylecop.json">
             <InProject>false</InProject>
