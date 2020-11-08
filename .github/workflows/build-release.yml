@@ -25,7 +25,7 @@ jobs:
               windows-2019,
           ]
     name: ${{ matrix.runs-on }}
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
