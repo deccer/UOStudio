@@ -18,12 +18,12 @@ elif [[ -f /etc/os-release ]]; then
 fi
 echo SHELLSCRIPT
 echo ==== Publishing Client ====
-echo dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/$os/client src/UOStudio.Client/UOStudio.Client.csproj
-dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/$os/client src/UOStudio.Client/UOStudio.Client.csproj
+echo dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/${os}/client src/UOStudio.Client/UOStudio.Client.csproj
+dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/${os}/client src/UOStudio.Client/UOStudio.Client.csproj
 echo.
 echo ==== Publishing Server ====
-echo dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/$os/server src/UOStudio.Server/UOStudio.Server.csproj
-dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/$os/server src/UOStudio.Server/UOStudio.Server.csproj
+echo dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/${os}/server src/UOStudio.Server/UOStudio.Server.csproj
+dotnet publish ${c} ${r} ${f} --self-contained=false -o dist/${os}/server src/UOStudio.Server/UOStudio.Server.csproj
 exit $?
 
 :CMDSCRIPT
