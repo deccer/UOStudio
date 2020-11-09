@@ -18,14 +18,8 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         private readonly IDictionary<IntPtr, int> _itemIdMap;
         private readonly IDictionary<int, string> _itemNameMap;
 
-        private bool _stretchItemTextures;
-        private string _itemNameFilter;
-
-        public bool StretchItemTextures
-        {
-            get => _stretchItemTextures;
-            set => _stretchItemTextures = value;
-        }
+        private string _itemNameFilter; // TODO(deccer): add config
+        private int _itemsPerRow = 3; // TODO(deccer): add config
 
         public MapItemBrowserWindow(
             IItemProvider itemProvider,
@@ -48,58 +42,54 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
         protected override void DrawInternal()
         {
-            var windowSize = ImGui.GetWindowSize();
-
             ImGui.TextUnformatted("Filter");
             ImGui.SameLine();
             ImGui.InputText("##hidelabel", ref _itemNameFilter, 20);
+            ImGui.TextUnformatted("Items per row");
+            ImGui.SameLine();
+            ImGui.InputInt("##hidelabel", ref _itemsPerRow);
 
-            ImGui.BeginGroup();
-            var perRowIndex = 0;
+            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Num.Vector2.Zero);
+            var perRowCounter = 0;
+
             foreach (var itemTexture in _itemTexturesMap)
             {
-                var landId = _itemIdMap[itemTexture.Value];
-                var landName = _itemNameMap[landId];
-                if (!landName.Contains(_itemNameFilter, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(_itemNameFilter))
+                var itemId = _itemIdMap[itemTexture.Value];
+                var itemName = _itemNameMap[itemId];
+                if (!itemName.Contains(_itemNameFilter, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(_itemNameFilter))
                 {
                     continue;
                 }
 
-                if (perRowIndex == (int)(windowSize.X / (_stretchItemTextures ? 88 : 44)) + 1)
+                if (perRowCounter == _itemsPerRow)
                 {
-                    perRowIndex = 0;
+                    perRowCounter = 0;
                 }
 
-                if (_stretchItemTextures)
+                if (ImGui.ImageButton(itemTexture.Value, new Num.Vector2(itemTexture.Key.Width, itemTexture.Key.Height)))
                 {
-                    if (ImGui.ImageButton(itemTexture.Value, new Num.Vector2(88, 166)))
-                    {
-                        _mapTileDetailWindow.IsLandSelected = false;
-                        _mapTilePreviewWindow.SelectedTextureId = itemTexture.Value;
-                        _mapTilePreviewWindow.SelectedTextureWidth = itemTexture.Key.Width;
-                        _mapTilePreviewWindow.SelectedTextureHeight = itemTexture.Key.Height;
-                        _mapTileDetailWindow.SelectedItemData = _tileDataProvider.ItemTable[landId];
-                    }
-                }
-                else
-                {
-                    if (ImGui.ImageButton(itemTexture.Value, new Num.Vector2(itemTexture.Key.Width, itemTexture.Key.Height)))
-                    {
-                        _mapTileDetailWindow.IsLandSelected = false;
-                        _mapTilePreviewWindow.SelectedTextureId = itemTexture.Value;
-                        _mapTilePreviewWindow.SelectedTextureWidth = itemTexture.Key.Width;
-                        _mapTilePreviewWindow.SelectedTextureHeight = itemTexture.Key.Height;
-                        _mapTileDetailWindow.SelectedItemData = _tileDataProvider.ItemTable[landId];
-                    }
+                    _mapTileDetailWindow.IsLandSelected = false;
+                    _mapTilePreviewWindow.SelectedTextureId = itemTexture.Value;
+                    _mapTilePreviewWindow.SelectedTextureWidth = itemTexture.Key.Width;
+                    _mapTilePreviewWindow.SelectedTextureHeight = itemTexture.Key.Height;
+                    _mapTileDetailWindow.SelectedItemData = _tileDataProvider.ItemTable[itemId];
                 }
 
-                if (perRowIndex > 0)
+                if (perRowCounter > 0)
                 {
                     ImGui.SameLine();
                 }
 
-                perRowIndex++;
+                perRowCounter++;
             }
+            ImGui.PopStyleVar();
+        }
+
+        protected override ImGuiWindowFlags SetWindowFlags()
+        {
+            var windowFlags = base.SetWindowFlags();
+            windowFlags |= ImGuiWindowFlags.HorizontalScrollbar;
+            return windowFlags;
         }
 
         protected override void LoadContentInternal(

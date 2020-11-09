@@ -19,14 +19,8 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         private readonly IDictionary<IntPtr, int> _landIdMap;
         private readonly IDictionary<int, string> _landNameMap;
 
-        private bool _stretchLandTextures;
-        private string _landNameFilter;
-
-        public bool StretchLandTextures
-        {
-            get => _stretchLandTextures;
-            set => _stretchLandTextures = value;
-        }
+        private string _landNameFilter; // TODO(deccer): add config
+        private int _itemsPerRow = 3; // TODO(deccer): add config
 
         public MapLandBrowserWindow(
             IItemProvider itemProvider,
@@ -48,58 +42,47 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
         protected override void DrawInternal()
         {
-            var windowSize = ImGui.GetWindowSize();
-
             ImGui.TextUnformatted("Filter");
             ImGui.SameLine();
             ImGui.InputText("##hidelabel", ref _landNameFilter, 20);
+            ImGui.TextUnformatted("Items per row");
+            ImGui.SameLine();
+            ImGui.InputInt("##hidelabel", ref _itemsPerRow);
 
-            ImGui.BeginGroup();
-            var perRowIndex = 0;
+            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Num.Vector2.Zero);
+            var perRowCounter = 0;
             foreach (var landTexture in _landTexturesMap)
             {
                 var landId = _landIdMap[landTexture.Value];
                 var landName = _landNameMap[landId];
-                if (!landName.Contains(_landNameFilter, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(_landNameFilter))
+                if (!landName.Contains(_landNameFilter, StringComparison.InvariantCultureIgnoreCase) &&
+                    !string.IsNullOrEmpty(_landNameFilter))
                 {
                     continue;
                 }
 
-                if (perRowIndex == (int)(windowSize.X / (_stretchLandTextures ? 88 : 44)) + 1)
+                if (perRowCounter >= _itemsPerRow)
                 {
-                    perRowIndex = 0;
+                    perRowCounter = 0;
                 }
 
-                if (_stretchLandTextures)
+                if (ImGui.ImageButton(landTexture.Value, new Num.Vector2(landTexture.Key.Width, landTexture.Key.Height)))
                 {
-                    if (ImGui.ImageButton(landTexture.Value, new Num.Vector2(88, 166)))
-                    {
-                        _mapTileDetailWindow.IsLandSelected = true;
-                        _mapTilePreviewWindow.SelectedTextureId = landTexture.Value;
-                        _mapTilePreviewWindow.SelectedTextureWidth = landTexture.Key.Width;
-                        _mapTilePreviewWindow.SelectedTextureHeight = landTexture.Key.Height;
-                        _mapTileDetailWindow.SelectedLandData = _tileDataProvider.LandTable[landId];
-                    }
-                }
-                else
-                {
-                    if (ImGui.ImageButton(landTexture.Value, new Num.Vector2(landTexture.Key.Width, landTexture.Key.Height)))
-                    {
-                        _mapTileDetailWindow.IsLandSelected = true;
-                        _mapTilePreviewWindow.SelectedTextureId = landTexture.Value;
-                        _mapTilePreviewWindow.SelectedTextureWidth = landTexture.Key.Width;
-                        _mapTilePreviewWindow.SelectedTextureHeight = landTexture.Key.Height;
-                        _mapTileDetailWindow.SelectedLandData = _tileDataProvider.LandTable[landId];
-                    }
+                    _mapTileDetailWindow.IsLandSelected = true;
+                    _mapTilePreviewWindow.SelectedTextureId = landTexture.Value;
+                    _mapTilePreviewWindow.SelectedTextureWidth = landTexture.Key.Width;
+                    _mapTilePreviewWindow.SelectedTextureHeight = landTexture.Key.Height;
+                    _mapTileDetailWindow.SelectedLandData = _tileDataProvider.LandTable[landId];
                 }
 
-                if (perRowIndex > 0)
+                if (perRowCounter > 0)
                 {
                     ImGui.SameLine();
                 }
 
-                perRowIndex++;
+                perRowCounter++;
             }
+            ImGui.PopStyleVar();
         }
 
         protected override void LoadContentInternal(
