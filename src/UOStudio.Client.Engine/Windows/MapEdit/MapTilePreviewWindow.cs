@@ -28,7 +28,7 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 ImGui.Checkbox("Stretch", ref _stretchTexture);
 
                 var size = _stretchTexture
-                    ? new Vector2(88, 176)
+                    ? new Vector2(SelectedTextureWidth * 2, SelectedTextureHeight * 2)
                     : new Vector2(SelectedTextureWidth, SelectedTextureHeight);
 
                 ImGui.Image(SelectedTextureId, size);
