@@ -1,7 +1,7 @@
 # UOStudio
 [![CodeFactor](https://www.codefactor.io/repository/github/deccer/uostudio/badge)](https://www.codefactor.io/repository/github/deccer/ncentred)
 ![Build-Debug](https://github.com/deccer/UOStudio/workflows/Build-Debug/badge.svg)
-![.github/workflows/build-release.yml](https://github.com/deccer/UOStudio/workflows/.github/workflows/build-release.yml/badge.svg)
+![Build Release](https://github.com/deccer/UOStudio/workflows/Build%20Release/badge.svg)
 
 ![UO Studio](https://github.com/deccer/UOStudio/blob/main/assets/client/splashscreen.png?raw=true)
 
