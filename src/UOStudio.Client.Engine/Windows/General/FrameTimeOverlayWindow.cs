@@ -22,7 +22,7 @@ namespace UOStudio.Client.Engine.Windows.General
         {
         }
 
-        protected override ImGuiWindowFlags SetWindowFlags()
+        protected override ImGuiWindowFlags GetWindowFlags()
         {
             const float DISTANCE = 10.0f;
             if (_position != Position.Custom)

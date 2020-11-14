@@ -85,9 +85,9 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             ImGui.PopStyleVar();
         }
 
-        protected override ImGuiWindowFlags SetWindowFlags()
+        protected override ImGuiWindowFlags GetWindowFlags()
         {
-            var windowFlags = base.SetWindowFlags();
+            var windowFlags = base.GetWindowFlags();
             windowFlags |= ImGuiWindowFlags.HorizontalScrollbar;
             return windowFlags;
         }

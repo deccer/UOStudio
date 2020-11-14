@@ -18,7 +18,7 @@ namespace UOStudio.Client.Engine.Windows
 
         public void Draw()
         {
-            if (IsVisible && ImGui.Begin(Caption, SetWindowFlags()))
+            if (IsVisible && ImGui.Begin(Caption, GetWindowFlags()))
             {
                 DrawInternal();
                 DrawEnd();
@@ -27,7 +27,7 @@ namespace UOStudio.Client.Engine.Windows
 
         protected virtual void DrawEnd() => ImGui.End();
 
-        protected virtual ImGuiWindowFlags SetWindowFlags() => ImGuiWindowFlags.None;
+        protected virtual ImGuiWindowFlags GetWindowFlags() => ImGuiWindowFlags.None;
 
         protected abstract void DrawInternal();
 

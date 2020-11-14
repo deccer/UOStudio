@@ -17,6 +17,8 @@ namespace UOStudio.Client.Engine
             Settings = new SettingsWindow(appSettingsProvider);
         }
 
+        public DockSpaceWindow DockSpaceWindow { get; protected set; }
+
         public AboutWindow AboutWindow { get; }
 
         public SplashScreenWindow SplashScreenWindow { get; }
@@ -27,6 +29,7 @@ namespace UOStudio.Client.Engine
 
         public virtual void Draw()
         {
+            DockSpaceWindow.Draw();
             SplashScreenWindow.Draw();
             AboutWindow.Draw();
             FrameTimeOverlayWindow.Draw();
