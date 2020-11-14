@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace UOStudio.Server.Network
+﻿namespace UOStudio.Server.Core
 {
     public class Account
     {

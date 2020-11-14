@@ -1,4 +1,4 @@
-﻿namespace UOStudio.Server.Network
+﻿namespace UOStudio.Server.Core
 {
     public enum AccountStatus
     {

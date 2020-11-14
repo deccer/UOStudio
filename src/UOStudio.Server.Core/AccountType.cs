@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UOStudio.Server.Network
+namespace UOStudio.Server.Core
 {
     [Flags]
     public enum AccountType

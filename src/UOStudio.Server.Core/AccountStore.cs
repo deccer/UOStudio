@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UOStudio.Core;
 
-namespace UOStudio.Server.Network
+namespace UOStudio.Server.Core
 {
     public sealed class AccountStore : IAccountStore
     {
@@ -18,6 +19,18 @@ namespace UOStudio.Server.Network
             _saver = saver;
 
             _accounts = new List<Account>();
+            if (File.Exists(AccountsFileName))
+            {
+                Load();
+            }
+            else
+            {
+                AddAccount("deccer", AccountType.Administrator);
+                AddAccount("deccerModerator", AccountType.Moderator);
+                AddAccount("deccerUser", AccountType.User);
+                AddAccount("deccerBackup", AccountType.Backup);
+                Save();
+            }
         }
 
         public void Load()

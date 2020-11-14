@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UOStudio.Server.Network
+namespace UOStudio.Server.Core
 {
     public interface IAccountStore
     {
