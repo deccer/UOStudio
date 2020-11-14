@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using UOStudio.Client.Core;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Engine.Windows.General;
@@ -9,6 +10,7 @@ namespace UOStudio.Client.Engine.Windows
 {
     public sealed class MapEditProjectWindowProvider : CommonProjectWindowProvider
     {
+        private readonly ProfileService _profileService;
         private readonly IItemProvider _itemProvider;
         private readonly TileDataProvider _tileDataProvider;
         private readonly MapEditState _mapEditState;
@@ -29,20 +31,20 @@ namespace UOStudio.Client.Engine.Windows
         public MapEditProjectWindowProvider(
             IAppSettingsProvider appSettingsProvider,
             IFileVersionProvider fileVersionProvider,
+            ProfileService profileService,
             IItemProvider itemProvider,
             TileDataProvider tileDataProvider,
             MapEditState mapEditState,
             RenderTarget2D mapEditRenderTarget)
             : base(appSettingsProvider, fileVersionProvider)
         {
+            DockSpaceWindow = new DockSpaceWindow("MapEditDockspace");
+            _profileService = profileService;
             _itemProvider = itemProvider;
             _tileDataProvider = tileDataProvider;
             _mapEditState = mapEditState;
             _mapEditRenderTarget = mapEditRenderTarget;
-            DockSpaceWindow = new DockSpaceWindow("MapEdit");
         }
-
-        public DockSpaceWindow DockSpaceWindow { get; }
 
         public MapToolbarWindow MapToolbarWindow { get; private set; }
 
@@ -56,9 +58,10 @@ namespace UOStudio.Client.Engine.Windows
 
         public MapTilePreviewWindow MapTilePreviewWindow { get; private set; }
 
+        public MapConnectToServerWindow MapConnectToServerWindow { get; private set; }
+
         public override void Draw()
         {
-            DockSpaceWindow.Draw();
             base.Draw();
             MapToolbarWindow.Draw();
             MapViewWindow.Draw();
@@ -66,6 +69,7 @@ namespace UOStudio.Client.Engine.Windows
             MapLandBrowserWindow.Draw();
             MapTileDetailWindow.Draw();
             MapTilePreviewWindow.Draw();
+            MapConnectToServerWindow.Draw();
         }
 
         public override void LoadContent(
@@ -129,6 +133,8 @@ namespace UOStudio.Client.Engine.Windows
             MapLandBrowserWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
             MapItemBrowserWindow = new MapItemBrowserWindow(_itemProvider, _tileDataProvider, MapTileDetailWindow, MapTilePreviewWindow);
             MapItemBrowserWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
+            MapConnectToServerWindow = new MapConnectToServerWindow(_profileService);
+            MapConnectToServerWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
         }
 
         public override void UnloadContent()
@@ -143,6 +149,7 @@ namespace UOStudio.Client.Engine.Windows
             _mapToolTerrainPaint.Dispose();
             _mapToolTerrainSmooth.Dispose();
             _mapToolTerrainSubtract.Dispose();
+
             base.UnloadContent();
         }
     }
