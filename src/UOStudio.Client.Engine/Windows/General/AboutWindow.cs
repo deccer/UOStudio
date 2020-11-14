@@ -7,10 +7,8 @@ namespace UOStudio.Client.Engine.Windows.General
         private readonly string _version;
 
         public AboutWindow(IFileVersionProvider fileVersionProvider)
-            : base("About")
-        {
+            : base("About") =>
             _version = fileVersionProvider.GetVersion();
-        }
 
         protected override void DrawInternal()
         {
@@ -20,8 +18,7 @@ namespace UOStudio.Client.Engine.Windows.General
             ImGui.TextUnformatted($"Edit Gumps");
         }
 
-        protected override ImGuiWindowFlags SetWindowFlags() =>
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove |
-            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize;
+        protected override ImGuiWindowFlags GetWindowFlags() =>
+            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize;
     }
 }
