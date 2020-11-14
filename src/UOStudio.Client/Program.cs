@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UOStudio.Client.Core;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.Windows;
@@ -17,7 +18,7 @@ namespace UOStudio.Client
             var compositionRoot = CreateCompositionRoot();
 
             using var clientGame = compositionRoot.GetService<ClientGame>();
-            clientGame.Run();
+            clientGame!.Run();
         }
 
         private static IServiceProvider CreateCompositionRoot()
@@ -35,6 +36,7 @@ namespace UOStudio.Client
             services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
             services.AddSingleton<IFileVersionProvider, FileVersionProvider>();
+            services.AddSingleton<ProfileService>();
             services.AddSingleton<INetworkClient, NetworkClient>();
             services.AddSingleton<ClientGame>();
             return services.BuildServiceProvider();

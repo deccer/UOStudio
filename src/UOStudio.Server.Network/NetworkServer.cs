@@ -3,7 +3,9 @@ using System.Threading;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using Serilog;
+using UOStudio.Server.Core;
 using UOStudio.Server.Core.Settings;
+using UOStudio.Server.Network.PacketHandlers;
 
 namespace UOStudio.Server.Network
 {
@@ -11,16 +13,19 @@ namespace UOStudio.Server.Network
     {
         private readonly ILogger _logger;
         private readonly IAppSettingsProvider _appSettingsProvider;
-        private readonly IAccountStore _accountStore;
+        private readonly IPacketProcessor _packetProcessor;
         private readonly EventBasedNetListener _listener;
         private readonly NetManager _server;
         private readonly NetworkSession _networkSession;
 
-        public NetworkServer(ILogger logger, IAppSettingsProvider appSettingsProvider, IAccountStore accountStore)
+        public NetworkServer(
+            ILogger logger,
+            IAppSettingsProvider appSettingsProvider,
+            IPacketProcessor packetProcessor)
         {
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;
-            _accountStore = accountStore;
+            _packetProcessor = packetProcessor;
             _networkSession = new NetworkSession();
             _listener = new EventBasedNetListener();
             _server = new NetManager(_listener);
@@ -33,13 +38,6 @@ namespace UOStudio.Server.Network
             _listener.ConnectionRequestEvent += ConnectionRequestEventHandler;
             _listener.PeerConnectedEvent += PeerConnectedEventHandler;
             _listener.NetworkReceiveEvent += NetworkReceiveEventHandler;
-
-            _accountStore.AddAccount("deccer", AccountType.Administrator);
-            _accountStore.AddAccount("deccerModerator", AccountType.Moderator);
-            _accountStore.AddAccount("deccerUser", AccountType.User);
-            _accountStore.AddAccount("deccerBackup", AccountType.Backup);
-            //_accountStore.Save();
-            _accountStore.Load();
         }
 
         private void NetworkReceiveEventHandler(NetPeer peer, NetPacketReader reader, DeliveryMethod deliveryMethod)
@@ -50,24 +48,14 @@ namespace UOStudio.Server.Network
             {
                 case 1:
                     {
-                        var accountName = reader.GetString();
-                        var accountPassword = reader.GetString();
-                        var account = _accountStore.GetAccount(accountName);
-                        if (account == null)
-                        {
-                            break;
-                        }
+                        var clientConnectPacket = new ClientConnectPacket(reader);
+                        var clientConnected = _packetProcessor.Process<ClientConnectPacket, int>(clientConnectPacket);
 
-                        if (account.IsBlocked())
-                        {
-                            _logger.Warning($"Blocked user {accountName} tried to log in.");
-                            break;
-                        }
+                        //_networkSession.AddActiveAccount(peer.Id, account);
 
-                        _networkSession.AddActiveAccount(peer.Id, account);
-
-                        _logger.Debug($"Packet - Login: {accountName}:{accountPassword}");
+                        _logger.Debug($"Packet - Login: {clientConnectPacket.UserName}");
                         break;
+
                     }
             }
         }

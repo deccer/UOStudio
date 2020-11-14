@@ -7,7 +7,11 @@
     <ItemGroup>
       <PackageReference Include="CSharpFunctionalExtensions" Version="2.12.2" />
       <PackageReference Include="LiteNetLib" Version="0.9.3.2" />
+      <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
       <PackageReference Include="Serilog" Version="2.10.0" />
+      <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -13,9 +13,9 @@ namespace UOStudio.Server
         {
             var serviceProvider = CreateCompositionRoot();
 
-            var nedServer = serviceProvider.GetService<NetworkServer>();
+            var nedServer = serviceProvider.GetService<INetworkServer>();
 
-            nedServer.Run();
+            nedServer!.Run();
         }
 
         private static IServiceProvider CreateCompositionRoot()
@@ -31,8 +31,7 @@ namespace UOStudio.Server
             services.AddSingleton<ILoader, Loader>();
             services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
-            services.AddSingleton<IAccountStore, AccountStore>();
-            services.AddSingleton<NetworkServer>();
+            services.AddNetworkServer();
 
             return services.BuildServiceProvider();
         }

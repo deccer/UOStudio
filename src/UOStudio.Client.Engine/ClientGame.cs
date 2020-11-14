@@ -1,9 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Serilog;
+using UOStudio.Client.Core;
 using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine.Resources;
 using UOStudio.Client.Engine.UI;
@@ -20,7 +22,8 @@ namespace UOStudio.Client.Engine
         Discord,
         DiscordDarker,
         DiscordDark,
-        Cherry
+        Cherry,
+        Red
     }
 
     public class ClientGame : Game
@@ -28,6 +31,7 @@ namespace UOStudio.Client.Engine
         private readonly ILogger _logger;
         private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly IFileVersionProvider _fileVersionProvider;
+        private readonly ProfileService _profileService;
         private readonly INetworkClient _networkClient;
         private readonly GraphicsDeviceManager _graphics;
         private ImGuiRenderer _guiRenderer;
@@ -38,6 +42,8 @@ namespace UOStudio.Client.Engine
         private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f);
 
         private bool _showChat = true;
+        private bool _showStyleEditor = false;
+        private bool _showDemoWindow = false;
 
         private ItemProvider _itemProvider;
         private TileDataProvider _tileDataProvider;
@@ -55,11 +61,14 @@ namespace UOStudio.Client.Engine
             ILogger logger,
             IAppSettingsProvider appSettingsProvider,
             IFileVersionProvider fileVersionProvider,
-            INetworkClient networkClient)
+            ProfileService profileService,
+            INetworkClient networkClient
+        )
         {
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;
             _fileVersionProvider = fileVersionProvider;
+            _profileService = profileService;
             _networkClient = networkClient;
 
             _appSettingsProvider.Load();
@@ -140,7 +149,8 @@ namespace UOStudio.Client.Engine
                 _graphics.PreferredBackBufferHeight,
                 false,
                 SurfaceFormat.Color,
-                DepthFormat.Depth24Stencil8);
+                DepthFormat.Depth24Stencil8
+            );
 
             _itemProvider = new ItemProvider(_logger, _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, false);
             _tileDataProvider = new TileDataProvider(_appSettingsProvider, false);
@@ -150,14 +160,36 @@ namespace UOStudio.Client.Engine
             _mapEditProjectWindowProvider = new MapEditProjectWindowProvider(
                 _appSettingsProvider,
                 _fileVersionProvider,
+                _profileService,
                 _itemProvider,
                 _tileDataProvider,
                 _mapEditState,
                 _mapEditRenderTarget
             );
             _mapEditProjectWindowProvider.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _mapEditProjectWindowProvider.MapConnectToServerWindow.OnConnect += LoginWindowOnOnConnect;
+            _mapEditProjectWindowProvider.MapConnectToServerWindow.OnDisconnect += LoginWindowOnOnDisconnect;
 
             _logger.Information("Content - Loading...Done");
+        }
+
+        private void LoginWindowOnOnDisconnect(object sender, EventArgs e)
+        {
+            _networkClient.Disconnect();
+        }
+
+        private void LoginWindowOnOnConnect(object sender, ConnectEventArgs e)
+        {
+            var profile = new Profile
+            {
+                Name = "localhost",
+                AccountName = "deccer",
+                AccountPassword = "xxx",
+                ServerName = "localhost",
+                ServerPort = 9050
+            };
+            profile = _mapEditProjectWindowProvider.MapConnectToServerWindow.SelectedProfile;
+            _networkClient.Connect(profile);
         }
 
         protected override void UnloadContent()
@@ -224,8 +256,9 @@ namespace UOStudio.Client.Engine
 
                         if (ImGui.BeginMenu(ResGeneral.MenuMapRemote))
                         {
-                            if (!_networkClient.IsConnected && ImGui.MenuItem(ResGeneral.MenuMapRemoteConnect))
+                            if (ImGui.MenuItem(ResGeneral.MenuMapRemoteConnect))
                             {
+                                _mapEditProjectWindowProvider.MapConnectToServerWindow.Show();
                             }
 
                             if (_networkClient.IsConnected && ImGui.MenuItem(ResGeneral.MenuMapRemoteDisconnect))
@@ -276,6 +309,10 @@ namespace UOStudio.Client.Engine
                             _mapEditProjectWindowProvider.MapTileDetailWindow.ToggleVisibility();
                         }
 
+                        if (ImGui.Checkbox("Chat", ref _showChat))
+                        {
+                        }
+
                         ImGui.Separator();
 
                         var styleSelected = (int)_uiStyle;
@@ -284,29 +321,40 @@ namespace UOStudio.Client.Engine
                             _uiStyle = UiStyle.Light;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
+
                         if (ImGui.RadioButton("Dark", ref styleSelected, 1))
                         {
                             _uiStyle = UiStyle.Dark;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
+
                         if (ImGui.RadioButton("Discord", ref styleSelected, 2))
                         {
                             _uiStyle = UiStyle.Discord;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
+
                         if (ImGui.RadioButton("Discord Darker", ref styleSelected, 3))
                         {
                             _uiStyle = UiStyle.DiscordDarker;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
+
                         if (ImGui.RadioButton("Discord Dark", ref styleSelected, 4))
                         {
                             _uiStyle = UiStyle.DiscordDark;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
+
                         if (ImGui.RadioButton("Cherry", ref styleSelected, 5))
                         {
                             _uiStyle = UiStyle.Cherry;
+                            ImGuiRenderer.SetStyle(_uiStyle);
+                        }
+
+                        if (ImGui.RadioButton("Red", ref styleSelected, 6))
+                        {
+                            _uiStyle = UiStyle.Red;
                             ImGuiRenderer.SetStyle(_uiStyle);
                         }
 
@@ -329,9 +377,12 @@ namespace UOStudio.Client.Engine
 
                         if (ImGui.MenuItem("Style Editor"))
                         {
-                            var currentStyle = ImGui.GetStyle();
-                            ImGui.ShowStyleEditor(currentStyle);
-                            ImGui.ShowStyleSelector("Style Selector");
+                            _showStyleEditor = !_showStyleEditor;
+                        }
+
+                        if (ImGui.MenuItem("Imgui Demo"))
+                        {
+                            _showDemoWindow = !_showDemoWindow;
                         }
 
                         ImGui.EndMenu();
@@ -350,6 +401,17 @@ namespace UOStudio.Client.Engine
             else
             {
                 _gumpEditProjectWindowProvider.Draw();
+            }
+
+            if (_showDemoWindow)
+            {
+                ImGui.ShowDemoWindow();
+            }
+            if (_showStyleEditor && ImGui.Begin("Edit Style"))
+            {
+                var currentStyle = ImGui.GetStyle();
+                ImGui.ShowStyleEditor(currentStyle);
+                ImGui.End();
             }
 
             if (_showChat && ImGui.Begin("Chat"))
