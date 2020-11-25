@@ -60,6 +60,8 @@ namespace UOStudio.Client.Engine.Windows
 
         public MapConnectToServerWindow MapConnectToServerWindow { get; private set; }
 
+        public MapListProjectsWindow MapListProjectsWindow { get; private set; }
+
         public override void Draw()
         {
             base.Draw();
@@ -70,6 +72,7 @@ namespace UOStudio.Client.Engine.Windows
             MapTileDetailWindow.Draw();
             MapTilePreviewWindow.Draw();
             MapConnectToServerWindow.Draw();
+            MapListProjectsWindow.Draw();
         }
 
         public override void LoadContent(
@@ -135,6 +138,8 @@ namespace UOStudio.Client.Engine.Windows
             MapItemBrowserWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
             MapConnectToServerWindow = new MapConnectToServerWindow(_profileService);
             MapConnectToServerWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
+            MapListProjectsWindow = new MapListProjectsWindow();
+            MapListProjectsWindow.LoadContent(graphicsDevice, contentManager, guiRenderer);
         }
 
         public override void UnloadContent()

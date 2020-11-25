@@ -9,7 +9,7 @@ using Num = System.Numerics;
 
 namespace UOStudio.Client.Engine.Windows.MapEdit
 {
-    public class MapConnectToServerWindow : Window
+    public sealed class MapConnectToServerWindow : Window
     {
         private readonly ProfileService _profileService;
         public event EventHandler<ConnectEventArgs> OnConnect;
