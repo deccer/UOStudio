@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using Serilog;
+using UOStudio.Core.Network;
 using UOStudio.Server.Core;
 using UOStudio.Server.Core.Settings;
+using UOStudio.Server.Data;
 using UOStudio.Server.Network.PacketHandlers;
 
 namespace UOStudio.Server.Network
@@ -16,7 +21,6 @@ namespace UOStudio.Server.Network
         private readonly IPacketProcessor _packetProcessor;
         private readonly EventBasedNetListener _listener;
         private readonly NetManager _server;
-        private readonly NetworkSession _networkSession;
 
         public NetworkServer(
             ILogger logger,
@@ -26,10 +30,13 @@ namespace UOStudio.Server.Network
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;
             _packetProcessor = packetProcessor;
-            _networkSession = new NetworkSession();
             _listener = new EventBasedNetListener();
             _server = new NetManager(_listener);
         }
+
+        public event Action<NetPeer, Guid, IList<Project>> LoginSuccess;
+
+        public event Action<NetPeer, string> LoginFailure;
 
         private void Initialize()
         {
@@ -37,26 +44,58 @@ namespace UOStudio.Server.Network
 
             _listener.ConnectionRequestEvent += ConnectionRequestEventHandler;
             _listener.PeerConnectedEvent += PeerConnectedEventHandler;
-            _listener.NetworkReceiveEvent += NetworkReceiveEventHandler;
+            _listener.NetworkReceiveEvent += async (netPeer, netReader, deliveryMethod) => await NetworkReceiveEventHandler(netPeer, netReader, deliveryMethod);
         }
 
-        private void NetworkReceiveEventHandler(NetPeer peer, NetPacketReader reader, DeliveryMethod deliveryMethod)
+        private async Task NetworkReceiveEventHandler(NetPeer peer, NetDataReader reader, DeliveryMethod deliveryMethod)
         {
             var packetId = reader.GetInt();
             _logger.Debug($"Packet: {packetId}");
             switch (packetId)
             {
-                case 1:
+                case PacketIds.Connect:
                     {
-                        var clientConnectPacket = new ClientConnectPacket(reader);
-                        var clientConnected = _packetProcessor.Process<ClientConnectPacket, int>(clientConnectPacket);
-
-                        //_networkSession.AddActiveAccount(peer.Id, account);
-
-                        _logger.Debug($"Packet - Login: {clientConnectPacket.UserName}");
+                        await HandleClientConnect(peer, reader);
                         break;
-
                     }
+                case PacketIds.Disconnect:
+                    break;
+                case PacketIds.CreateAccount:
+                    break;
+                case PacketIds.DeleteAccount:
+                    break;
+                case PacketIds.UpdateAccount:
+                    break;
+                case PacketIds.ListAccounts:
+                    break;
+                case PacketIds.ListProjects:
+                    break;
+                case PacketIds.CreateProject:
+                    break;
+                case PacketIds.DeleteProject:
+                    break;
+                case PacketIds.UpdateProject:
+                    break;
+                case PacketIds.JoinProject:
+                    break;
+                case PacketIds.LeaveProject:
+                    break;
+
+            }
+        }
+
+        private async Task HandleClientConnect(NetPeer peer, NetDataReader reader)
+        {
+            var clientConnectPacket = new ClientConnectRequest(reader);
+            var (isSuccess, _, value, error) = await _packetProcessor.Process<ClientConnectRequest, ClientConnectResult>(clientConnectPacket);
+            if (isSuccess)
+            {
+                _logger.Debug($"Packet - Login: {clientConnectPacket.UserName}");
+                LoginSuccess?.Invoke(peer, value.AccountId, value.Projects);
+            }
+            else
+            {
+                LoginFailure?.Invoke(peer, error);
             }
         }
 
@@ -91,21 +130,6 @@ namespace UOStudio.Server.Network
             var writer = new NetDataWriter();
             writer.Put("Hello you majestic UO admirer!");
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
-        }
-    }
-
-    public class NetworkSession
-    {
-        public IDictionary<int, Account> AccountsOnline { get; }
-
-        public NetworkSession()
-        {
-            AccountsOnline = new Dictionary<int, Account>();
-        }
-
-        public void AddActiveAccount(int userId, Account account)
-        {
-            AccountsOnline.Add(userId, account);
         }
     }
 }

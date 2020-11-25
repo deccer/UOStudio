@@ -1,8 +1,10 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using UOStudio.Core;
 using UOStudio.Server.Core.Settings;
+using UOStudio.Server.Data;
 using UOStudio.Server.Network;
 
 namespace UOStudio.Server
@@ -31,6 +33,7 @@ namespace UOStudio.Server
             services.AddSingleton<ILoader, Loader>();
             services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
+            services.AddDbContextFactory<UOStudioDbContext>(options => options.UseSqlite("Data Source=accounts.db"));
             services.AddNetworkServer();
 
             return services.BuildServiceProvider();
