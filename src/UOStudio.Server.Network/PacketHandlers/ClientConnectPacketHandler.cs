@@ -1,37 +1,41 @@
 ﻿using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
-using UOStudio.Server.Core;
+using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Network.PacketHandlers
 {
-    public class ClientConnectPacketHandler : IPacketHandler<ClientConnectPacket, int>
+    public class ClientConnectPacketHandler : IPacketHandler<ClientConnectRequest, ClientConnectResult>
     {
         private readonly ILogger _logger;
-        private readonly IAccountStore _accountStore;
+        private readonly IDbContextFactory<UOStudioDbContext> _contextFactory;
 
-        public ClientConnectPacketHandler(ILogger logger, IAccountStore accountStore)
+        public ClientConnectPacketHandler(ILogger logger, IDbContextFactory<UOStudioDbContext> contextFactory)
         {
             _logger = logger.ForContext<ClientConnectPacketHandler>();
-            _accountStore = accountStore;
+            _contextFactory = contextFactory;
         }
 
-        public Task<Result<int>> Handle(ClientConnectPacket clientConnectPacket)
+        public async Task<Result<ClientConnectResult>> Handle(ClientConnectRequest clientConnectRequest)
         {
-            var account = _accountStore.GetAccount(clientConnectPacket.UserName);
+            await using var context = _contextFactory.CreateDbContext();
+            var account = await context.Accounts.FirstOrDefaultAsync();
             if (account == null)
             {
-                return Task.FromResult(Result.Failure<int>("Account not found."));
+                return await Task.FromResult(Result.Failure<ClientConnectResult>("Account not found."));
             }
 
             if (account.IsBlocked())
             {
-                var message = $"Blocked user {clientConnectPacket.UserName} tried to log in.";
+                var message = $"Blocked user {clientConnectRequest.UserName} tried to log in.";
                 _logger.Warning(message);
-                return Task.FromResult(Result.Failure<int>(message));
+                return await Task.FromResult(Result.Failure<ClientConnectResult>(message));
             }
 
-            return Task.FromResult(Result.Success(42));
+            var projects = await context.Projects.ToListAsync();
+
+            return await Task.FromResult(Result.Success(new ClientConnectResult(account.Id, projects)));
         }
     }
 }

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UOStudio.Server.Network.PacketHandlers;
 
-namespace UOStudio.Server.Network.PacketHandlers
+namespace UOStudio.Server.Network
 {
     public sealed class PacketProcessor : IPacketProcessor
     {

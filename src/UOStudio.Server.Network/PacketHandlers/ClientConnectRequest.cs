@@ -2,9 +2,9 @@
 
 namespace UOStudio.Server.Network.PacketHandlers
 {
-    public class ClientConnectPacket : IPacket
+    public readonly struct ClientConnectRequest : IPacket
     {
-        public ClientConnectPacket(NetDataReader reader)
+        public ClientConnectRequest(NetDataReader reader)
         {
             UserName = reader.GetString();
             PasswordHash = reader.GetString();
