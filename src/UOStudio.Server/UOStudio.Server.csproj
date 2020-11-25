@@ -7,6 +7,11 @@
 
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.0">
             <PrivateAssets>all</PrivateAssets>
@@ -38,6 +43,7 @@
     <ItemGroup>
         <ProjectReference Include="..\UOStudio.Core\UOStudio.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Server.Core\UOStudio.Server.Core.csproj" />
+        <ProjectReference Include="..\UOStudio.Server.Data\UOStudio.Server.Data.csproj" />
         <ProjectReference Include="..\UOStudio.Server.Engine\UOStudio.Server.Engine.csproj" />
         <ProjectReference Include="..\UOStudio.Server.Network\UOStudio.Server.Network.csproj" />
     </ItemGroup>
