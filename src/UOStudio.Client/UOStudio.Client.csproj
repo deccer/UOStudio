@@ -40,6 +40,7 @@
         <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Engine\UOStudio.Client.Engine.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Network\UOStudio.Client.Network.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Resources\UOStudio.Client.Resources.csproj" />
         <ProjectReference Include="..\UOStudio.Core\UOStudio.Core.csproj" />
     </ItemGroup>
 

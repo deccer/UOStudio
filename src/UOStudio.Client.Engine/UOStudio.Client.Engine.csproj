@@ -31,27 +31,12 @@
       <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
       <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
        <ProjectReference Include="..\UOStudio.Client.Network\UOStudio.Client.Network.csproj" />
+       <ProjectReference Include="..\UOStudio.Client.Resources\UOStudio.Client.Resources.csproj" />
     </ItemGroup>
     <ItemGroup>
       <None Include="..\..\assets\client\splashscreen.png">
         <Link>Content\splashscreen.png</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Update="Resources\ResGeneral.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ResGeneral.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Update="Resources\ResGeneral.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ResGeneral.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Windows\GumpEdit" />
     </ItemGroup>
 </Project>

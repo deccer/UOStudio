@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace UOStudio.Client.Engine.Resources {
+namespace UOStudio.Client.Resources {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,16 +22,16 @@ namespace UOStudio.Client.Engine.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ResGeneral {
-        
+    public class ResGeneral {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal ResGeneral() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -39,19 +39,19 @@ namespace UOStudio.Client.Engine.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("UOStudio.Client.Engine.Resources.ResGeneral", typeof(ResGeneral).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("UOStudio.Client.Resources.ResGeneral", typeof(ResGeneral).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -59,16 +59,16 @@ namespace UOStudio.Client.Engine.Resources {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
-        internal static string MenuEdit {
+        public static string MenuEdit {
             get {
                 return ResourceManager.GetString("MenuEdit", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Extras.
         /// </summary>
@@ -77,110 +77,110 @@ namespace UOStudio.Client.Engine.Resources {
                 return ResourceManager.GetString("MenuExtras", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to File.
         /// </summary>
-        internal static string MenuFile {
+        public static string MenuFile {
             get {
                 return ResourceManager.GetString("MenuFile", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Quit.
         /// </summary>
-        internal static string MenuFileQuit {
+        public static string MenuFileQuit {
             get {
                 return ResourceManager.GetString("MenuFileQuit", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Settings....
         /// </summary>
-        internal static string MenuFileSettings {
+        public static string MenuFileSettings {
             get {
                 return ResourceManager.GetString("MenuFileSettings", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Help.
         /// </summary>
-        internal static string MenuHelp {
+        public static string MenuHelp {
             get {
                 return ResourceManager.GetString("MenuHelp", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to About.
         /// </summary>
-        internal static string MenuHelpAbout {
+        public static string MenuHelpAbout {
             get {
                 return ResourceManager.GetString("MenuHelpAbout", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Map.
         /// </summary>
-        internal static string MenuMap {
+        public static string MenuMap {
             get {
                 return ResourceManager.GetString("MenuMap", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Local....
         /// </summary>
-        internal static string MenuMapLocal {
+        public static string MenuMapLocal {
             get {
                 return ResourceManager.GetString("MenuMapLocal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Remote....
         /// </summary>
-        internal static string MenuMapRemote {
+        public static string MenuMapRemote {
             get {
                 return ResourceManager.GetString("MenuMapRemote", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Connect....
         /// </summary>
-        internal static string MenuMapRemoteConnect {
+        public static string MenuMapRemoteConnect {
             get {
                 return ResourceManager.GetString("MenuMapRemoteConnect", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Disconnect.
         /// </summary>
-        internal static string MenuMapRemoteDisconnect {
+        public static string MenuMapRemoteDisconnect {
             get {
                 return ResourceManager.GetString("MenuMapRemoteDisconnect", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to View.
         /// </summary>
-        internal static string MenuView {
+        public static string MenuView {
             get {
                 return ResourceManager.GetString("MenuView", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
-        internal static string WindowCaptionSettings {
+        public static string WindowCaptionSettings {
             get {
                 return ResourceManager.GetString("WindowCaptionSettings", resourceCulture);
             }

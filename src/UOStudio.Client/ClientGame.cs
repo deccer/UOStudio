@@ -11,7 +11,7 @@ using UOStudio.Client.Engine.Resources;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Engine.Windows;
 using UOStudio.Client.Network;
-using Num = System.Numerics;
+using UOStudio.Client.Resources;
 
 namespace UOStudio.Client.Engine
 {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using ImGuiNET;
 using UOStudio.Client.Core.Settings;
-using UOStudio.Client.Engine.Resources;
+using UOStudio.Client.Resources;
 
 namespace UOStudio.Client.Engine.Windows.General
 {
