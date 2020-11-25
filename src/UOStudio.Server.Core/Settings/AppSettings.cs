@@ -2,11 +2,14 @@
 {
     public sealed class AppSettings
     {
-        public NetworkSettings Network { get; private set; }
+        public GeneralSettings General { get; }
+
+        public NetworkSettings Network { get; }
 
         public AppSettings()
         {
             Network = new NetworkSettings();
+            General = new GeneralSettings();
         }
     }
 }
