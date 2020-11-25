@@ -6,6 +6,7 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using Serilog;
 using UOStudio.Client.Core;
+using UOStudio.Client.Network.Packets;
 
 namespace UOStudio.Client.Network
 {
@@ -16,6 +17,7 @@ namespace UOStudio.Client.Network
         private readonly NetManager _client;
         private NetPeer _peerConnection;
         private readonly Thread _clientThread;
+        private readonly NetDataWriter _dataWriter;
 
         private Profile _profile;
 
@@ -38,6 +40,8 @@ namespace UOStudio.Client.Network
             _listener.NetworkReceiveUnconnectedEvent += NetworkReceiveUnconnectedEventHandler;
             _listener.PeerConnectedEvent += PeerConnectedEventHandler;
             _listener.PeerDisconnectedEvent += PeerDisconnectedEventHandler;
+
+            _dataWriter = new NetDataWriter(false);
         }
 
         private void NetworkReceiveUnconnectedEventHandler(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
@@ -88,17 +92,19 @@ namespace UOStudio.Client.Network
             Connected?.Invoke(peer.EndPoint, peer.Id);
             IsConnected = true;
 
-            var dataWriter = new NetDataWriter();
-            dataWriter.Put(1);
-            dataWriter.Put(_profile.AccountName);
-            dataWriter.Put(_profile.AccountPassword);
-            peer.Send(dataWriter, DeliveryMethod.ReliableOrdered);
+            var clientConnectPacket = new ClientConnectPacket(_dataWriter, _profile);
+            clientConnectPacket.Send(peer);
         }
 
         public void Connect(Profile profile)
         {
             _profile = profile;
             _logger.Debug($"NetworkClient - Connecting to {_profile.ServerName}:{_profile.ServerPort}...");
+            if (IsConnected)
+            {
+                _clientThread.Abort();
+                _client.Stop();
+            }
             _client.Start();
             _clientThread.Start();
 
