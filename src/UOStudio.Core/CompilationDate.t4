@@ -2,11 +2,13 @@
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System" #>
 <#@ output extension=".g.cs" #>
+<#@ import namespace="System.Globalization" #>
 using System;
 namespace UOStudio.Core
 {
     public static partial class Constants
     {
+        // UTC: <# WriteLine(DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)); #>
         public static DateTime CompilationTimestampUtc { get { return new DateTime(<# Write(DateTime.UtcNow.Ticks.ToString()); #>L, DateTimeKind.Utc); } }
     }
 }
