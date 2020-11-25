@@ -7,25 +7,14 @@ using Microsoft.Xna.Framework.Input;
 using Serilog;
 using UOStudio.Client.Core;
 using UOStudio.Client.Core.Settings;
-using UOStudio.Client.Engine.Resources;
+using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Engine.Windows;
 using UOStudio.Client.Network;
 using UOStudio.Client.Resources;
 
-namespace UOStudio.Client.Engine
+namespace UOStudio.Client
 {
-    public enum UiStyle
-    {
-        Light,
-        Dark,
-        Discord,
-        DiscordDarker,
-        DiscordDark,
-        Cherry,
-        Red
-    }
-
     public class ClientGame : Game
     {
         private readonly ILogger _logger;
@@ -88,23 +77,6 @@ namespace UOStudio.Client.Engine
 
             _mapEditState = new MapEditState();
             _projectType = ProjectType.Map;
-
-            // _windowProvider = new WindowProvider(_appSettingsProvider);
-            // _windowProvider.LoginWindow.OnConnect += (_, e) =>
-            // {
-            //     var profile = new Profile
-            //     {
-            //         ServerName = e.ServerName,
-            //         ServerPort = e.ServerPort,
-            //         AccountName = e.UserName,
-            //         AccountPassword = e.Password
-            //     };
-            //     _networkClient.Connect(profile);
-            // };
-            // _windowProvider.LoginWindow.OnDisconnect += (_, __) =>
-            // {
-            //     _networkClient.Disconnect();
-            // };
 
             IsMouseVisible = true;
         }
@@ -180,15 +152,7 @@ namespace UOStudio.Client.Engine
 
         private void LoginWindowOnOnConnect(object sender, ConnectEventArgs e)
         {
-            var profile = new Profile
-            {
-                Name = "localhost",
-                AccountName = "deccer",
-                AccountPassword = "xxx",
-                ServerName = "localhost",
-                ServerPort = 9050
-            };
-            profile = _mapEditProjectWindowProvider.MapConnectToServerWindow.SelectedProfile;
+            var profile = _mapEditProjectWindowProvider.MapConnectToServerWindow.SelectedProfile;
             _networkClient.Connect(profile);
         }
 
@@ -214,6 +178,8 @@ namespace UOStudio.Client.Engine
 
         private void NetworkClientConnectedHandler(EndPoint endPoint, int clientId)
         {
+            _mapEditProjectWindowProvider.MapConnectToServerWindow.Hide();
+            _mapEditProjectWindowProvider.MapListProjectsWindow.Show();
             _networkClient.SendMessage("Tadaaaa!");
         }
 
