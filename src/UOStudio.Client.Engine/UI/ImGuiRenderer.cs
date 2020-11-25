@@ -189,21 +189,24 @@ namespace UOStudio.Client.Engine.UI
             io.KeyAlt = keyboard.IsKeyDown(Keys.LeftAlt) || keyboard.IsKeyDown(Keys.RightAlt);
             io.KeySuper = keyboard.IsKeyDown(Keys.LeftWindows) || keyboard.IsKeyDown(Keys.RightWindows);
 
-            io.DisplaySize = new System.Numerics.Vector2(
+            io.DisplaySize = new Num.Vector2(
                 _graphicsDevice.PresentationParameters.BackBufferWidth,
                 _graphicsDevice.PresentationParameters.BackBufferHeight
             );
-            io.DisplayFramebufferScale = new System.Numerics.Vector2(1f, 1f);
+            io.DisplayFramebufferScale = new Num.Vector2(1f, 1f);
 
-            io.MousePos = new System.Numerics.Vector2(mouse.X, mouse.Y);
+            io.MousePos = new Num.Vector2(mouse.X, mouse.Y);
 
             io.MouseDown[0] = mouse.LeftButton == ButtonState.Pressed;
             io.MouseDown[1] = mouse.RightButton == ButtonState.Pressed;
             io.MouseDown[2] = mouse.MiddleButton == ButtonState.Pressed;
 
             var scrollDelta = mouse.ScrollWheelValue - _scrollWheelValue;
-            io.MouseWheel = scrollDelta > 0 ? 1 :
-                scrollDelta < 0 ? -1 : 0;
+            io.MouseWheel = scrollDelta > 0
+                ? 1
+                : scrollDelta < 0
+                    ? -1
+                    : 0;
             _scrollWheelValue = mouse.ScrollWheelValue;
         }
 
@@ -245,7 +248,6 @@ namespace UOStudio.Client.Engine.UI
                 return;
             }
 
-            // Expand buffers if we need more room
             if (drawData.TotalVtxCount > _vertexBufferSize)
             {
                 _vertexBuffer?.Dispose();
