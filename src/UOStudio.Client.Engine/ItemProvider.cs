@@ -6,8 +6,7 @@ using UOStudio.Client.Engine.IO;
 
 namespace UOStudio.Client.Engine
 {
-    internal sealed class ItemProvider
-        : IItemProvider
+    public sealed class ItemProvider : IItemProvider
     {
         private readonly ILogger _logger;
         private FileIndexBase _fileIndex;
