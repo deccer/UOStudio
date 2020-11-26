@@ -10,6 +10,8 @@ using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Engine.Windows;
+using UOStudio.Client.Engine.Windows.General;
+using UOStudio.Client.Engine.Windows.MapEdit;
 using UOStudio.Client.Network;
 using UOStudio.Client.Resources;
 
@@ -38,13 +40,27 @@ namespace UOStudio.Client
         private TileDataProvider _tileDataProvider;
 
         private ProjectType _projectType;
-        private GumpEditProjectWindowProvider _gumpEditProjectWindowProvider;
-        private MapEditProjectWindowProvider _mapEditProjectWindowProvider;
 
         private RenderTarget2D _mapEditRenderTarget;
         private MapEditState _mapEditState;
 
         private UiStyle _uiStyle = UiStyle.Light;
+
+        // windows
+        private DesktopWindow _desktopWindow;
+        private AboutWindow _aboutWindow;
+        private SplashScreenWindow _splashScreenWindow;
+        private FrameTimeOverlayWindow _frameTimeOverlayWindow;
+        private SettingsWindow _settingsWindow;
+
+        private MapToolbarWindow _mapToolbarWindow;
+        private MapViewWindow _mapViewWindow;
+        private MapItemBrowserWindow _mapItemBrowserWindow;
+        private MapLandBrowserWindow _mapLandBrowserWindow;
+        private MapTileDetailWindow _mapTileDetailWindow;
+        private MapTilePreviewWindow _mapTilePreviewWindow;
+        private MapConnectToServerWindow _mapConnectToServerWindow;
+        private MapListProjectsWindow _mapListProjectsWindow;
 
         public ClientGame(
             ILogger logger,
@@ -91,6 +107,11 @@ namespace UOStudio.Client
             ImGuiRenderer.EnableDocking();
             _guiRenderer.RebuildFontAtlas();
 
+            _splashScreenWindow = new SplashScreenWindow(_fileVersionProvider);
+            _aboutWindow = new AboutWindow(_fileVersionProvider);
+            _frameTimeOverlayWindow = new FrameTimeOverlayWindow("Frame Times");
+            _settingsWindow = new SettingsWindow(_appSettingsProvider);
+
             ImGui.GetIO().ConfigFlags = ImGuiConfigFlags.DockingEnable;
             base.Initialize();
             _logger.Information("Initializing...Done");
@@ -127,20 +148,33 @@ namespace UOStudio.Client
             _itemProvider = new ItemProvider(_logger, _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, false);
             _tileDataProvider = new TileDataProvider(_appSettingsProvider, false);
 
-            _gumpEditProjectWindowProvider = new GumpEditProjectWindowProvider(_appSettingsProvider, _fileVersionProvider);
-            _gumpEditProjectWindowProvider.LoadContent(GraphicsDevice, Content, _guiRenderer);
-            _mapEditProjectWindowProvider = new MapEditProjectWindowProvider(
-                _appSettingsProvider,
-                _fileVersionProvider,
-                _profileService,
-                _itemProvider,
-                _tileDataProvider,
-                _mapEditState,
-                _mapEditRenderTarget
-            );
-            _mapEditProjectWindowProvider.LoadContent(GraphicsDevice, Content, _guiRenderer);
-            _mapEditProjectWindowProvider.MapConnectToServerWindow.OnConnect += LoginWindowOnOnConnect;
-            _mapEditProjectWindowProvider.MapConnectToServerWindow.OnDisconnect += LoginWindowOnOnDisconnect;
+            // general windows
+            _desktopWindow = new DesktopWindow();
+            _splashScreenWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _aboutWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _frameTimeOverlayWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _settingsWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+
+            // map edit windows
+            _mapToolbarWindow = new MapToolbarWindow();
+            _mapToolbarWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            var renderTargetId = _guiRenderer.BindTexture(_mapEditRenderTarget);
+            _mapViewWindow = new MapViewWindow(_mapEditState, renderTargetId);
+            _mapTileDetailWindow = new MapTileDetailWindow(_itemProvider);
+            _mapTileDetailWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _mapTilePreviewWindow = new MapTilePreviewWindow();
+            _mapTilePreviewWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _mapLandBrowserWindow = new MapLandBrowserWindow(_itemProvider, _tileDataProvider, _mapTileDetailWindow, _mapTilePreviewWindow);
+            _mapLandBrowserWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _mapItemBrowserWindow = new MapItemBrowserWindow(_itemProvider, _tileDataProvider, _mapTileDetailWindow, _mapTilePreviewWindow);
+            _mapItemBrowserWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _mapConnectToServerWindow = new MapConnectToServerWindow(_profileService);
+            _mapConnectToServerWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _mapListProjectsWindow = new MapListProjectsWindow();
+            _mapListProjectsWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+
+            _mapConnectToServerWindow.OnConnect += LoginWindowOnOnConnect;
+            _mapConnectToServerWindow.OnDisconnect += LoginWindowOnOnDisconnect;
 
             _logger.Information("Content - Loading...Done");
         }
@@ -152,15 +186,21 @@ namespace UOStudio.Client
 
         private void LoginWindowOnOnConnect(object sender, ConnectEventArgs e)
         {
-            var profile = _mapEditProjectWindowProvider.MapConnectToServerWindow.SelectedProfile;
+            var profile = _mapConnectToServerWindow.SelectedProfile;
             _networkClient.Connect(profile);
         }
 
         protected override void UnloadContent()
         {
             _logger.Information("Content - Unloading...");
-            _mapEditProjectWindowProvider.UnloadContent();
-            _gumpEditProjectWindowProvider.UnloadContent();
+            // common windows
+            _desktopWindow.UnloadContent();
+            _splashScreenWindow.UnloadContent();
+            _aboutWindow.UnloadContent();
+            _frameTimeOverlayWindow.UnloadContent();
+            _settingsWindow.UnloadContent();
+            // map edit related windows
+            _mapToolbarWindow.UnloadContent();
             base.UnloadContent();
             _logger.Information("Content - Unloading...Done");
         }
@@ -178,9 +218,8 @@ namespace UOStudio.Client
 
         private void NetworkClientConnectedHandler(EndPoint endPoint, int clientId)
         {
-            _mapEditProjectWindowProvider.MapConnectToServerWindow.Hide();
-            _mapEditProjectWindowProvider.MapListProjectsWindow.Show();
-            _networkClient.SendMessage("Tadaaaa!");
+            _mapConnectToServerWindow.Hide();
+            _mapListProjectsWindow.Show();
         }
 
         private void DrawUi()
@@ -195,11 +234,11 @@ namespace UOStudio.Client
                         {
                             if (_projectType == ProjectType.Map)
                             {
-                                _mapEditProjectWindowProvider.Settings.Show();
+                                _settingsWindow.Show();
                             }
                             else
                             {
-                                _gumpEditProjectWindowProvider.Settings.Show();
+                                _settingsWindow.Show();
                             }
                         }
 
@@ -224,7 +263,7 @@ namespace UOStudio.Client
                         {
                             if (ImGui.MenuItem(ResGeneral.MenuMapRemoteConnect))
                             {
-                                _mapEditProjectWindowProvider.MapConnectToServerWindow.Show();
+                                _mapConnectToServerWindow.Show();
                             }
 
                             if (_networkClient.IsConnected && ImGui.MenuItem(ResGeneral.MenuMapRemoteDisconnect))
@@ -251,28 +290,28 @@ namespace UOStudio.Client
                             ImGui.Separator();
                         }
 
-                        var showToolbarWindow = _mapEditProjectWindowProvider.MapToolbarWindow.IsVisible;
+                        var showToolbarWindow = _mapToolbarWindow.IsVisible;
                         if (ImGui.Checkbox("Tools", ref showToolbarWindow))
                         {
-                            _mapEditProjectWindowProvider.MapToolbarWindow.ToggleVisibility();
+                            _mapToolbarWindow.ToggleVisibility();
                         }
 
-                        var showItemsWindow = _mapEditProjectWindowProvider.MapItemBrowserWindow.IsVisible;
+                        var showItemsWindow = _mapItemBrowserWindow.IsVisible;
                         if (ImGui.Checkbox("Items", ref showItemsWindow))
                         {
-                            _mapEditProjectWindowProvider.MapItemBrowserWindow.ToggleVisibility();
+                            _mapItemBrowserWindow.ToggleVisibility();
                         }
 
-                        var showLandsWindow = _mapEditProjectWindowProvider.MapLandBrowserWindow.IsVisible;
+                        var showLandsWindow = _mapLandBrowserWindow.IsVisible;
                         if (ImGui.Checkbox("Land Tiles", ref showLandsWindow))
                         {
-                            _mapEditProjectWindowProvider.MapLandBrowserWindow.ToggleVisibility();
+                            _mapLandBrowserWindow.ToggleVisibility();
                         }
 
-                        var showItemDetail = _mapEditProjectWindowProvider.MapTileDetailWindow.IsVisible;
+                        var showItemDetail = _mapTileDetailWindow.IsVisible;
                         if (ImGui.Checkbox("Details", ref showItemDetail))
                         {
-                            _mapEditProjectWindowProvider.MapTileDetailWindow.ToggleVisibility();
+                            _mapTileDetailWindow.ToggleVisibility();
                         }
 
                         if (ImGui.Checkbox("Chat", ref _showChat))
@@ -333,11 +372,11 @@ namespace UOStudio.Client
                         {
                             if (_projectType == ProjectType.Map)
                             {
-                                _mapEditProjectWindowProvider.AboutWindow.Show();
+                                _aboutWindow.Show();
                             }
                             else
                             {
-                                _gumpEditProjectWindowProvider.AboutWindow.Show();
+                                _aboutWindow.Show();
                             }
                         }
 
@@ -360,13 +399,24 @@ namespace UOStudio.Client
                 ImGui.EndMainMenuBar();
             }
 
+            _desktopWindow.Draw();
+            _splashScreenWindow.Draw();
+            _aboutWindow.Draw();
+            _frameTimeOverlayWindow.Draw();
+            _settingsWindow.Draw();
             if (_projectType == ProjectType.Map)
             {
-                _mapEditProjectWindowProvider.Draw();
+                _mapToolbarWindow.Draw();
+                _mapViewWindow.Draw();
+                _mapItemBrowserWindow.Draw();
+                _mapLandBrowserWindow.Draw();
+                _mapTileDetailWindow.Draw();
+                _mapTilePreviewWindow.Draw();
+                _mapConnectToServerWindow.Draw();
+                _mapListProjectsWindow.Draw();
             }
             else
             {
-                _gumpEditProjectWindowProvider.Draw();
             }
 
             if (_showDemoWindow)

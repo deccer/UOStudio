@@ -3,12 +3,12 @@ using Num = System.Numerics;
 
 namespace UOStudio.Client.Engine.Windows.General
 {
-    public sealed class DockSpaceWindow : Window
+    public sealed class DesktopWindow : Window
     {
         private readonly ImGuiDockNodeFlags _dockspaceFlags = ImGuiDockNodeFlags.None;
 
-        public DockSpaceWindow(string caption)
-            : base(caption)
+        public DesktopWindow()
+            : base("Desktop")
         {
             Show();
         }
