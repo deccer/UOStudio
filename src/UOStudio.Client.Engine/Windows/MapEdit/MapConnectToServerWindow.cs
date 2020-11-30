@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ImGuiNET;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using UOStudio.Client.Core;
-using UOStudio.Client.Engine.UI;
 using Num = System.Numerics;
 
 namespace UOStudio.Client.Engine.Windows.MapEdit
@@ -12,9 +9,12 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
     public sealed class MapConnectToServerWindow : Window
     {
         private readonly ProfileService _profileService;
-        public event EventHandler<ConnectEventArgs> OnConnect;
 
-        public event EventHandler OnDisconnect;
+        public event EventHandler<ConnectEventArgs> ConnectClicked;
+
+        public event EventHandler DisconnectClicked;
+
+        public event Action EditProfilesClicked;
 
         private string _serverName;
         private string _serverPort;
@@ -22,8 +22,6 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         private string _password;
         private int _selectedProfileIndex;
         private Profile _selectedProfile;
-
-        private MapConnectProfileEditorWindow _mapConnectProfileEditorWindow;
 
         public MapConnectToServerWindow(ProfileService profileService)
             : base("Login")
@@ -65,7 +63,7 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             set => _password = value;
         }
 
-        protected override ImGuiWindowFlags GetWindowFlags() => ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoDocking;
+        protected override ImGuiWindowFlags GetWindowFlags() => ImGuiWindowFlags.NoDocking;
 
         protected override void DrawInternal()
         {
@@ -87,7 +85,8 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
             if (ImGui.Button("Edit Profiles"))
             {
-                _mapConnectProfileEditorWindow.Show();
+                var editProfilesClicked = EditProfilesClicked;
+                editProfilesClicked?.Invoke();
             }
 
             if (ImGui.InputText("Server", ref _serverName, 64))
@@ -110,26 +109,16 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             {
                 var serverPortAsInt = int.TryParse(_serverPort, out var port) ? port : 0;
 
-                OnConnect?.Invoke(this, new ConnectEventArgs(_serverName, serverPortAsInt, _userName, _password));
+                var connectClicked = ConnectClicked;
+                connectClicked?.Invoke(this, new ConnectEventArgs(_serverName, serverPortAsInt, _userName, _password));
             }
 
             ImGui.SameLine();
             if (ImGui.Button("Disconnect"))
             {
-                OnDisconnect?.Invoke(this, EventArgs.Empty);
+                var disconnectClicked = DisconnectClicked;
+                disconnectClicked?.Invoke(this, EventArgs.Empty);
             }
-
-            _mapConnectProfileEditorWindow.Draw();
-        }
-
-        protected override void LoadContentInternal(
-            GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer imGuiRenderer
-        )
-        {
-            base.LoadContentInternal(graphicsDevice, contentManager, imGuiRenderer);
-
-            _mapConnectProfileEditorWindow = new MapConnectProfileEditorWindow(_profileService);
-            _mapConnectProfileEditorWindow.LoadContent(graphicsDevice, contentManager, imGuiRenderer);
         }
     }
 }

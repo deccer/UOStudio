@@ -37,6 +37,10 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
             if (ImGui.Button("Delete"))
             {
+                if (_selectedProfile != null)
+                {
+                    _profileService.Remove(_selectedProfile);
+                }
             }
 
             ImGui.NextColumn();
@@ -68,6 +72,11 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                     AccountPassword = _profileAccountPasswordHash
                 };
                 _profileService.Add(profile);
+            }
+
+            if (ImGui.Button("OK"))
+            {
+                Hide();
             }
         }
 
