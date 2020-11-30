@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using ImGuiNET;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,6 +28,11 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         {
             Show();
         }
+
+        public event Action Login;
+        public event Action Logout;
+        public event Action TerrainAdd;
+        public event Action TerrainRemove;
 
         public int IconSize { get; set; } = 32;
 
@@ -70,10 +76,27 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             var mapToolTerrainPaint = guiRenderer.BindTexture(_mapToolTerrainPaint);
             var mapToolTerrainSmooth = guiRenderer.BindTexture(_mapToolTerrainSmooth);
 
+            var loginToolDescription = new ToolDescription
+            {
+                Group = ToolGroup.Control,
+                Name = "Login",
+                TextureHandle = mapControlLogin,
+                Size = IconSize
+            };
+            loginToolDescription.Clicked += Login;
+
+            var logoutToolDescription = new ToolDescription
+            {
+                Group = ToolGroup.Control,
+                Name = "Logout", TextureHandle = mapControlLogout,
+                Size = IconSize
+            };
+            logoutToolDescription.Clicked += Logout;
+
             _toolDescriptions = new[]
             {
-                new ToolDescription { Group = ToolGroup.Control, Name = "Login", TextureHandle = mapControlLogin, Size = IconSize },
-                new ToolDescription { Group = ToolGroup.Control, Name = "Logout", TextureHandle = mapControlLogout, Size = IconSize },
+                loginToolDescription,
+                logoutToolDescription,
                 new ToolDescription { Group = ToolGroup.Selection, Name = "Elevate", TextureHandle = mapToolTerrainElevate, Size = IconSize },
                 new ToolDescription { Group = ToolGroup.Selection, Name = "Lower", TextureHandle = mapToolTerrainLower, Size = IconSize },
                 new ToolDescription { Group = ToolGroup.Selection, Name = "Add", TextureHandle = mapToolTerrainAdd, Size = IconSize },
@@ -97,7 +120,10 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 }
                 currentToolGroup = toolDescription.Group;
 
-                ImGui.ImageButton(toolDescription.TextureHandle, new Vector2(toolDescription.Size, toolDescription.Size));
+                if (ImGui.ImageButton(toolDescription.TextureHandle, new Vector2(toolDescription.Size, toolDescription.Size)))
+                {
+                    toolDescription.Click();
+                }
                 ImGui.SameLine();
             }
         }
