@@ -9,7 +9,7 @@ namespace UOStudio.Server.Network.PacketHandlers
         Task<Result> Handle(TPacket command);
     }
 
-    public interface IPacketHandler<in TPacket, TResult>
+    public interface IRequestHandler<in TPacket, TResult>
         where TPacket : IPacket
     {
         Task<Result<TResult>> Handle(TPacket command);

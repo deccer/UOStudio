@@ -7,7 +7,7 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Network.PacketHandlers
 {
-    public sealed class CreateProjectRequestHandler : IPacketHandler<CreateProjectRequest, CreateProjectResult>
+    public sealed class CreateProjectRequestHandler : IRequestHandler<CreateProjectRequest, CreateProjectResult>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioDbContext> _contextFactory;

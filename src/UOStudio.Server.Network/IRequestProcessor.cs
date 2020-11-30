@@ -4,7 +4,7 @@ using UOStudio.Server.Network.PacketHandlers;
 
 namespace UOStudio.Server.Network
 {
-    public interface IPacketProcessor
+    public interface IRequestProcessor
     {
         Task<Result> Process<TPacket>(IPacket packet)
             where TPacket : IPacket;

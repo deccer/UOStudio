@@ -6,14 +6,14 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Network.PacketHandlers
 {
-    public class ClientConnectPacketHandler : IPacketHandler<ClientConnectRequest, ClientConnectResult>
+    public class ClientConnectRequestHandler : IRequestHandler<ClientConnectRequest, ClientConnectResult>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioDbContext> _contextFactory;
 
-        public ClientConnectPacketHandler(ILogger logger, IDbContextFactory<UOStudioDbContext> contextFactory)
+        public ClientConnectRequestHandler(ILogger logger, IDbContextFactory<UOStudioDbContext> contextFactory)
         {
-            _logger = logger.ForContext<ClientConnectPacketHandler>();
+            _logger = logger.ForContext<ClientConnectRequestHandler>();
             _contextFactory = contextFactory;
         }
 

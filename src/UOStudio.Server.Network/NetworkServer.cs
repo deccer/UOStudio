@@ -18,18 +18,18 @@ namespace UOStudio.Server.Network
     {
         private readonly ILogger _logger;
         private readonly IAppSettingsProvider _appSettingsProvider;
-        private readonly IPacketProcessor _packetProcessor;
+        private readonly IRequestProcessor _requestProcessor;
         private readonly EventBasedNetListener _listener;
         private readonly NetManager _server;
 
         public NetworkServer(
             ILogger logger,
             IAppSettingsProvider appSettingsProvider,
-            IPacketProcessor packetProcessor)
+            IRequestProcessor requestProcessor)
         {
             _logger = logger;
             _appSettingsProvider = appSettingsProvider;
-            _packetProcessor = packetProcessor;
+            _requestProcessor = requestProcessor;
             _listener = new EventBasedNetListener();
             _server = new NetManager(_listener);
         }
@@ -89,7 +89,7 @@ namespace UOStudio.Server.Network
         {
             var createProjectRequest = new CreateProjectRequest(reader);
             var writer = new NetDataWriter();
-            var (isSuccess, _, value, error) = await _packetProcessor.Process<CreateProjectRequest, CreateProjectResult>(createProjectRequest);
+            var (isSuccess, _, value, error) = await _requestProcessor.Process<CreateProjectRequest, CreateProjectResult>(createProjectRequest);
             if (isSuccess)
             {
                 writer.Put(PacketIds.S2C.CreateProjectSuccess);
@@ -113,7 +113,7 @@ namespace UOStudio.Server.Network
         {
             var clientConnectRequest = new ClientConnectRequest(reader);
             var writer = new NetDataWriter();
-            var (isSuccess, _, value, error) = await _packetProcessor.Process<ClientConnectRequest, ClientConnectResult>(clientConnectRequest);
+            var (isSuccess, _, value, error) = await _requestProcessor.Process<ClientConnectRequest, ClientConnectResult>(clientConnectRequest);
             if (isSuccess)
             {
                 _logger.Debug($"Packet - Login: {clientConnectRequest.UserName}");

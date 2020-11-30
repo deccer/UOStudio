@@ -10,14 +10,14 @@ using UOStudio.Server.Network.PacketHandlers;
 
 namespace UOStudio.Server.Network
 {
-    public sealed class PacketProcessor : IPacketProcessor
+    public sealed class RequestProcessor : IRequestProcessor
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public PacketProcessor(ILogger logger, IServiceProvider serviceProvider)
+        public RequestProcessor(ILogger logger, IServiceProvider serviceProvider)
         {
-            _logger = logger.ForContext<PacketProcessor>();
+            _logger = logger.ForContext<RequestProcessor>();
             _serviceProvider = serviceProvider;
         }
 
@@ -27,7 +27,7 @@ namespace UOStudio.Server.Network
 
         public Task<Result<TResult>> Process<TPacket, TResult>(IPacket packet)
             where TPacket : IPacket =>
-            HandleActionInternal(typeof(IPacketHandler<TPacket, TResult>), packet);
+            HandleActionInternal(typeof(IRequestHandler<TPacket, TResult>), packet);
 
         private dynamic HandleActionInternal<TAction>(Type handlerType, TAction action)
             where TAction : notnull
