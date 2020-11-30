@@ -11,5 +11,13 @@ namespace UOStudio.Client.Engine.Windows
         public ToolGroup Group { get; set; }
 
         public int Size { get; set; }
+
+        public event Action Clicked;
+
+        public void Click()
+        {
+            var clicked = Clicked;
+            clicked?.Invoke();
+        }
     }
 }
