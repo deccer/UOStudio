@@ -53,50 +53,94 @@ namespace UOStudio.Server.Network
             _logger.Debug($"Packet: {packetId}");
             switch (packetId)
             {
-                case PacketIds.Connect:
-                    {
-                        await HandleClientConnect(peer, reader);
-                        break;
-                    }
-                case PacketIds.Disconnect:
+                case PacketIds.C2S.ChatMessage:
+                    await HandleChatMessage(peer, reader);
                     break;
-                case PacketIds.CreateAccount:
+                case PacketIds.C2S.Connect:
+                    await HandleClientConnect(peer, reader);
                     break;
-                case PacketIds.DeleteAccount:
+                case PacketIds.C2S.Disconnect:
                     break;
-                case PacketIds.UpdateAccount:
+                case PacketIds.C2S.CreateAccount:
                     break;
-                case PacketIds.ListAccounts:
+                case PacketIds.C2S.DeleteAccount:
                     break;
-                case PacketIds.ListProjects:
+                case PacketIds.C2S.UpdateAccount:
                     break;
-                case PacketIds.CreateProject:
+                case PacketIds.C2S.ListAccounts:
                     break;
-                case PacketIds.DeleteProject:
+                case PacketIds.C2S.ListProjects:
                     break;
-                case PacketIds.UpdateProject:
+                case PacketIds.C2S.CreateProject:
+                    await HandleCreateProject(peer, reader);
                     break;
-                case PacketIds.JoinProject:
+                case PacketIds.C2S.DeleteProject:
                     break;
-                case PacketIds.LeaveProject:
+                case PacketIds.C2S.UpdateProject:
                     break;
-
+                case PacketIds.C2S.JoinProject:
+                    break;
+                case PacketIds.C2S.LeaveProject:
+                    break;
             }
+        }
+
+        private async Task HandleCreateProject(NetPeer peer, NetDataReader reader)
+        {
+            var createProjectRequest = new CreateProjectRequest(reader);
+            var writer = new NetDataWriter();
+            var (isSuccess, _, value, error) = await _packetProcessor.Process<CreateProjectRequest, CreateProjectResult>(createProjectRequest);
+            if (isSuccess)
+            {
+                writer.Put(PacketIds.S2C.CreateProjectSuccess);
+                writer.Put(value.ProjectId);
+            }
+            else
+            {
+                writer.Put(PacketIds.S2C.CreateProjectFailed);
+                writer.Put(error);
+            }
+
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
+        }
+
+        private async Task HandleChatMessage(NetPeer peer, NetDataReader reader)
+        {
+
         }
 
         private async Task HandleClientConnect(NetPeer peer, NetDataReader reader)
         {
-            var clientConnectPacket = new ClientConnectRequest(reader);
-            var (isSuccess, _, value, error) = await _packetProcessor.Process<ClientConnectRequest, ClientConnectResult>(clientConnectPacket);
+            var clientConnectRequest = new ClientConnectRequest(reader);
+            var writer = new NetDataWriter();
+            var (isSuccess, _, value, error) = await _packetProcessor.Process<ClientConnectRequest, ClientConnectResult>(clientConnectRequest);
             if (isSuccess)
             {
-                _logger.Debug($"Packet - Login: {clientConnectPacket.UserName}");
+                _logger.Debug($"Packet - Login: {clientConnectRequest.UserName}");
                 LoginSuccess?.Invoke(peer, value.AccountId, value.Projects);
+
+                var permissions = 0;
+                writer.Put(PacketIds.S2C.ConnectSuccess);
+                writer.Put(value.AccountId.ToString("N"));
+                writer.Put(permissions);
+                var projectCount = value.Projects.Count;
+                writer.Put(projectCount);
+                foreach (var project in value.Projects)
+                {
+                    writer.Put(project.Id);
+                    writer.Put(project.Name);
+                    writer.Put(project.Description);
+                    writer.Put(project.ClientVersion);
+                }
             }
             else
             {
                 LoginFailure?.Invoke(peer, error);
+
+                writer.Put(PacketIds.S2C.ConnectFailed);
+                writer.Put(error);
             }
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
         public void Run()

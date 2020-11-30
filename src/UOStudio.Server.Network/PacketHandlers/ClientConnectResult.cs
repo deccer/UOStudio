@@ -4,7 +4,7 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Network.PacketHandlers
 {
-    public class ClientConnectResult
+    public readonly struct ClientConnectResult
     {
         public ClientConnectResult(Guid accountId, IList<Project> projects)
         {

@@ -33,7 +33,6 @@ namespace UOStudio.Client
         private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f);
 
         private bool _showChat = true;
-        private bool _showStyleEditor = false;
         private bool _showDemoWindow = false;
 
         private ItemProvider _itemProvider;
@@ -52,6 +51,9 @@ namespace UOStudio.Client
         private SplashScreenWindow _splashScreenWindow;
         private FrameTimeOverlayWindow _frameTimeOverlayWindow;
         private SettingsWindow _settingsWindow;
+        private LogWindow _logWindow;
+        private StyleEditorWindow _styleEditorWindow;
+        private ChatWindow _chatWindow;
 
         private MapToolbarWindow _mapToolbarWindow;
         private MapViewWindow _mapViewWindow;
@@ -61,6 +63,7 @@ namespace UOStudio.Client
         private MapTilePreviewWindow _mapTilePreviewWindow;
         private MapConnectToServerWindow _mapConnectToServerWindow;
         private MapListProjectsWindow _mapListProjectsWindow;
+        private MapConnectProfileEditorWindow _mapConnectProfileEditorWindow;
 
         public ClientGame(
             ILogger logger,
@@ -78,6 +81,7 @@ namespace UOStudio.Client
 
             _appSettingsProvider.Load();
             _networkClient.Connected += NetworkClientConnectedHandler;
+            _networkClient.Disconnected += NetworkClientDisconnectedHandler;
 
             Window.Title = "UOStudio";
             Window.AllowUserResizing = true;
@@ -111,10 +115,14 @@ namespace UOStudio.Client
             _aboutWindow = new AboutWindow(_fileVersionProvider);
             _frameTimeOverlayWindow = new FrameTimeOverlayWindow("Frame Times");
             _settingsWindow = new SettingsWindow(_appSettingsProvider);
+            _logWindow = new LogWindow();
+            _styleEditorWindow = new StyleEditorWindow();
+            _chatWindow = new ChatWindow();
 
             ImGui.GetIO().ConfigFlags = ImGuiConfigFlags.DockingEnable;
             base.Initialize();
             _logger.Information("Initializing...Done");
+            _logWindow.AddLogMessage(LogType.Info, "Initializing...Done");
         }
 
         protected override void Draw(GameTime gameTime)
@@ -157,6 +165,8 @@ namespace UOStudio.Client
 
             // map edit windows
             _mapToolbarWindow = new MapToolbarWindow();
+            _mapToolbarWindow.Login += ToolbarLogin;
+            _mapToolbarWindow.Logout += ToolbarLogout;
             _mapToolbarWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
             var renderTargetId = _guiRenderer.BindTexture(_mapEditRenderTarget);
             _mapViewWindow = new MapViewWindow(_mapEditState, renderTargetId);
@@ -170,24 +180,41 @@ namespace UOStudio.Client
             _mapItemBrowserWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
             _mapConnectToServerWindow = new MapConnectToServerWindow(_profileService);
             _mapConnectToServerWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
+            _mapConnectToServerWindow.ConnectClicked += ConnectToServerWindowConnectClicked;
+            _mapConnectToServerWindow.DisconnectClicked += ConnectToServerWindowDisconnectClicked;
+            _mapConnectToServerWindow.EditProfilesClicked += ConnectToServerEditProfilesClicked;
+
+            _mapConnectProfileEditorWindow = new MapConnectProfileEditorWindow(_profileService);
+
             _mapListProjectsWindow = new MapListProjectsWindow();
             _mapListProjectsWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
-
-            _mapConnectToServerWindow.OnConnect += LoginWindowOnOnConnect;
-            _mapConnectToServerWindow.OnDisconnect += LoginWindowOnOnDisconnect;
 
             _logger.Information("Content - Loading...Done");
         }
 
-        private void LoginWindowOnOnDisconnect(object sender, EventArgs e)
+        private void ToolbarLogout()
+        {
+        }
+
+        private void ToolbarLogin()
+        {
+            _mapConnectToServerWindow.Show();
+        }
+
+        private void ConnectToServerWindowDisconnectClicked(object sender, EventArgs e)
         {
             _networkClient.Disconnect();
         }
 
-        private void LoginWindowOnOnConnect(object sender, ConnectEventArgs e)
+        private void ConnectToServerWindowConnectClicked(object sender, ConnectEventArgs e)
         {
             var profile = _mapConnectToServerWindow.SelectedProfile;
             _networkClient.Connect(profile);
+        }
+
+        private void ConnectToServerEditProfilesClicked()
+        {
+            _mapConnectProfileEditorWindow.Show();
         }
 
         protected override void UnloadContent()
@@ -199,8 +226,19 @@ namespace UOStudio.Client
             _aboutWindow.UnloadContent();
             _frameTimeOverlayWindow.UnloadContent();
             _settingsWindow.UnloadContent();
+            _chatWindow.UnloadContent();
+            _logWindow.UnloadContent();
             // map edit related windows
             _mapToolbarWindow.UnloadContent();
+            _mapViewWindow.UnloadContent();
+            _mapTileDetailWindow.UnloadContent();
+            _mapTilePreviewWindow.UnloadContent();
+            _mapLandBrowserWindow.UnloadContent();
+            _mapItemBrowserWindow.UnloadContent();
+            _mapConnectToServerWindow.UnloadContent();
+            _mapConnectProfileEditorWindow.UnloadContent();
+            _mapListProjectsWindow.UnloadContent();
+
             base.UnloadContent();
             _logger.Information("Content - Unloading...Done");
         }
@@ -220,6 +258,10 @@ namespace UOStudio.Client
         {
             _mapConnectToServerWindow.Hide();
             _mapListProjectsWindow.Show();
+        }
+
+        private void NetworkClientDisconnectedHandler()
+        {
         }
 
         private void DrawUi()
@@ -263,7 +305,7 @@ namespace UOStudio.Client
                         {
                             if (ImGui.MenuItem(ResGeneral.MenuMapRemoteConnect))
                             {
-                                _mapConnectToServerWindow.Show();
+                                ToolbarLogin();
                             }
 
                             if (_networkClient.IsConnected && ImGui.MenuItem(ResGeneral.MenuMapRemoteDisconnect))
@@ -287,6 +329,14 @@ namespace UOStudio.Client
                         if (_networkClient.IsConnected)
                         {
                             ImGui.Checkbox("Chat", ref _showChat);
+                            if (_showChat)
+                            {
+                                _chatWindow.Show();
+                            }
+                            else
+                            {
+                                _chatWindow.Hide();
+                            }
                             ImGui.Separator();
                         }
 
@@ -382,7 +432,7 @@ namespace UOStudio.Client
 
                         if (ImGui.MenuItem("Style Editor"))
                         {
-                            _showStyleEditor = !_showStyleEditor;
+                            _styleEditorWindow.ToggleVisibility();
                         }
 
                         if (ImGui.MenuItem("Imgui Demo"))
@@ -404,6 +454,9 @@ namespace UOStudio.Client
             _aboutWindow.Draw();
             _frameTimeOverlayWindow.Draw();
             _settingsWindow.Draw();
+            _logWindow.Draw();
+            _styleEditorWindow.Draw();
+            _chatWindow.Draw();
             if (_projectType == ProjectType.Map)
             {
                 _mapToolbarWindow.Draw();
@@ -413,26 +466,13 @@ namespace UOStudio.Client
                 _mapTileDetailWindow.Draw();
                 _mapTilePreviewWindow.Draw();
                 _mapConnectToServerWindow.Draw();
+                _mapConnectProfileEditorWindow.Draw();
                 _mapListProjectsWindow.Draw();
-            }
-            else
-            {
             }
 
             if (_showDemoWindow)
             {
                 ImGui.ShowDemoWindow();
-            }
-            if (_showStyleEditor && ImGui.Begin("Edit Style"))
-            {
-                var currentStyle = ImGui.GetStyle();
-                ImGui.ShowStyleEditor(currentStyle);
-                ImGui.End();
-            }
-
-            if (_showChat && ImGui.Begin("Chat"))
-            {
-                ImGui.End();
             }
         }
     }

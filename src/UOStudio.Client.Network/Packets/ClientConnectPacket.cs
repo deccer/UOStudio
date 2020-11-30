@@ -19,7 +19,7 @@ namespace UOStudio.Client.Network.Packets
         public void Send(NetPeer peer)
         {
             _dataWriter.Reset();
-            _dataWriter.Put(PacketIds.Connect);
+            _dataWriter.Put(PacketIds.C2S.Connect);
             _dataWriter.Put(_profile.AccountName);
             _dataWriter.Put(_profile.AccountPassword);
             peer.Send(_dataWriter, DeliveryMethod.ReliableOrdered);

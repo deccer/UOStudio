@@ -8,12 +8,14 @@ namespace UOStudio.Client.Network
     {
         event Action<EndPoint, int> Connected;
 
+        event Action Disconnected;
+
         bool IsConnected { get; }
 
         void Connect(Profile profile);
 
         void Disconnect();
 
-        void SendMessage(string message);
+        void SendMessage(Guid accountId, string message);
     }
 }

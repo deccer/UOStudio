@@ -8,6 +8,7 @@ namespace UOStudio.Server.Network
         public static void AddNetworkServer(this IServiceCollection services)
         {
             services.AddSingleton<IPacketHandler<ClientConnectRequest, ClientConnectResult>, ClientConnectPacketHandler>();
+            services.AddSingleton<IPacketHandler<CreateProjectRequest, CreateProjectResult>, CreateProjectRequestHandler>();
             services.AddSingleton<IPacketProcessor, PacketProcessor>();
             services.AddSingleton<INetworkServer, NetworkServer>();
         }
