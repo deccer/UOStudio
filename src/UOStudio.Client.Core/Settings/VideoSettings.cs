@@ -11,8 +11,8 @@
         public VideoSettings()
         {
             IsFullScreen = false;
-            Width = 1920;
-            Height = 1080;
+            Width = 1650;
+            Height = 900;
         }
     }
 }
