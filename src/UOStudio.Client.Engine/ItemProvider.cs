@@ -10,21 +10,18 @@ namespace UOStudio.Client.Engine
     {
         private readonly ILogger _logger;
         private FileIndexBase _fileIndex;
-        private readonly bool _isUOPFileIndex;
-        private readonly string _clientPath;
+        private bool _isUOPFileIndex;
+        private string _projectBasePath;
 
-        public ItemProvider(ILogger logger, string ultimaOnlineBasePath, bool isUopFileIndex)
-        {
-            _logger = logger;
-            _isUOPFileIndex = isUopFileIndex;
-            _clientPath = ultimaOnlineBasePath;
-            Initialize();
-        }
+        public ItemProvider(ILogger logger) => _logger = logger;
 
         public int Length => _fileIndex.Length;
 
-        private void Initialize()
+        public void Load(string projectBasePath)
         {
+            _projectBasePath = projectBasePath;
+            _isUOPFileIndex = File.Exists(Path.Combine(_projectBasePath, "artLegacyMUL.uop"));
+
             _fileIndex = _isUOPFileIndex
                 ? CreateUopFileIndex("artLegacyMUL.uop", 0x10000, false, ".tga")
                 : CreateMulFileIndex("artidx.mul", "art.mul");
@@ -34,7 +31,7 @@ namespace UOStudio.Client.Engine
 
         private string GetPath(string filename, params object[] args)
         {
-            var filePath = Path.Combine(_clientPath, string.Format(filename, args));
+            var filePath = Path.Combine(_projectBasePath, string.Format(filename, args));
 
             if (!File.Exists(filePath))
             {
@@ -52,7 +49,7 @@ namespace UOStudio.Client.Engine
 
             if (!fileIndex.FilesExist)
             {
-                _logger.Error($"FileIndex was created but {Path.GetFileName(uopFile)} was missing from {_clientPath}");
+                _logger.Error($"FileIndex was created but {Path.GetFileName(uopFile)} was missing from {_projectBasePath}");
             }
 
             fileIndex.Open();
@@ -70,7 +67,7 @@ namespace UOStudio.Client.Engine
             if (!fileIndex.FilesExist)
             {
                 _logger.Error(
-                    $"FileIndex was created but 1 or more files do not exist. Either {Path.GetFileName(indexFileName)} or {Path.GetFileName(mulFileName)} were missing from {_clientPath}"
+                    $"FileIndex was created but 1 or more files do not exist. Either {Path.GetFileName(indexFileName)} or {Path.GetFileName(mulFileName)} were missing from {_projectBasePath}"
                 );
             }
 
