@@ -4,13 +4,9 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 {
     public class MapTileDetailWindow : Window
     {
-        private readonly IItemProvider _itemProvider;
-
-        public MapTileDetailWindow(IItemProvider itemProvider)
+        public MapTileDetailWindow()
             : base("Details")
         {
-            _itemProvider = itemProvider;
-            Show();
         }
 
         private ItemData _selectedItemData;

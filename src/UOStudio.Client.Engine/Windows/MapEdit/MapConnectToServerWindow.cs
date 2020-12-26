@@ -26,6 +26,7 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         public MapConnectToServerWindow(ProfileService profileService)
             : base("Login")
         {
+            Show();
             _profileService = profileService;
             _serverName = string.Empty;
             _serverPort = string.Empty;
@@ -67,11 +68,9 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
         protected override void DrawInternal()
         {
-            var backBufferSize = ImGui.GetWindowViewport().Size;
-            var windowSize = ImGui.GetWindowSize();
-            ImGui.SetWindowPos(
-                new Num.Vector2(backBufferSize.X / 2.0f - windowSize.X / 2.0f, backBufferSize.Y / 2.0f - windowSize.Y / 2.0f)
-            );
+            var halfBackBufferSize = ImGui.GetWindowViewport().Size / 2.0f;
+            var halfWindowSize = ImGui.GetWindowSize() / 2.0f;
+            ImGui.SetWindowPos(new Num.Vector2(halfBackBufferSize.X - halfWindowSize.X, halfBackBufferSize.Y - halfWindowSize.Y));
 
             var profileNames = _profileService.GetAll(p => p.Name).ToArray();
             if (ImGui.Combo("Profiles", ref _selectedProfileIndex, profileNames, Math.Min(5, profileNames.Length)))
@@ -91,18 +90,22 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
             if (ImGui.InputText("Server", ref _serverName, 64))
             {
+                ServerName = _serverName;
             }
 
             if (ImGui.InputText("Port", ref _serverPort, 5))
             {
+                ServerPort = int.TryParse(_serverPort, out var port) ? port : 0;
             }
 
             if (ImGui.InputText("User Name", ref _userName, 64))
             {
+                UserName = _userName;
             }
 
             if (ImGui.InputText("Password", ref _password, 64, ImGuiInputTextFlags.Password))
             {
+                Password = _password;
             }
 
             if (ImGui.Button("Connect"))

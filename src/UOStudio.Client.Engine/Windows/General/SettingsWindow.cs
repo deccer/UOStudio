@@ -39,6 +39,8 @@ namespace UOStudio.Client.Engine.Windows.General
                         _appSettingsProvider.AppSettings.General.UltimaOnlineBasePath = uoPath;
                     }
 
+                    ImGui.Separator();
+
                     if (ImGui.Button("English"))
                     {
                         SetCulture(Constants.Language.English);

@@ -37,17 +37,16 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             _itemIdMap = new Dictionary<IntPtr, int>();
             _itemNameMap = new Dictionary<int, string>();
             _itemNameFilter = string.Empty;
-            Show();
         }
 
         protected override void DrawInternal()
         {
             ImGui.TextUnformatted("Filter");
             ImGui.SameLine();
-            ImGui.InputText("##hidelabel", ref _itemNameFilter, 20);
+            ImGui.InputText("##itemName", ref _itemNameFilter, 20);
             ImGui.TextUnformatted("Items per row");
             ImGui.SameLine();
-            ImGui.InputInt("##hidelabel", ref _itemsPerRow);
+            ImGui.InputInt("##itemsPerRow", ref _itemsPerRow);
 
             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Num.Vector2.Zero);
             var perRowCounter = 0;
@@ -55,7 +54,8 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             foreach (var itemTexture in _itemTexturesMap)
             {
                 var itemId = _itemIdMap[itemTexture.Value];
-                var itemName = _itemNameMap[itemId];
+                //var itemName = _itemNameMap[itemId];
+                var itemName = _itemNameMap.TryGetValue(itemId, out var name) ? name : "NOF";
                 if (!itemName.Contains(_itemNameFilter, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(_itemNameFilter))
                 {
                     continue;
@@ -85,19 +85,15 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             ImGui.PopStyleVar();
         }
 
-        protected override ImGuiWindowFlags GetWindowFlags()
-        {
-            var windowFlags = base.GetWindowFlags();
-            windowFlags |= ImGuiWindowFlags.HorizontalScrollbar;
-            return windowFlags;
-        }
+        protected override ImGuiWindowFlags GetWindowFlags() => base.GetWindowFlags() | ImGuiWindowFlags.HorizontalScrollbar;
 
         protected override void LoadContentInternal(
             GraphicsDevice graphicsDevice,
             ContentManager contentManager,
             ImGuiRenderer imGuiRenderer)
         {
-            var itemCount = _tileDataProvider.ItemTable.Length;
+            Clear(imGuiRenderer);
+            var itemCount = _tileDataProvider.ItemTable?.Length;
             for (var itemIndex = 0; itemIndex < itemCount; ++itemIndex)
             {
                 var itemTexture = _itemProvider.GetStatic(graphicsDevice, itemIndex);
@@ -115,6 +111,17 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 var textureHandle = imGuiRenderer.BindTexture(itemTexture);
                 _itemTexturesMap.Add(itemTexture, textureHandle);
                 _itemIdMap.Add(textureHandle, itemIndex);
+            }
+        }
+
+        private void Clear(ImGuiRenderer imGuiRenderer)
+        {
+            _itemIdMap.Clear();
+            _itemNameMap.Clear();
+            foreach (var (texture, texturePtr) in _itemTexturesMap)
+            {
+                texture.Dispose();
+                imGuiRenderer.UnbindTexture(texturePtr);
             }
         }
     }

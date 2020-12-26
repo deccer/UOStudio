@@ -26,13 +26,12 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         public MapToolbarWindow()
             : base("Controls")
         {
-            Show();
         }
 
-        public event Action Login;
-        public event Action Logout;
-        public event Action TerrainAdd;
-        public event Action TerrainRemove;
+        public event Action LoginClicked;
+        public event Action LogoutClicked;
+        public event Action TerrainAddClicked;
+        public event Action TerrainRemoveClicked;
 
         public int IconSize { get; set; } = 32;
 
@@ -83,7 +82,7 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 TextureHandle = mapControlLogin,
                 Size = IconSize
             };
-            loginToolDescription.Clicked += Login;
+            loginToolDescription.Clicked += LoginClicked;
 
             var logoutToolDescription = new ToolDescription
             {
@@ -91,7 +90,7 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 Name = "Logout", TextureHandle = mapControlLogout,
                 Size = IconSize
             };
-            logoutToolDescription.Clicked += Logout;
+            logoutToolDescription.Clicked += LogoutClicked;
 
             _toolDescriptions = new[]
             {
@@ -110,6 +109,8 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
         protected override void DrawInternal()
         {
+            ImGui.PopStyleVar(1);
+
             var currentToolGroup = ToolGroup.Control;
             foreach (var toolDescription in _toolDescriptions)
             {
@@ -126,6 +127,12 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 }
                 ImGui.SameLine();
             }
+        }
+
+        protected override ImGuiWindowFlags GetWindowFlags()
+        {
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            return base.GetWindowFlags();
         }
     }
 }

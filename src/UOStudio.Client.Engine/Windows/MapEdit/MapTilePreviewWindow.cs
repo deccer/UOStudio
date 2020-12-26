@@ -9,11 +9,8 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         private bool _stretchTexture;
 
         public MapTilePreviewWindow()
-            : base("Tile Preview")
-        {
+            : base("Tile Preview") =>
             _stretchTexture = false;
-            Show();
-        }
 
         public IntPtr SelectedTextureId { get; set; }
 

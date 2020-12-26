@@ -13,7 +13,6 @@ namespace UOStudio.Client.Engine.Windows.General
             : base("Log")
         {
             _messages = new List<(LogType, DateTime, string)>(128);
-            Show();
 
             AddLogMessage(LogType.Info, "test1");
             AddLogMessage(LogType.Debug, "test2");

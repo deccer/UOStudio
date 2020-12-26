@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ImGuiNET;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using UOStudio.Client.Engine.UI;
@@ -37,24 +36,24 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             _landIdMap = new Dictionary<IntPtr, int>();
             _landNameMap = new Dictionary<int, string>();
             _landNameFilter = string.Empty;
-            Show();
         }
 
         protected override void DrawInternal()
         {
             ImGui.TextUnformatted("Filter");
             ImGui.SameLine();
-            ImGui.InputText("##hidelabel", ref _landNameFilter, 20);
+            ImGui.InputText("##itemName", ref _landNameFilter, 20);
             ImGui.TextUnformatted("Items per row");
             ImGui.SameLine();
-            ImGui.InputInt("##hidelabel", ref _itemsPerRow);
+            ImGui.InputInt("##itemsPerRow", ref _itemsPerRow);
 
             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Num.Vector2.Zero);
             var perRowCounter = 0;
             foreach (var landTexture in _landTexturesMap)
             {
                 var landId = _landIdMap[landTexture.Value];
-                var landName = _landNameMap[landId];
+                //var landName = _landNameMap[landId];
+                var landName = _landNameMap.TryGetValue(landId, out var name) ? name : "NOF";
                 if (!landName.Contains(_landNameFilter, StringComparison.InvariantCultureIgnoreCase) &&
                     !string.IsNullOrEmpty(_landNameFilter))
                 {
@@ -90,7 +89,8 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             ContentManager contentManager,
             ImGuiRenderer imGuiRenderer)
         {
-            var landCount = _tileDataProvider.LandTable.Length;
+            Clear(imGuiRenderer);
+            var landCount = _tileDataProvider.LandTable?.Length;
             for (var landIndex = 0; landIndex < landCount; ++landIndex)
             {
                 var landTexture = _itemProvider.GetLand(graphicsDevice, landIndex);
@@ -108,6 +108,17 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 var textureHandle = imGuiRenderer.BindTexture((Texture2D)landTexture);
                 _landTexturesMap.Add((Texture2D)landTexture, textureHandle);
                 _landIdMap.Add(textureHandle, landIndex);
+            }
+        }
+
+        private void Clear(ImGuiRenderer imGuiRenderer)
+        {
+            _landIdMap.Clear();
+            _landNameMap.Clear();
+            foreach (var (texture, texturePtr) in _landTexturesMap)
+            {
+                texture.Dispose();
+                imGuiRenderer.UnbindTexture(texturePtr);
             }
         }
     }
