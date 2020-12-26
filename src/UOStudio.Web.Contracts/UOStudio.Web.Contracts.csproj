@@ -1,13 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-        <PackageReference Include="LiteNetLib" Version="0.9.3.2" />
-        <PackageReference Include="Serilog" Version="2.10.0" />
+        <ProjectReference Include="..\UOStudio.Core\UOStudio.Core.csproj"/>
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,7 +21,7 @@
         <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
     <ItemGroup>
-        <AdditionalFiles Include="..\..\stylecop.json" />
+        <AdditionalFiles Include="..\..\stylecop.json"/>
     </ItemGroup>
 
 </Project>
