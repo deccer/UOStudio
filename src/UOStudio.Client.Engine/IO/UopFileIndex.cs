@@ -118,12 +118,14 @@ namespace UOStudio.Client.Engine.IO
 
         public static ulong CreateHash(string s)
         {
-            uint ecx, edx, ebx, esi, edi;
+            uint edx;
+            uint esi;
+            uint edi;
 
-            var eax = ecx = edx = ebx = esi = edi = 0;
-            ebx = edi = esi = (uint)s.Length + 0xDEADBEEF;
+            var eax = 0ul;
+            var ebx = edi = esi = (uint)s.Length + 0xDEADBEEF;
 
-            var i = 0;
+            int i;
 
             for (i = 0; i + 12 < s.Length; i += 12)
             {
@@ -188,7 +190,7 @@ namespace UOStudio.Client.Engine.IO
                 }
 
                 esi = (esi ^ edi) - ((edi >> 18) ^ (edi << 14));
-                ecx = (esi ^ ebx) - ((esi >> 21) ^ (esi << 11));
+                var ecx = (esi ^ ebx) - ((esi >> 21) ^ (esi << 11));
                 edi = (edi ^ ecx) - ((ecx >> 7) ^ (ecx << 25));
                 esi = (esi ^ edi) - ((edi >> 16) ^ (edi << 16));
                 edx = (esi ^ ecx) - ((esi >> 28) ^ (esi << 4));
