@@ -364,5 +364,8 @@ build/
 # Generated Versioning
 src/UOStudio.Core/CompilationDate.g.cs
 
+# UOStudio.Web db
+src/UOStudio.Web/uostudio.db
+
 # Publish build output
 dist/
