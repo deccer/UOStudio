@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using UOStudio.Client.Core;
@@ -14,6 +16,7 @@ namespace UOStudio.Client
     {
         public static void Main(string[] args)
         {
+            Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", "OpenGL");
             DllMap.Initialise();
             var compositionRoot = CreateCompositionRoot();
 
@@ -36,8 +39,18 @@ namespace UOStudio.Client
             services.AddSingleton<ISaver, Saver>();
             services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
             services.AddSingleton<IFileVersionProvider, FileVersionProvider>();
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            services.AddSingleton<AddBasicAuthenticationHandler>();
+            services.AddTransient<INetworkClient, NetworkClient>();
+            services.AddHttpClient<INetworkClient, NetworkClient>(
+                    client =>
+                    {
+                        client.DefaultRequestHeaders.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                    }
+                )
+                .AddHttpMessageHandler<AddBasicAuthenticationHandler>();
             services.AddSingleton<ProfileService>();
-            services.AddSingleton<INetworkClient, NetworkClient>();
             services.AddSingleton<ClientGame>();
             return services.BuildServiceProvider();
         }
