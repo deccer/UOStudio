@@ -4,14 +4,12 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using UOStudio.Client.Core.Settings;
 
 namespace UOStudio.Client.Engine
 {
     public class TileDataProvider
     {
-        private readonly IAppSettingsProvider _appSettingsProvider;
-        private readonly bool _isUoahs;
+        private bool _isUoahs;
         public LandData[] LandTable { get; private set; }
 
         public ItemData[] ItemTable { get; private set; }
@@ -33,16 +31,10 @@ namespace UOStudio.Client.Engine
         private int[] _landHeader;
         private int[] _itemHeader;
 
-        public TileDataProvider(IAppSettingsProvider appSettingsProvider, bool isUOAHS)
+        public unsafe void Load(string projectBasePath, bool isUOAHS)
         {
-            _appSettingsProvider = appSettingsProvider;
             _isUoahs = isUOAHS;
-            Initialize();
-        }
-
-        public unsafe void Initialize()
-        {
-            var filePath = Path.Combine(_appSettingsProvider.AppSettings.General.UltimaOnlineBasePath, "tiledata.mul");
+            var filePath = Path.Combine(projectBasePath, "tiledata.mul");
 
             using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             bool useNeWTileDataFormat = _isUoahs;
