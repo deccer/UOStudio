@@ -14,17 +14,14 @@ namespace UOStudio.Core
         }
 
         [MethodImpl(256)]
-        public static void* AsPointer<T>(ref T v)
+        public static void* AsPointer<T>(ref T value)
         {
-            var t = __makeref(v);
+            var typedReference = __makeref(value);
 
-            return (void*)*((IntPtr*)&t + (IsMonoRuntime ? 1 : 0));
+            return (void*)*((IntPtr*)&typedReference + (IsMonoRuntime ? 1 : 0));
         }
 
-        public static T ToStruct<T>(IntPtr ptr)
-        {
-            return ToStruct<T>(ptr, SizeOf<T>());
-        }
+        public static T ToStruct<T>(IntPtr ptr) => ToStruct<T>(ptr, SizeOf<T>());
 
         [MethodImpl(256)]
         public static T ToStruct<T>(IntPtr ptr, int size)
@@ -70,19 +67,19 @@ namespace UOStudio.Core
 
 
         [MethodImpl(256)]
-        public static TResult Reinterpret<TInput, TResult>(TInput curValue, int sizeBytes)
+        public static TResult Reinterpret<TInput, TResult>(TInput value, int sizeBytes)
         {
             TResult result = default;
 
             var resultRef = __makeref(result);
-            var curValueRef = __makeref(curValue);
+            var valueRef = __makeref(value);
 
             var offset = IsMonoRuntime ? 1 : 0;
 
             var resultPtr = (byte*)*((IntPtr*)&resultRef + offset);
-            var curValuePtr = (byte*)*((IntPtr*)&curValueRef + offset);
+            var valuePtr = (byte*)*((IntPtr*)&valueRef + offset);
 
-            Buffer.MemoryCopy(curValuePtr, resultPtr, sizeBytes, sizeBytes);
+            Buffer.MemoryCopy(valuePtr, resultPtr, sizeBytes, sizeBytes);
 
             return result;
         }

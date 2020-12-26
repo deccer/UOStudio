@@ -1,8 +1,10 @@
-﻿namespace UOStudio.Client.Core
+﻿using System;
+
+namespace UOStudio.Client.Core
 {
     public class Project
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 

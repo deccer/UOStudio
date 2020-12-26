@@ -27,8 +27,8 @@ namespace UOStudio.Client.Core
                     Description = "Local Development",
                     ServerName = "localhost",
                     ServerPort = 9050,
-                    AccountName = "Admin",
-                    AccountPassword = "Password"
+                    AccountName = "admin",
+                    AccountPassword = "admin"
                 };
                 _logger.Debug("Profiles - Create default profile...");
                 Add(localhostProfile);
