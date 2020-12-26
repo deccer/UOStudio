@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
+      <ProjectReference Include="..\UOStudio.Shared.Network\UOStudio.Shared.Network.csproj" />
     </ItemGroup>
 
 </Project>
