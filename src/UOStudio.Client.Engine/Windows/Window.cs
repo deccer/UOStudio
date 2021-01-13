@@ -25,16 +25,6 @@ namespace UOStudio.Client.Engine.Windows
             }
         }
 
-        protected virtual void DrawEnd() => ImGui.End();
-
-        protected virtual ImGuiWindowFlags GetWindowFlags() => ImGuiWindowFlags.None;
-
-        protected abstract void DrawInternal();
-
-        protected virtual void LoadContentInternal(GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer imGuiRenderer)
-        {
-        }
-
         public void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer imGuiRenderer)
         {
             LoadContentInternal(graphicsDevice, contentManager, imGuiRenderer);
@@ -64,6 +54,16 @@ namespace UOStudio.Client.Engine.Windows
             {
                 Show();
             }
+        }
+
+        protected virtual void DrawEnd() => ImGui.End();
+
+        protected virtual ImGuiWindowFlags GetWindowFlags() => ImGuiWindowFlags.None;
+
+        protected abstract void DrawInternal();
+
+        protected virtual void LoadContentInternal(GraphicsDevice graphicsDevice, ContentManager contentManager, ImGuiRenderer imGuiRenderer)
+        {
         }
     }
 }
