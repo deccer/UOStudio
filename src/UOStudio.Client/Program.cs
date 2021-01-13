@@ -1,11 +1,11 @@
 using System;
 using System.Net.Http.Headers;
 using System.Net.Mime;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using UOStudio.Client.Core;
-using UOStudio.Client.Core.Settings;
-using UOStudio.Client.Engine;
+using UOStudio.Client.Core.Extensions;
 using UOStudio.Client.Engine.Windows;
 using UOStudio.Client.Network;
 using UOStudio.Core;
@@ -16,15 +16,15 @@ namespace UOStudio.Client
     {
         public static void Main(string[] args)
         {
-            Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", "OpenGL");
+            //Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", "OpenGL");
             DllMap.Initialise();
-            var compositionRoot = CreateCompositionRoot();
+            var serviceProvider = CreateServiceProvider();
 
-            using var clientGame = compositionRoot.GetService<ClientGame>();
+            using var clientGame = serviceProvider.GetService<ClientGame>();
             clientGame!.Run();
         }
 
-        private static IServiceProvider CreateCompositionRoot()
+        private static IServiceProvider CreateServiceProvider()
         {
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -33,15 +33,25 @@ namespace UOStudio.Client
                 .WriteTo.File("client.log")
                 .CreateLogger();
 
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false, true)
+                .Build();
+
             var services = new ServiceCollection();
-            services.AddSingleton<ILogger>(Log.Logger);
-            services.AddSingleton<ILoader, Loader>();
-            services.AddSingleton<ISaver, Saver>();
-            services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
+            services.AddSingleton(Log.Logger);
+            services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IFileVersionProvider, FileVersionProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
-            services.AddSingleton<AddBasicAuthenticationHandler>();
             services.AddTransient<INetworkClient, NetworkClient>();
+            services.AddProfileService();
+            services.AddSingleton<ClientGame>();
+            AddHttpHandling(services);
+            return services.BuildServiceProvider();
+        }
+
+        private static void AddHttpHandling(ServiceCollection services)
+        {
+            services.AddSingleton<AddBasicAuthenticationHandler>();
             services.AddHttpClient<INetworkClient, NetworkClient>(
                     client =>
                     {
@@ -50,9 +60,6 @@ namespace UOStudio.Client
                     }
                 )
                 .AddHttpMessageHandler<AddBasicAuthenticationHandler>();
-            services.AddSingleton<ProfileService>();
-            services.AddSingleton<ClientGame>();
-            return services.BuildServiceProvider();
         }
     }
 }

@@ -12,13 +12,15 @@
     <ItemGroup>
         <PackageReference Include="CSharpFunctionalExtensions" Version="2.13.2" />
         <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -76,6 +78,9 @@
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <InProject>false</InProject>
         </None>
+        <None Update="appsettings.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -86,6 +91,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="..\..\assets\client\Atlas.json">
+        <Link>Content\Atlas.json</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\..\assets\client\Atlas.png">
+        <Link>Content\Atlas.png</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
       <Content Include="..\..\assets\client\controls\control-login-16.png">
         <Link>Content\Controls\control-login-16.png</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

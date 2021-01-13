@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using UOStudio.Client.Core;
-using UOStudio.Client.Core.Settings;
 using UOStudio.Core.Extensions;
 using UOStudio.Core.Network;
 using UOStudio.Shared.Network;
@@ -22,8 +22,8 @@ namespace UOStudio.Client.Network
     public class NetworkClient : INetworkClient
     {
         private readonly ILogger _logger;
-        private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly HttpClient _httpClient;
+        private readonly string _uoStudioApiBaseUrl;
 
         private readonly NetManager _client;
         private NetPeer _peerConnection;
@@ -50,11 +50,16 @@ namespace UOStudio.Client.Network
 
         public bool IsConnected { get; private set; }
 
-        public NetworkClient(ILogger logger, IAppSettingsProvider appSettingsProvider, HttpClient httpClient)
+        public NetworkClient(
+            ILogger logger,
+            IConfiguration configuration,
+            HttpClient httpClient)
         {
             _logger = logger;
-            _appSettingsProvider = appSettingsProvider;
             _httpClient = httpClient;
+
+            _uoStudioApiBaseUrl = configuration["UOStudioApiBaseUrl"];
+            _projectsPath = configuration["ProjectsDirectory"];
 
             var listener = new EventBasedNetListener();
             _client = new NetManager(listener);
@@ -65,7 +70,6 @@ namespace UOStudio.Client.Network
             listener.NetworkErrorEvent += ListenerOnNetworkErrorEvent;
 
             _writer = new NetDataWriter();
-            _projectsPath = _appSettingsProvider.AppSettings.General.ProjectsPath;
         }
 
         public void Update()
@@ -76,14 +80,14 @@ namespace UOStudio.Client.Network
         public void Connect(Profile profile)
         {
             _profile = profile;
-            _logger.Debug($"NetworkClient - Connecting to {_profile.ServerName}:{_profile.ServerPort}...");
+            _logger.Debug($"NetworkClient - Connecting to {_profile.HostName}:{_profile.HostPort}...");
             if (IsConnected)
             {
                 _client.Stop();
             }
             _client.Start();
 
-            _peerConnection = _client.Connect(_profile.ServerName, _profile.ServerPort, "UOStudio");
+            _peerConnection = _client.Connect(_profile.HostName, _profile.HostPort, "UOStudio");
         }
 
         public void Disconnect()
@@ -166,7 +170,7 @@ namespace UOStudio.Client.Network
 
         public async Task<IReadOnlyCollection<Project>> GetProjectsAsync()
         {
-            var response = await _httpClient.GetAsync($"{_appSettingsProvider.AppSettings.General.UOStudioBaseUrl}api/project");
+            var response = await _httpClient.GetAsync($"{_uoStudioApiBaseUrl}api/project");
             return response.IsSuccessStatusCode
                 ? await response.Content.ReadAsAsync<Project[]>()
                 : null;
@@ -181,7 +185,7 @@ namespace UOStudio.Client.Network
                 ClientVersion = projectClientVersion
             };
 
-            var response = await _httpClient.PostAsJsonAsync($"{_appSettingsProvider.AppSettings.General.UOStudioBaseUrl}api/project", projectModel);
+            var response = await _httpClient.PostAsJsonAsync($"{_uoStudioApiBaseUrl}api/project", projectModel);
             if (response.IsSuccessStatusCode)
             {
                 var projectId = await response.Content.ReadAsAsync<Guid>();
@@ -194,7 +198,7 @@ namespace UOStudio.Client.Network
 
         public async Task<Result> DeleteProjectAsync(Guid projectId)
         {
-            var response = await _httpClient.DeleteAsync($"{_appSettingsProvider.AppSettings.General.UOStudioBaseUrl}api/project/{projectId:N}");
+            var response = await _httpClient.DeleteAsync($"{_uoStudioApiBaseUrl}api/project/{projectId:N}");
             return response.IsSuccessStatusCode
                 ? Result.Success()
                 : Result.Failure(await response.Content.ReadAsStringAsync());
@@ -253,8 +257,8 @@ namespace UOStudio.Client.Network
 
             _writer.Reset();
             _writer.Put((int)RequestIds.C2S.Connect);
-            _writer.Put(_profile.AccountName);
-            _writer.Put(_profile.AccountPassword);
+            _writer.Put(_profile.UserName);
+            _writer.Put(_profile.UserPassword);
             peer.Send(_writer, DeliveryMethod.ReliableOrdered);
         }
 
@@ -318,7 +322,7 @@ namespace UOStudio.Client.Network
 
             if (joinResult == JoinResult.ClientRequiresUpdate)
             {
-                var downloadUrl = $"{_appSettingsProvider.AppSettings.General.UOStudioBaseUrl}api/file/{projectId:N}";
+                var downloadUrl = $"{_uoStudioApiBaseUrl}api/file/{projectId:N}";
                 var tempFileName = Path.GetTempFileName();
                 var httpClientProgressWrapper = new HttpClientProgressWrapper(_httpClient, downloadUrl, tempFileName, projectId);
                 httpClientProgressWrapper.ProgressChanged += HttpClientProgressChanged;
