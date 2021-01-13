@@ -20,7 +20,7 @@ namespace UOStudio.Client.Engine
             _position = new Vector3(0, 0, 768);
             _direction = Vector3.Forward;
             _nearPlane = 0.1f;
-            _farPlane = 2048f;
+            _farPlane = 8192;
             UpdateProjectionMatrix(width, height);
             UpdateViewMatrix();
         }
@@ -91,6 +91,16 @@ namespace UOStudio.Client.Engine
             if (_currentKeyboardState.IsKeyDown(Keys.Z) || _currentKeyboardState.IsKeyDown(Keys.PageDown))
             {
                 _position += Vector3.Backward * speedFactor;
+            }
+
+            if (_currentKeyboardState.IsKeyDown(Keys.PageUp))
+            {
+                _position += Vector3.Up * speedFactor;
+            }
+
+            if (_currentKeyboardState.IsKeyDown(Keys.PageUp))
+            {
+                _position += Vector3.Down * speedFactor;
             }
 
             UpdateViewMatrix();
