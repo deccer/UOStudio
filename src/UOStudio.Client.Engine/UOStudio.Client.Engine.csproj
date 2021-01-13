@@ -40,12 +40,6 @@
       </None>
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Update="Resources\Shaders.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Shaders.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
       <Content Include="..\..\assets\client\shaders\IsometricEffect.fx">
         <Link>Content\Shaders\IsometricEffect.fx</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
