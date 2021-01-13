@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Linq;
 using ImGuiNET;
-using UOStudio.Client.Core;
 
 namespace UOStudio.Client.Engine.Windows.MapEdit
 {
     public class MapViewProfileWindow : Window
     {
-        private readonly ProfileService _profileService;
+        private readonly IProfileService _profileService;
 
         private int _selectedProfileIndex;
         private Profile _selectedProfile;
 
-        public MapViewProfileWindow(ProfileService profileService)
+        public MapViewProfileWindow(IProfileService profileService)
             : base("Edit Profiles") =>
             _profileService = profileService;
 
@@ -24,8 +23,17 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 
         protected override void DrawInternal()
         {
-            var profiles = _profileService.GetAll();
-            var profileNames = profiles.Select(p => p.Name).ToArray();
+            var profileNames = _profileService.GetProfileNames();
+            var profiles = profileNames
+                .Select(profileName =>
+                {
+                    var getProfileResult = _profileService.GetProfile(profileName);
+                    return getProfileResult.IsSuccess
+                        ? getProfileResult.Value
+                        : null;
+                })
+                .Where(p => p != null)
+                .ToArray();
 
             ImGui.BeginGroup();
             {
@@ -37,19 +45,14 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
                 }
 
                 var profileName = _selectedProfile?.Name ?? string.Empty;
-                var profileDescription = _selectedProfile?.Description ?? string.Empty;
-                var profileServerName = _selectedProfile?.ServerName ?? string.Empty;
-                var profileServerPort = _selectedProfile?.ServerPort ?? 0;
-                var profileAccountName = _selectedProfile?.AccountName ?? string.Empty;
-                var profileAccountPasswordHash = _selectedProfile?.AccountPassword ?? string.Empty;
+                var profileServerName = _selectedProfile?.HostName ?? string.Empty;
+                var profileServerPort = _selectedProfile?.HostPort ?? 0;
+                var profileAccountName = _selectedProfile?.UserName ?? string.Empty;
+                var profileAccountPasswordHash = _selectedProfile?.UserPassword ?? string.Empty;
 
                 ImGui.TextUnformatted("Name");
                 ImGui.SameLine(96);
                 ImGui.TextUnformatted(profileName);
-
-                ImGui.TextUnformatted("Description");
-                ImGui.SameLine(96);
-                ImGui.TextUnformatted(profileDescription);
 
                 ImGui.Separator();
                 ImGui.TextUnformatted("Server");

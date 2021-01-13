@@ -8,7 +8,7 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
 {
     public sealed class MapConnectToServerWindow : Window
     {
-        private readonly ProfileService _profileService;
+        private readonly IProfileService _profileService;
 
         public event EventHandler<ConnectEventArgs> ConnectClicked;
 
@@ -23,7 +23,7 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
         private int _selectedProfileIndex;
         private Profile _selectedProfile;
 
-        public MapConnectToServerWindow(ProfileService profileService)
+        public MapConnectToServerWindow(IProfileService profileService)
             : base("Login")
         {
             Show();
@@ -72,14 +72,18 @@ namespace UOStudio.Client.Engine.Windows.MapEdit
             var halfWindowSize = ImGui.GetWindowSize() / 2.0f;
             ImGui.SetWindowPos(new Num.Vector2(halfBackBufferSize.X - halfWindowSize.X, halfBackBufferSize.Y - halfWindowSize.Y));
 
-            var profileNames = _profileService.GetAll(p => p.Name).ToArray();
+            var profileNames = _profileService.GetProfileNames();
             if (ImGui.Combo("Profiles", ref _selectedProfileIndex, profileNames, Math.Min(5, profileNames.Length)))
             {
-                _selectedProfile = _profileService.GetByIndex(_selectedProfileIndex);
-                _serverName = _selectedProfile?.ServerName ?? string.Empty;
-                _serverPort = _selectedProfile?.ServerPort.ToString() ?? string.Empty;
-                _userName = _selectedProfile?.AccountName ?? string.Empty;
-                _password = _selectedProfile?.AccountPassword ?? string.Empty;
+                var getProfileResult = _profileService.GetProfile(profileNames[_selectedProfileIndex]);
+                if (getProfileResult.IsSuccess)
+                {
+                    _selectedProfile = getProfileResult.Value;
+                    _serverName = _selectedProfile?.HostName ?? string.Empty;
+                    _serverPort = _selectedProfile?.HostPort.ToString() ?? string.Empty;
+                    _userName = _selectedProfile?.UserName ?? string.Empty;
+                    _password = _selectedProfile?.UserPassword ?? string.Empty;
+                }
             }
 
             if (ImGui.Button("Edit Profiles"))

@@ -20,6 +20,7 @@ namespace UOStudio.Client.Engine.Windows.General
         public FrameTimeOverlayWindow(string caption)
             : base(caption)
         {
+            Show();
         }
 
         protected override ImGuiWindowFlags GetWindowFlags()
@@ -61,7 +62,7 @@ namespace UOStudio.Client.Engine.Windows.General
         {
             var io = ImGui.GetIO();
 
-            ImGui.Text($"Average \n{(int)(1000.0f / ImGui.GetIO().Framerate)} ms/frame ({(int)ImGui.GetIO().Framerate} FPS)");
+            ImGui.Text($"MSPF \n{(int)(1000.0f / io.Framerate)} FPS {(int)io.Framerate} DT {io.DeltaTime:F}");
             ImGui.Separator();
             ImGui.Text(ImGui.IsMousePosValid()
                 ? $"Mouse Position: ({io.MousePos.X},{io.MousePos.Y})"

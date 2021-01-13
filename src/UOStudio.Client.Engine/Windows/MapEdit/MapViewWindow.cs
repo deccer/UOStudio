@@ -1,33 +1,49 @@
 ﻿using System;
-using System.Numerics;
 using ImGuiNET;
-using Microsoft.Xna.Framework.Graphics;
+using Vector2 = System.Numerics.Vector2;
 
 namespace UOStudio.Client.Engine.Windows.MapEdit
 {
     public class MapViewWindow : Window
     {
         private readonly EditorState _editorState;
-        private readonly IntPtr _mapViewTextureId;
-        private readonly float _width;
-        private readonly float _height;
+        private IntPtr _mapViewTextureId;
+        private Vector2 _windowSize;
 
-        public MapViewWindow(EditorState editorState, IntPtr mapViewTextureId, float width, float height)
+        public MapViewWindow(EditorState editorState)
             : base("Map")
         {
             _editorState = editorState;
+        }
+
+        public event Action<Vector2> OnWindowResize;
+
+        public Vector2 WindowSize { get; private set; }
+
+        public void UpdateRenderTarget(IntPtr mapViewTextureId, int width, int height)
+        {
             _mapViewTextureId = mapViewTextureId;
-            _width = width;
-            _height = height;
+            _windowSize = new Vector2(width, height);
         }
 
         protected override void DrawInternal()
         {
-            var padding = ImGui.GetStyle().WindowPadding;
-            var itemSpacing = ImGui.GetStyle().ItemSpacing;
-            var itemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
+            var windowSize = ImGui.GetWindowSize();
+            if (!windowSize.Equals(_windowSize))
+            {
+                var onWindowResize = OnWindowResize;
+                onWindowResize?.Invoke(windowSize);
+                _windowSize = windowSize;
+            }
+            var style = ImGui.GetStyle();
+            var padding = style.WindowPadding;
+            var itemSpacing = style.ItemSpacing;
+            var itemInnerSpacing = style.ItemInnerSpacing;
             ImGui.SetCursorPos(-(padding + itemSpacing + itemInnerSpacing));
-            ImGui.Image(_mapViewTextureId, new Vector2(_width, _height));
+            ImGui.Image(_mapViewTextureId, WindowSize);
         }
+
+        protected override ImGuiWindowFlags GetWindowFlags()
+            => ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoCollapse;
     }
 }
