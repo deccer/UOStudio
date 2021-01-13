@@ -8,9 +8,9 @@ using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
 using Serilog;
 using UOStudio.Client.Core;
-using UOStudio.Client.Core.Settings;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Engine.Windows;
@@ -35,18 +35,38 @@ namespace UOStudio.Client
         public int TileId { get; }
     }
 
+    public struct MapTile
+    {
+        [JsonProperty("Id")]
+        public int TileId { get; set; }
+
+        public float U0 { get; set; }
+
+        public float V0 { get; set; }
+
+        public float U1 { get; set; }
+
+        public float V1 { get; set; }
+
+        public float U2 { get; set; }
+
+        public float V2 { get; set; }
+
+        public float U3 { get; set; }
+
+        public float V3 { get; set; }
+    }
+
     public class ClientGame : Game
     {
         private readonly ILogger _logger;
-        private readonly IAppSettingsProvider _appSettingsProvider;
         private readonly IFileVersionProvider _fileVersionProvider;
-        private readonly ProfileService _profileService;
+        private readonly IProfileService _profileService;
         private readonly INetworkClient _networkClient;
         private readonly GraphicsDeviceManager _graphics;
         private ImGuiRenderer _guiRenderer;
         private readonly Camera _camera;
-        private TileBatcher _batcher;
-        private Effect _batcherEffect;
+        private bool _isWindowFocused;
 
         private KeyboardState _currentKeyboardState;
         private MouseState _currentMouseState;
@@ -56,14 +76,17 @@ namespace UOStudio.Client
         private bool _showChat = true;
         private bool _showDemoWindow = false;
 
-        private Map _map;
+        private IList<MapTile> _mapTilesInfo;
+        private Texture2D _mapTilesAtlas;
+        private SamplerState _mapAtlasSamplerState;
 
         private ItemProvider _itemProvider;
         private TileDataProvider _tileDataProvider;
 
         private ProjectType _projectType;
 
-        private RenderTarget2D _mapEditRenderTarget;
+        private RenderTarget2D _mapViewRenderTarget;
+        private IntPtr _mapViewRenderTargetTextureId;
         private EditorState _editorState = EditorState.Debug;
 
         private UiStyle _uiStyle = UiStyle.Light;
@@ -91,27 +114,36 @@ namespace UOStudio.Client
         private MapCreateProjectWindow _mapCreateProjectWindow;
         private double _networkClientDownloadPercentage;
 
-        //private BasicEffect _mapEffect;
-        //private VertexBuffer _mapVertexBuffer;
+        private BasicEffect _mapEffect;
+        private VertexBuffer _mapVertexBuffer;
         private IList<VertexPositionColorTexture> _mapVertices;
         private RasterizerState _wireframeRasterizerState;
         private IDictionary<(int, int), Tile> _mapTiles;
 
+        float Fps = 0f;
+        private const int NumberSamples = 50; //Update fps timer based on this number of samples
+        int[] Samples = new int[NumberSamples];
+        int CurrentSample = 0;
+        int TicksAggregate = 0;
+        int SecondSinceStart = 0;
+
+
         public ClientGame(
             ILogger logger,
-            IAppSettingsProvider appSettingsProvider,
             IFileVersionProvider fileVersionProvider,
-            ProfileService profileService,
+            IProfileService profileService,
             INetworkClient networkClient
         )
         {
             _logger = logger;
-            _appSettingsProvider = appSettingsProvider;
             _fileVersionProvider = fileVersionProvider;
             _profileService = profileService;
             _networkClient = networkClient;
 
-            _appSettingsProvider.Load();
+            FNALoggerEXT.LogError = message => _logger.Error($"FNA: {message}");
+            FNALoggerEXT.LogInfo = message => _logger.Information($"FNA: {message}");
+            FNALoggerEXT.LogWarn = message => _logger.Warning($"FNA: {message}");
+
             _networkClient.Connected += NetworkClientConnectedHandler;
             _networkClient.Disconnected += NetworkClientDisconnectedHandler;
             _networkClient.LoginSuccessful += NetworkClientOnLoginSuccessful;
@@ -122,21 +154,34 @@ namespace UOStudio.Client
 
             Window.Title = "UOStudio";
             Window.AllowUserResizing = true;
+            Activated += (_, _) =>
+            {
+                _isWindowFocused = true;
+                IsFixedTimeStep = false;
+            };
+            Deactivated += (_, _) =>
+            {
+                _isWindowFocused = false;
+                IsFixedTimeStep = true;
+            };
 
             _graphics = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferWidth = _appSettingsProvider.AppSettings.Video.Width,
-                PreferredBackBufferHeight = _appSettingsProvider.AppSettings.Video.Height,
+                PreferredBackBufferWidth = 1280,
+                PreferredBackBufferHeight = 720,
                 PreferMultiSampling = true,
-                GraphicsProfile = GraphicsProfile.HiDef
+                GraphicsProfile = GraphicsProfile.HiDef,
+                SynchronizeWithVerticalRetrace = false
             };
             _graphics.ApplyChanges();
             _camera = new Camera(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            _camera.Mode = CameraMode.Perspective;
 
             //_editorState = EditorState.Disconnected;
             _projectType = ProjectType.Map;
 
             IsMouseVisible = true;
+            IsFixedTimeStep = false;
         }
 
         private void NetworkClientOnDownloadProgress(double percentage)
@@ -156,7 +201,7 @@ namespace UOStudio.Client
             _splashScreenWindow = new SplashScreenWindow(_fileVersionProvider);
             _aboutWindow = new AboutWindow(_fileVersionProvider);
             _frameTimeOverlayWindow = new FrameTimeOverlayWindow("Frame Times");
-            _settingsWindow = new SettingsWindow(_appSettingsProvider);
+            _settingsWindow = new SettingsWindow();
             _logWindow = new LogWindow();
             _styleEditorWindow = new StyleEditorWindow();
             _chatWindow = new ChatWindow();
@@ -166,42 +211,72 @@ namespace UOStudio.Client
             base.Initialize();
             _logger.Information("Initializing...Done");
             _logWindow.AddLogMessage(LogType.Info, "Initializing...Done");
+
+            int DesiredFrameRate = 60;
+            TargetElapsedTime = new TimeSpan(TimeSpan.TicksPerSecond / DesiredFrameRate);
+        }
+
+        private float Sum(int[] samples)
+        {
+            float RetVal = 0f;
+            for (int i = 0; i < samples.Length; i++)
+            {
+                RetVal += samples[i];
+            }
+            return RetVal;
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.SetRenderTarget(_mapEditRenderTarget);
-            GraphicsDevice.Viewport = new Viewport(_mapEditRenderTarget.Bounds);
-            GraphicsDevice.Clear(Color.Purple);
+            if (!_isWindowFocused)
+            {
+                return;
+            }
+            Samples[CurrentSample++] = (int)gameTime.ElapsedGameTime.Ticks;
+            TicksAggregate += (int)gameTime.ElapsedGameTime.Ticks;
+            if (TicksAggregate > TimeSpan.TicksPerSecond)
+            {
+                TicksAggregate -= (int)TimeSpan.TicksPerSecond;
+                SecondSinceStart += 1;
+            }
+            if (CurrentSample == NumberSamples) //We are past the end of the array since the array is 0-based and NumberSamples is 1-based
+            {
+                float AverageFrameTime = Sum(Samples) / NumberSamples;
+                Fps = TimeSpan.TicksPerSecond / AverageFrameTime;
+                CurrentSample = 0;
+            }
 
-            GraphicsDevice.SetStringMarkerEXT("Batcher Begin");
-            _batcher.Begin();
-            _map.Draw(_batcher, _dummyTexture);
-            _batcher.End();
-            GraphicsDevice.SetStringMarkerEXT("Batcher End");
+            GraphicsDevice.SetRenderTarget(_mapViewRenderTarget);
+            GraphicsDevice.Viewport = new Viewport(_mapViewRenderTarget.Bounds);
+            GraphicsDevice.Clear(Color.SlateGray);
 
-            //_mapEffect.World = Matrix.Identity * Matrix.CreateScale(new Vector3(1, -1, 1));
-            //_mapEffect.View = _camera.ViewMatrix;//Matrix.CreateLookAt(new Vector3(4, -4, 768), new Vector3(4, -4, 0), Vector3.Up);
-            //_mapEffect.Projection = Matrix.CreateOrthographic(40, 22.5f, 0.05f, 64f);
-            //_mapEffect.Projection = _camera.ProjectionMatrix;//Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, _mapEditRenderTarget.Width / (float)_mapEditRenderTarget.Height, 0.1f, 2048.0f);
+            _mapEffect.World = Matrix.Identity * Matrix.CreateScale(new Vector3(1, -1, 1));
+            _mapEffect.View = _camera.ViewMatrix;
+            _mapEffect.Projection = _camera.ProjectionMatrix;
+            _mapEffect.VertexColorEnabled = false;
+            _mapEffect.Texture = _mapTilesAtlas;
+            _mapEffect.TextureEnabled = true;
 
-            //GraphicsDevice.SetVertexBuffer(_mapVertexBuffer);
-            //GraphicsDevice.RasterizerState = _wireframeRasterizerState;
-            //foreach (var pass in _mapEffect.CurrentTechnique.Passes)
-            //{
-            //    pass.Apply();
-            //    GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, _mapVertices.Count / 3);
-            //}
+            GraphicsDevice.SamplerStates[0] = SamplerState.AnisotropicWrap;
 
+            GraphicsDevice.SetVertexBuffer(_mapVertexBuffer);
+            GraphicsDevice.RasterizerState = _wireframeRasterizerState;
+            foreach (var pass in _mapEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, _mapVertices.Count / 3);
+            }
+
+            GraphicsDevice.SetVertexBuffer(null);
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Viewport = new Viewport(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             GraphicsDevice.Clear(_clearColor);
 
-            GraphicsDevice.SetVertexBuffer(null);
-
             _guiRenderer.BeginLayout(gameTime);
             DrawUi();
             _guiRenderer.EndLayout();
+
+            Window.Title = $"FPS: {Fps}";
             base.Draw(gameTime);
         }
 
@@ -209,10 +284,40 @@ namespace UOStudio.Client
 
         protected override void LoadContent()
         {
+            var map = new Engine.Ultima.Map(@"D:\Private\Code\Projects\UOStudio\src\UOStudio.Client\bin\Debug\Projects\Temp", "Felucca");
+            var tm = map.Tiles;
+            var w = 64;
+            var h = 64;
+            var startx = 220;
+            var starty = 325;
+            _mapTiles = new Dictionary<(int, int), Tile>(131072);
+
+            for (var bx = startx; bx < startx + w; bx++)
+            {
+                for (var by = starty; by < starty + h; by++)
+                {
+                    var lb = tm.GetLandBlock(bx, by);
+
+                    var bbx = bx - startx;
+                    var bby = by - starty;
+
+                    for (var cx = 0; cx < 8; cx++)
+                    {
+                        for (var cy = 0; cy < 8; cy++)
+                        {
+                            var lt = lb[cy * 8 + cx];
+                            var x = bbx * 8 + cx;
+                            var y = bby * 8 + cy;
+                            _mapTiles.Add((x, y), new Tile(lt.ID, lt.Z));
+                        }
+                    }
+                }
+            }
+
             _logger.Information("Content - Loading...");
             base.LoadContent();
 
-            _mapEditRenderTarget = new RenderTarget2D(
+            _mapViewRenderTarget = new RenderTarget2D(
                 GraphicsDevice,
                 _graphics.PreferredBackBufferWidth,
                 _graphics.PreferredBackBufferHeight,
@@ -221,51 +326,22 @@ namespace UOStudio.Client
                 DepthFormat.Depth24Stencil8
             );
 
-            var heightMap = new sbyte []
+            _mapTilesAtlas = Content.Load<Texture2D>("Content/Atlas.png");
+            _mapTilesInfo = new List<MapTile>(16384);
+            var json = File.ReadAllText($"Content/Atlas.json");
+            _mapTilesInfo = JsonConvert.DeserializeObject<IList<MapTile>>(json);
+
+            _mapVertexBuffer?.Dispose();
+            _mapVertexBuffer = BuildVertexBuffer(w * 8, h * 8, _mapTilesInfo);
+            _mapEffect = new BasicEffect(GraphicsDevice);
+            _mapAtlasSamplerState = SamplerState.PointClamp;
+
+            _wireframeRasterizerState = new RasterizerState
             {
-                30, 29, 27, 28, 18, 0, 0, 0,
-                29, 25, 22, 19, 21, 0, 0, 0,
-                27, 24, 0, 0, 0, 0, 0, 0,
-                22, 21, 0, 0, 0, 0, 0, 0,
-                20, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0,
+                CullMode = CullMode.CullCounterClockwiseFace,
+                FillMode = FillMode.WireFrame,
+                MultiSampleAntiAlias = true
             };
-            _mapTiles = new Dictionary<(int, int), Tile>(64);
-            for (var y = 0; y < 8; y++)
-            {
-                for (var x = 0; x < 8; x++)
-                {
-                    var z = heightMap[y * 8 + x];
-                    _mapTiles.Add((x, y), new Tile(0, z));
-                }
-            }
-
-            var textureData = new Color[44 * 44];
-            _dummyTexture = new Texture2D(GraphicsDevice, 44, 44);
-
-            for (var y = 0; y < 44; y++)
-            {
-                for (var x = 0; x < 44; x++)
-                {
-                    textureData[y * 44 + x] = Color.Red;
-                }
-            }
-            _dummyTexture.SetData(textureData);
-
-            _map = new Map(heightMap, 8, 8);
-            _batcherEffect = Content.Load<Effect>("Content/Shaders/IsometricEffect.fxc");
-            _batcher = new TileBatcher(GraphicsDevice, _batcherEffect);
-
-            //_mapVertexBuffer?.Dispose();
-            //_mapVertexBuffer = BuildVertexBuffer();
-            //_mapEffect = new BasicEffect(GraphicsDevice);
-            //_mapEffect.VertexColorEnabled = true;
-            _wireframeRasterizerState = new RasterizerState();
-            _wireframeRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
-            _wireframeRasterizerState.FillMode = FillMode.WireFrame;
-            _wireframeRasterizerState.MultiSampleAntiAlias = true;
 
             _itemProvider = new ItemProvider(_logger);
             _tileDataProvider = new TileDataProvider();
@@ -282,9 +358,12 @@ namespace UOStudio.Client
             _mapToolbarWindow.LoginClicked += MapToolbarLoginClicked;
             _mapToolbarWindow.LogoutClicked += MapToolbarLogoutClicked;
             _mapToolbarWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
-            var renderTargetId = _guiRenderer.BindTexture(_mapEditRenderTarget);
-            _mapViewWindow = new MapViewWindow(_editorState, renderTargetId, _mapEditRenderTarget.Width, _mapEditRenderTarget.Height);
+
+            _mapViewRenderTargetTextureId = _guiRenderer.BindTexture(_mapViewRenderTarget);
+            _mapViewWindow = new MapViewWindow(_editorState);
+            _mapViewWindow.OnWindowResize += MapViewWindowOnOnWindowResize;
             _mapViewWindow.Show();
+            _mapViewWindow.UpdateRenderTarget(_mapViewRenderTargetTextureId, _mapViewRenderTarget.Width, _mapViewRenderTarget.Height);
 
             _mapTileDetailWindow = new MapTileDetailWindow();
             _mapTileDetailWindow.LoadContent(GraphicsDevice, Content, _guiRenderer);
@@ -325,67 +404,60 @@ namespace UOStudio.Client
             _logger.Information("Content - Loading...Done");
         }
 
+        private void MapViewWindowOnOnWindowResize(Vector2 viewSize)
+        {
+            _guiRenderer.UnbindTexture(_mapViewRenderTargetTextureId);
+            _mapViewRenderTarget?.Dispose();
+            _mapViewRenderTarget = new RenderTarget2D(GraphicsDevice, (int)viewSize.X, (int)viewSize.Y, false,
+                SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            _mapViewRenderTargetTextureId = _guiRenderer.BindTexture(_mapViewRenderTarget);
+            _mapViewWindow.UpdateRenderTarget(_mapViewRenderTargetTextureId, _mapViewRenderTarget.Width, _mapViewRenderTarget.Height);
+        }
+
         private float GetTileZ(int x, int y, float defaultZ) => _mapTiles.TryGetValue((x, y), out var tile)
             ? tile.Z
             : defaultZ;
 
-        private VertexBuffer BuildVertexBuffer()
+        private VertexBuffer BuildVertexBuffer(int width, int height, IList<MapTile> mapTilesInfo)
         {
             const int TileSize = 44;
             const int TileSizeHalf = TileSize / 2;
-            /*
-for (int y = 1; y < gridY+1; y++) {
-    for (int x = 1; x < gridX+1; x++) {
-        drawSquare((x-y) * 38 + (SCREEN_SIZE_X/2), (x+y) * 19);
-    }
-}
 
-glTexCoord2f(0,1); glVertex2i(x+38, y);
-glTexCoord2f(1,1); glVertex2i(x,    y+19);
-glTexCoord2f(1,0); glVertex2i(x-38, y);
-glTexCoord2f(0,0); glVertex2i(x,    y-19);
-             */
-
-            void DrawSquare(int x, int y, float tileZ, float tileZEast, float tileZWest, float tileZSouth)
+            void DrawSquare(int graphicId, int x, int y, float tileZ, float tileZEast, float tileZWest, float tileZSouth)
             {
-                var p0 = new Vector3(x + TileSizeHalf, y - tileZWest * 4, 0);
-                var p1 = new Vector3(x + TileSize, y + TileSizeHalf - tileZSouth * 4, 0);
-                var p2 = new Vector3(x, y + TileSizeHalf - tileZ, 0);
-                var p3 = new Vector3(x + TileSizeHalf, y + TileSize - tileZEast * 4, 0);
+                var p0 = new Vector3(x + TileSizeHalf, y - tileZ * 4, 0);
+                var p1 = new Vector3(x + TileSize, y + TileSizeHalf - tileZEast * 4, 0);
+                var p2 = new Vector3(x, y + TileSizeHalf - tileZWest * 4, 0);
+                var p3 = new Vector3(x + TileSizeHalf, y + TileSize - tileZSouth * 4, 0);
+
+                var mapTile = mapTilesInfo[graphicId];
+                var uv0 = new Microsoft.Xna.Framework.Vector2(mapTile.U0, mapTile.V0);
+                var uv1 = new Microsoft.Xna.Framework.Vector2(mapTile.U1, mapTile.V1);
+                var uv2 = new Microsoft.Xna.Framework.Vector2(mapTile.U2, mapTile.V2);
+                var uv3 = new Microsoft.Xna.Framework.Vector2(mapTile.U3, mapTile.V3);
 
                 var n1 = Vector3.Cross(p2 - p0, p1 - p0);
+                _mapVertices.Add(new VertexPositionColorTexture(p0, Color.White, uv0));
+                _mapVertices.Add(new VertexPositionColorTexture(p1, Color.White, uv1));
+                _mapVertices.Add(new VertexPositionColorTexture(p2, Color.White, uv2));
 
-                _mapVertices.Add(new VertexPositionColorTexture(p0, Color.White, Microsoft.Xna.Framework.Vector2.Zero));
-                _mapVertices.Add(new VertexPositionColorTexture(p1, Color.White, Microsoft.Xna.Framework.Vector2.Zero));
-                _mapVertices.Add(new VertexPositionColorTexture(p2, Color.White, Microsoft.Xna.Framework.Vector2.Zero));
-                //_mapVertices.Add(new VertexPositionColorTexture(p3, Color.Black, Microsoft.Xna.Framework.Vector2.Zero));
                 var n2 = Vector3.Cross(p2 - p3, p1 - p3);
-
-                //_mapVertices.Add(new VertexPositionColorTexture(p1, Color.Black, Microsoft.Xna.Framework.Vector2.Zero));
-                //_mapVertices.Add(new VertexPositionColorTexture(p3, Color.Black, Microsoft.Xna.Framework.Vector2.Zero));
-                //_mapVertices.Add(new VertexPositionColorTexture(p2, Color.Black, Microsoft.Xna.Framework.Vector2.Zero));
-
-                /*
-                _mapVertices.Add(new VertexPositionColorTexture(new Vector3(x, y, tileZ * 4), Color.White, Microsoft.Xna.Framework.Vector2.Zero));
-                _mapVertices.Add(new VertexPositionColorTexture(new Vector3(x - 22, y + 11 - (tileZWest * 4), 0), Color.White, Microsoft.Xna.Framework.Vector2.Zero));
-                _mapVertices.Add(new VertexPositionColorTexture(new Vector3(x + 22, y + 11 - (tileZEast * 4), 0), Color.White, Microsoft.Xna.Framework.Vector2.Zero));
-
-                _mapVertices.Add(new VertexPositionColorTexture(new Vector3(x - 22, y + 11 - (tileZWest * 4), 0), Color.DarkGray, Microsoft.Xna.Framework.Vector2.Zero));
-                _mapVertices.Add(new VertexPositionColorTexture(new Vector3(x, y + 22 - (tileZSouth * 4), 0), Color.DarkGray, Microsoft.Xna.Framework.Vector2.Zero));
-                _mapVertices.Add(new VertexPositionColorTexture(new Vector3(x + 22, y + 11 - (tileZEast * 4), 0), Color.DarkGray, Microsoft.Xna.Framework.Vector2.Zero));
-                */
+                _mapVertices.Add(new VertexPositionColorTexture(p1, Color.Black, uv1));
+                _mapVertices.Add(new VertexPositionColorTexture(p3, Color.Black, uv3));
+                _mapVertices.Add(new VertexPositionColorTexture(p2, Color.Black, uv2));
             }
 
-            for (var x = 0; x < 8; ++x)
+            for (var x = 0; x < width; ++x)
             {
-                for (var y = 0; y < 8; ++y)
+                for (var y = 0; y < height; ++y)
                 {
                     var tileZ = GetTileZ(x, y, -15);
                     var tileZEast = GetTileZ(x + 1, y, tileZ);
                     var tileZWest = GetTileZ(x, y + 1, tileZ);
                     var tileZSouth = GetTileZ(x + 1, y + 1, tileZ);
+                    var graphicId = _mapTiles[(x, y)].TileId;
 
-                    DrawSquare((x - y) * TileSizeHalf, (x + y) * TileSizeHalf - 200, tileZ, tileZEast, tileZWest, tileZSouth);
+                    DrawSquare(graphicId, (x - y) * TileSizeHalf, (x + y) * TileSizeHalf - 200, tileZ, tileZEast, tileZWest, tileZSouth);
                 }
             }
 
@@ -397,25 +469,6 @@ glTexCoord2f(0,0); glVertex2i(x,    y-19);
             );
             vertexBuffer.SetData(_mapVertices.ToArray());
             return vertexBuffer;
-            /*
-      GetLandAlt(item.X, item.Y + 1, z, rawZ, west, rawWest);
-      GetLandAlt(item.X + 1, item.Y + 1, z, rawZ, south, rawSouth);
-      GetLandAlt(item.X + 1, item.Y, z, rawZ, east, rawEast);
-
-      if  (west <> z) or (south <> z) or (east <> z) then
-        ABlockInfo^.HighRes := FTextureManager.GetTexMaterial(item.TileID);
-
-      if (rawWest <> rawZ) or (rawSouth <> rawZ) or (rawEast <> rawZ) then
-      begin
-        ABlockInfo^.RealQuad[0][0] := drawX;
-        ABlockInfo^.RealQuad[0][1] := drawY - rawZ * 4;
-        ABlockInfo^.RealQuad[1][0] := drawX + 22;
-        ABlockInfo^.RealQuad[1][1] := drawY + 22 - rawEast * 4;
-        ABlockInfo^.RealQuad[2][0] := drawX;
-        ABlockInfo^.RealQuad[2][1] := drawY + 44 - rawSouth * 4;
-        ABlockInfo^.RealQuad[3][0] := drawX - 22;
-        ABlockInfo^.RealQuad[3][1] := drawY + 22 - rawWest * 4;
-             */
         }
 
         private void MapViewProfileWindowOnUpdateProfileClicked(Profile profile)
@@ -430,7 +483,7 @@ glTexCoord2f(0,0); glVertex2i(x,    y-19);
             // TODO(deccer): add confirmation dialog
             if (profile != null)
             {
-                _profileService.Remove(profile);
+                _profileService.RemoveProfile(profile);
             }
         }
 
@@ -492,7 +545,7 @@ glTexCoord2f(0,0); glVertex2i(x,    y-19);
         {
             var profile = _mapConnectToServerWindow.SelectedProfile;
 
-            var encoded = Encoding.ASCII.GetBytes($"{profile.AccountName}:{profile.AccountPassword}");
+            var encoded = Encoding.ASCII.GetBytes($"{profile.UserName}:{profile.UserPassword}");
             File.WriteAllText(Path.Combine(Path.GetTempPath(), "uostudio.uostudio"), Convert.ToBase64String(encoded));
 
             _networkClient.Connect(profile);
@@ -533,15 +586,20 @@ glTexCoord2f(0,0); glVertex2i(x,    y-19);
 
         protected override void Update(GameTime gameTime)
         {
+            if (!_isWindowFocused)
+            {
+                return;
+            }
             _networkClient.Update();
             var previousKeyboardState = _currentKeyboardState;
             var previousMouseState = _currentMouseState;
             _currentKeyboardState = Keyboard.GetState();
             _currentMouseState = Mouse.GetState();
 
-            _camera.Update(_mapEditRenderTarget.Width, _mapEditRenderTarget.Height);
+            _camera.Update(_mapViewRenderTarget.Width, _mapViewRenderTarget.Height);
 
             _guiRenderer.UpdateInput();
+
             base.Update(gameTime);
         }
 
