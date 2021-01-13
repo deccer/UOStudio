@@ -120,13 +120,11 @@ namespace UOStudio.Client
         private RasterizerState _wireframeRasterizerState;
         private IDictionary<(int, int), Tile> _mapTiles;
 
-        float Fps = 0f;
-        private const int NumberSamples = 50; //Update fps timer based on this number of samples
-        int[] Samples = new int[NumberSamples];
-        int CurrentSample = 0;
-        int TicksAggregate = 0;
-        int SecondSinceStart = 0;
-
+        private const int NumberSamples = 50;
+        private float _fps;
+        private readonly int[] _samples = new int[NumberSamples];
+        private int _currentSample;
+        private int ticksAggregate;
 
         public ClientGame(
             ILogger logger,
@@ -177,7 +175,6 @@ namespace UOStudio.Client
             _camera = new Camera(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             _camera.Mode = CameraMode.Perspective;
 
-            //_editorState = EditorState.Disconnected;
             _projectType = ProjectType.Map;
 
             IsMouseVisible = true;
@@ -232,18 +229,17 @@ namespace UOStudio.Client
             {
                 return;
             }
-            Samples[CurrentSample++] = (int)gameTime.ElapsedGameTime.Ticks;
-            TicksAggregate += (int)gameTime.ElapsedGameTime.Ticks;
-            if (TicksAggregate > TimeSpan.TicksPerSecond)
+            _samples[_currentSample++] = (int)gameTime.ElapsedGameTime.Ticks;
+            ticksAggregate += (int)gameTime.ElapsedGameTime.Ticks;
+            if (ticksAggregate > TimeSpan.TicksPerSecond)
             {
-                TicksAggregate -= (int)TimeSpan.TicksPerSecond;
-                SecondSinceStart += 1;
+                ticksAggregate -= (int)TimeSpan.TicksPerSecond;
             }
-            if (CurrentSample == NumberSamples) //We are past the end of the array since the array is 0-based and NumberSamples is 1-based
+            if (_currentSample == NumberSamples)
             {
-                float AverageFrameTime = Sum(Samples) / NumberSamples;
-                Fps = TimeSpan.TicksPerSecond / AverageFrameTime;
-                CurrentSample = 0;
+                float AverageFrameTime = Sum(_samples) / NumberSamples;
+                _fps = TimeSpan.TicksPerSecond / AverageFrameTime;
+                _currentSample = 0;
             }
 
             GraphicsDevice.SetRenderTarget(_mapViewRenderTarget);
@@ -276,11 +272,9 @@ namespace UOStudio.Client
             DrawUi();
             _guiRenderer.EndLayout();
 
-            Window.Title = $"FPS: {Fps}";
+            Window.Title = $"FPS: {_fps}";
             base.Draw(gameTime);
         }
-
-        private Texture2D _dummyTexture;
 
         protected override void LoadContent()
         {

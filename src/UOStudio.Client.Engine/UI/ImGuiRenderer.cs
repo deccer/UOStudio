@@ -55,7 +55,6 @@ namespace UOStudio.Client.Engine.UI
             var io = ImGui.GetIO();
             io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
             SetupInput(io);
-            //SetRedStyle(ImGui.GetStyle());
         }
 
         public unsafe void RebuildFontAtlas()

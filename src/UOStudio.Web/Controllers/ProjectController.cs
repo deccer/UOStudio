@@ -32,7 +32,7 @@ namespace UOStudio.Web.Controllers
             var result = await _projectService.GetProjectAsync(projectId, userId);
             if (result.IsFailure)
             {
-                //TODO: handle
+                // TODO: handle
             }
 
             return Ok(result.Value);

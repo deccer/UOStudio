@@ -16,7 +16,6 @@ namespace UOStudio.Client
     {
         public static void Main(string[] args)
         {
-            //Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", "OpenGL");
             DllMap.Initialise();
             var serviceProvider = CreateServiceProvider();
 
