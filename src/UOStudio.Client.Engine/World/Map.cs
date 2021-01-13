@@ -24,37 +24,4 @@ namespace UOStudio.Client.Engine.World
             return null;
         }
     }
-
-    public class MapChunk
-    {
-        public bool IsDirty { get; internal set; }
-    }
-
-    public readonly struct MapTile
-    {
-        public MapTile(short tileId, sbyte z)
-        {
-            TileId = tileId;
-            Z = z;
-        }
-
-        public readonly short TileId;
-
-        public readonly sbyte Z;
-    }
-
-    public class MapRenderer
-    {
-        private readonly Map _map;
-
-        public MapRenderer(Map map)
-        {
-            _map = map;
-        }
-
-        public void Draw(Camera camera)
-        {
-
-        }
-    }
 }
