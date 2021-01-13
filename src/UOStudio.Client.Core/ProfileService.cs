@@ -1,56 +1,109 @@
-﻿using System.IO;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CSharpFunctionalExtensions;
 using Serilog;
-using UOStudio.Core;
 
-namespace UOStudio.Client.Core
+namespace UOStudio
 {
-    public sealed class ProfileService : Repository<Profile>
+    internal sealed class ProfileService : IProfileService
     {
         private readonly ILogger _logger;
-        private const string ProfilesFileName = "profiles.json";
+        private readonly IProfileSaver _profileSaver;
+        private readonly IProfileLoader _profileLoader;
 
-        public ProfileService(ILogger logger)
+        private IList<Profile> _profiles;
+
+        public ProfileService(
+            ILogger logger,
+            IProfileSaver profileSaver,
+            IProfileLoader profileLoader)
         {
             _logger = logger.ForContext<ProfileService>();
-            if (File.Exists(ProfilesFileName))
-            {
-                _logger.Debug("Profiles - Loading...");
-                Load(ProfilesFileName);
-                _logger.Debug("Profiles - Loading...Done.");
-            }
-            else
-            {
-                var localhostProfile = new Profile
-                {
-                    Name = "localhost",
-                    Description = "Local Development",
-                    ServerName = "localhost",
-                    ServerPort = 9050,
-                    AccountName = "admin",
-                    AccountPassword = "admin"
-                };
-                _logger.Debug("Profiles - Create default profile...");
-                Add(localhostProfile);
-                Save(ProfilesFileName);
-                _logger.Debug("Profiles - Create default profile...Done.");
-            }
+            _profileSaver = profileSaver;
+            _profileLoader = profileLoader;
+            LoadProfiles();
         }
 
-        public void Load(string fileName)
+        public Result AddProfile(Profile profile)
         {
-            var json = File.ReadAllText(fileName);
-            var items = JsonConvert.DeserializeObject<Profile[]>(json);
-            foreach (var item in items)
+            if (_profiles.Any(p => p.Name == profile.Name))
             {
-                Add(item);
+                return Result.Failure($"Profile with name '{profile.Name}' already exists.");
             }
+
+            _profiles.Add(profile);
+            _logger.Debug($"Added new profile '{profile.Name}'");
+            return Result.Success();
         }
 
-        public void Save(string fileName)
+        public Result<Profile> GetProfile(string profileName)
         {
-            var json = JsonConvert.SerializeObject(_items, Formatting.Indented);
-            File.WriteAllText(fileName, json);
+            var profile = _profiles.FirstOrDefault(p => p.Name == profileName);
+            return profile == null
+                ? Result.Failure<Profile>($"Profile '{profileName}' not found")
+                : Result.Success(profile);
+        }
+
+        public string[] GetProfileNames()
+        {
+            return _profiles
+                .Select(profile => profile.Name)
+                .ToArray();
+        }
+
+        public Result RemoveProfile(Profile profile)
+        {
+            var profileToRemove = _profiles.FirstOrDefault(p => p.Name == profile.Name);
+            if (profileToRemove == null)
+            {
+                return Result.Failure($"Profile '{profile.Name}' not found");
+            }
+
+            _profiles.Remove(profileToRemove);
+            _profileSaver.SaveProfiles(_profiles.ToArray());
+            return Result.Success();
+        }
+
+        public Result Update(Profile selectedProfile)
+        {
+            var profileToUpdate = _profiles.FirstOrDefault(p => p.Name == selectedProfile.Name);
+            if (profileToUpdate == null)
+            {
+                return Result.Failure($"Profile '{selectedProfile.Name}' not found");
+            }
+
+            profileToUpdate.HostName = selectedProfile.HostName;
+            profileToUpdate.HostPort = selectedProfile.HostPort;
+            profileToUpdate.UserName = selectedProfile.UserName;
+            profileToUpdate.UserPassword = selectedProfile.UserPassword;
+
+            _profileSaver.SaveProfiles(_profiles.ToArray());
+            return Result.Success();
+        }
+
+        private void LoadProfiles()
+        {
+            var profilesResult = _profileLoader.LoadProfiles();
+            if (profilesResult.IsSuccess)
+            {
+                _profiles = profilesResult.Value;
+                return;
+            }
+
+            _logger.Debug($"Profiles.json not found. Creating default profiles.");
+            var defaultProfile = new Profile
+            {
+                Name = "Local",
+                HostName = "localhost",
+                HostPort = 9050,
+                UserName = "admin",
+                UserPassword = "admin"
+            };
+            _profiles = new List<Profile>
+            {
+                defaultProfile
+            };
+            _profileSaver.SaveProfiles(_profiles.ToList());
         }
     }
 }

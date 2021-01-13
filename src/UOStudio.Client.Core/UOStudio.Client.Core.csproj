@@ -12,7 +12,11 @@
       <PackageReference Include="CSharpFunctionalExtensions" Version="2.12.2" />
       <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
       <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
       <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
+      <PackageReference Include="System.Text.Json" Version="5.0.1" />
     </ItemGroup>
 
 </Project>

@@ -1,32 +1,15 @@
-﻿using UOStudio.Core;
-
-namespace UOStudio.Client.Core
+﻿namespace UOStudio
 {
-    public class Profile : Entity
+    public class Profile
     {
         public string Name { get; set; }
 
-        public string Description { get; set; }
+        public string HostName { get; set; }
 
-        public string ServerName { get; set; }
+        public int HostPort { get; set; }
 
-        public int ServerPort { get; set; }
+        public string UserName { get; set; }
 
-        public string AccountName { get; set; }
-
-        public string AccountPassword { get; set; }
-
-        public override void CopyFrom(Entity entity)
-        {
-            if (entity is Profile otherProfile)
-            {
-                Name = otherProfile.Name;
-                Description = otherProfile.Description;
-                ServerName = otherProfile.ServerName;
-                ServerPort = otherProfile.ServerPort;
-                AccountName = otherProfile.AccountName;
-                AccountPassword = otherProfile.AccountPassword;
-            }
-        }
+        public string UserPassword { get; set; }
     }
 }
