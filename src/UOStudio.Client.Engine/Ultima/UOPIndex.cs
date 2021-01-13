@@ -51,19 +51,20 @@ namespace UOStudio.Client.Engine.Ultima
 
                     stream.Seek(18, SeekOrigin.Current);
                 }
-            } while (nextTable != 0 && nextTable < m_Length);
+            }
+            while (nextTable != 0 && nextTable < m_Length);
 
             entries.Sort(OffsetComparer.Instance);
 
             for (var i = 0; i < entries.Count; ++i)
             {
-                stream.Seek(entries[i].m_Offset + 2, SeekOrigin.Begin);
+                stream.Seek(entries[i].Offset + 2, SeekOrigin.Begin);
 
                 int dataOffset = m_Reader.ReadInt16();
-                entries[i].m_Offset += 4 + dataOffset;
+                entries[i].Offset += 4 + dataOffset;
 
                 stream.Seek(dataOffset, SeekOrigin.Current);
-                entries[i].m_Order = m_Reader.ReadInt32();
+                entries[i].Order = m_Reader.ReadInt32();
             }
 
             entries.Sort();
@@ -78,11 +79,11 @@ namespace UOStudio.Client.Engine.Ultima
 
             for (var i = 0; i < m_Entries.Length; ++i)
             {
-                var newTotal = total + m_Entries[i].m_Length;
+                var newTotal = total + m_Entries[i].Length;
 
                 if (offset < newTotal)
                 {
-                    return m_Entries[i].m_Offset + (offset - total);
+                    return m_Entries[i].Offset + (offset - total);
                 }
 
                 total = newTotal;
@@ -98,18 +99,18 @@ namespace UOStudio.Client.Engine.Ultima
 
         private class UOPEntry : IComparable<UOPEntry>
         {
-            public readonly int m_Length;
-            public int m_Offset;
-            public int m_Order;
+            public readonly int Length;
+            public int Offset;
+            public int Order;
 
             public UOPEntry(int offset, int length)
             {
-                m_Offset = offset;
-                m_Length = length;
-                m_Order = 0;
+                Offset = offset;
+                Length = length;
+                Order = 0;
             }
 
-            public int CompareTo(UOPEntry other) => m_Order.CompareTo(other.m_Order);
+            public int CompareTo(UOPEntry other) => Order.CompareTo(other.Order);
         }
 
         private class OffsetComparer : IComparer<UOPEntry>
@@ -118,7 +119,7 @@ namespace UOStudio.Client.Engine.Ultima
 
             public int Compare(UOPEntry x, UOPEntry y) =>
                 x == null ? y == null ? 0 : 1 :
-                y == null ? -1 : x.m_Offset.CompareTo(y.m_Offset);
+                y == null ? -1 : x.Offset.CompareTo(y.Offset);
         }
     }
 }

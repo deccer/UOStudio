@@ -12,7 +12,7 @@ namespace UOStudio.Web.Controllers
             var nameId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             if (nameId == null)
             {
-                //TODO: handle
+                // TODO: handle
             }
 
             var userId = Guid.Parse(nameId!.Value);

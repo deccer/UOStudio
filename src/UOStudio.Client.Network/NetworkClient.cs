@@ -24,15 +24,14 @@ namespace UOStudio.Client.Network
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
         private readonly string _uoStudioApiBaseUrl;
-
+        private readonly string _projectsPath;
         private readonly NetManager _client;
-        private NetPeer _peerConnection;
         private readonly NetDataWriter _writer;
 
+        private NetPeer _peerConnection;
         private Profile _profile;
         private Guid _currentUserId;
         private Project _currentProject;
-        private readonly string _projectsPath;
 
         public event Action<EndPoint, int> Connected;
 
@@ -104,6 +103,12 @@ namespace UOStudio.Client.Network
 
         public void JoinProject(Guid projectId)
         {
+            if (!IsConnected)
+            {
+                _logger.Debug($"Join Project: Not Connected");
+                return;
+            }
+
             var projectClientHash = new byte[16];
             for (var i = 0; i < projectClientHash.Length; ++i)
             {
@@ -119,11 +124,6 @@ namespace UOStudio.Client.Network
                     .ComputeHashAsync(projectPathInfo.EnumerateFiles("*.mul", SearchOption.TopDirectoryOnly), false)
                     .GetAwaiter()
                     .GetResult();
-            }
-
-            if (!IsConnected)
-            {
-                return;
             }
 
             _logger.Debug($"Join Project: {projectId:N}");
