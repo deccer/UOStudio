@@ -2,8 +2,6 @@
 
 on:
   push:
-    branches:
-      - "**"
     tags:
       - "!*" # not a tag push
   pull_request:
@@ -25,10 +23,9 @@ jobs:
         runs-on:
           [
               macos-10.15,
-              ubuntu-16.04,
+              macos-latest,
               ubuntu-18.04,
               ubuntu-latest,
-              windows-2016,
               windows-2019,
           ]
     name: ${{ matrix.runs-on }}
@@ -40,7 +37,7 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: Install zlib
-        if: ${{ matrix.runs-on == 'ubuntu-16.04' || matrix.runs-on == 'ubuntu-18.04' }}
+        if: ${{ matrix.runs-on == 'ubuntu-18.04' }}
         run: sudo apt-get install zlib1g-dev
 
       - uses: actions/setup-dotnet@v1
