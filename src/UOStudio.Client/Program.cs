@@ -1,26 +1,44 @@
 using System;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Mime;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using UOStudio.Client.Core;
-using UOStudio.Client.Core.Extensions;
-using UOStudio.Client.Engine.Windows;
-using UOStudio.Client.Network;
-using UOStudio.Core;
+using UOStudio.Client.Screens;
+using UOStudio.Client.Services;
+using UOStudio.Client.UI.Extensions;
+using UOStudio.Common.Core;
 
 namespace UOStudio.Client
 {
     internal static class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
             DllMap.Initialise();
             var serviceProvider = CreateServiceProvider();
 
-            using var clientGame = serviceProvider.GetService<ClientGame>();
-            clientGame!.Run();
+            var graphicsSettings = serviceProvider.GetRequiredService<GraphicsSettings>();
+            Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", graphicsSettings.Backend.ToString());
+
+            var networkClient = serviceProvider.GetService<INetworkClient>();
+            networkClient!.LoginSucceeded += (userId, projects) =>
+            {
+                Console.WriteLine(userId);
+                Console.WriteLine(string.Join(", ", projects.Select(p => p.Name)));
+            };
+            networkClient!.LoginFailed += errorMessage =>
+            {
+                Console.WriteLine(errorMessage);
+            };
+            networkClient!.Connect(new Profile { UserName = "admin", Password = "admin" });
+
+/*
+            using var mainGame = serviceProvider.GetService<MainGame>();
+            mainGame!.Run();
+            */
         }
 
         private static IServiceProvider CreateServiceProvider()
@@ -36,29 +54,30 @@ namespace UOStudio.Client
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
+            var graphicsSettings = new GraphicsSettings();
+            configuration.GetSection(GraphicsSettings.Key).Bind(graphicsSettings);
+
             var services = new ServiceCollection();
             services.AddSingleton(Log.Logger);
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton<IFileVersionProvider, FileVersionProvider>();
+            services.AddSingleton(graphicsSettings);
+            services.AddSingleton<IScreenHandler, ScreenHandler>();
+            services.AddSingleton<INetworkClient, NetworkClient>();
+            services.AddSingleton<IProfileService, ProfileService>();
+            services.AddSingleton<IProjectService, ProjectService>();
+            services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<IMemoryCache, MemoryCache>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
-            services.AddTransient<INetworkClient, NetworkClient>();
-            services.AddProfileService();
-            services.AddSingleton<ClientGame>();
-            AddHttpHandling(services);
-            return services.BuildServiceProvider();
-        }
+            services.AddSingleton<IContext, Context>();
+            services.AddWindows();
+            services.AddSingleton<MainGame>();
+            services.AddHttpClient<NetworkClient>(client =>
+            {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            });
 
-        private static void AddHttpHandling(ServiceCollection services)
-        {
-            services.AddSingleton<AddBasicAuthenticationHandler>();
-            services.AddHttpClient<INetworkClient, NetworkClient>(
-                    client =>
-                    {
-                        client.DefaultRequestHeaders.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                    }
-                )
-                .AddHttpMessageHandler<AddBasicAuthenticationHandler>();
+            return services.BuildServiceProvider();
         }
     }
 }

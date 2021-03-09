@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -29,6 +30,7 @@ namespace UOStudio.Client
         public static string CPU;
         public static bool Optimise;
 
+        [Conditional("NETCORE")]
         public static void Initialise(bool optimise = true)
         {
             Optimise = optimise;
@@ -118,7 +120,7 @@ namespace UOStudio.Client
             foreach (var el in root.Elements("dllmap"))
             {
                 // Ignore entries for other OSs
-                if (el.Attribute("os").ToString().IndexOf(OS) < 0)
+                if (el.Attribute("os")!.ToString().IndexOf(OS) < 0)
                 {
                     continue;
                 }
@@ -131,21 +133,21 @@ namespace UOStudio.Client
                         continue;
                     }
 
-                    if (el.Attribute("cpu").ToString().IndexOf(CPU) < 0)
+                    if (el.Attribute("cpu")!.ToString().IndexOf(CPU) < 0)
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    if (el.Attribute("cpu") != null && el.Attribute("cpu").ToString().IndexOf(CPU) < 0)
+                    if (el.Attribute("cpu") != null && el.Attribute("cpu")!.ToString().IndexOf(CPU) < 0)
                     {
                         continue;
                     }
                 }
 
-                var oldLib = el.Attribute("dll").Value;
-                var newLib = el.Attribute("target").Value;
+                var oldLib = el.Attribute("dll")!.Value;
+                var newLib = el.Attribute("target")!.Value;
                 if (string.IsNullOrWhiteSpace(oldLib) || string.IsNullOrWhiteSpace(newLib))
                 {
                     continue;

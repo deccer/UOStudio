@@ -2,6 +2,9 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Exe</OutputType>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Product>UOStudio</Product>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -10,46 +13,37 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CSharpFunctionalExtensions" Version="2.13.2" />
-        <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="2.14.1" />
+        <PackageReference Include="ImGui.NET" Version="1.78.0" />
+        <PackageReference Include="LiteNetLib" Version="0.9.4" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
     </ItemGroup>
-
-    <PropertyGroup>
-        <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
-        <InProject>false</InProject>
-    </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DebugType>full</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="..\..\stylecop.json">
-            <InProject>false</InProject>
-        </AdditionalFiles>
-    </ItemGroup>
-    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Projects\UOStudio-Tools\src\UOStudio.TextureAtlasGenerator.Client\UOStudio.TextureAtlasGenerator.Client.csproj" />
+        <ProjectReference Include="..\..\..\..\Projects\UOStudio-Tools\src\UOStudio.TextureAtlasGenerator.Contracts\UOStudio.TextureAtlasGenerator.Contracts.csproj" />
         <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
+        <ProjectReference Include="..\..\external\SpriteFontPlus\src\SpriteFontPlus.FNA.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
-        <ProjectReference Include="..\UOStudio.Client.Engine\UOStudio.Client.Engine.csproj" />
-        <ProjectReference Include="..\UOStudio.Client.Network\UOStudio.Client.Network.csproj" />
-        <ProjectReference Include="..\UOStudio.Client.Resources\UOStudio.Client.Resources.csproj" />
-        <ProjectReference Include="..\UOStudio.Core\UOStudio.Core.csproj" />
+        <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
+        <ProjectReference Include="..\UOStudio.Common.Core\UOStudio.Common.Core.csproj" />
+        <ProjectReference Include="..\UOStudio.Common.Network\UOStudio.Common.Network.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -81,119 +75,56 @@
         <None Update="appsettings.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="..\..\assets\client\splashscreen.png">
-            <Link>Content\splashscreen.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <None Update="Content\Effects\WorldEffect.fxc">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\control-login-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\control-logout-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-add-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-coast-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-elevate-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-flatten-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-lower-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-paint-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-smooth-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\terrain-subtract-32.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\AdventPro-Regular.ttf">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\assets\client\Atlas.json">
-        <Link>Content\Atlas.json</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\Atlas.png">
-        <Link>Content\Atlas.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-login-16.png">
-        <Link>Content\Controls\control-login-16.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-login-24.png">
-        <Link>Content\Controls\control-login-24.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-login-32.png">
-        <Link>Content\Controls\control-login-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-login-64.png">
-        <Link>Content\Controls\control-login-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-logout-16.png">
-        <Link>Content\Controls\control-logout-16.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-logout-24.png">
-        <Link>Content\Controls\control-logout-24.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-logout-32.png">
-        <Link>Content\Controls\control-logout-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\controls\control-logout-64.png">
-        <Link>Content\Controls\control-logout-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-add-32.png">
-        <Link>Content\Tools\terrain-add-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-add-64.png">
-        <Link>Content\Tools\terrain-add-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-coast-32.png">
-        <Link>Content\Tools\terrain-coast-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-coast-64.png">
-        <Link>Content\Tools\terrain-coast-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-elevate-32.png">
-        <Link>Content\Tools\terrain-elevate-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-elevate-64.png">
-        <Link>Content\Tools\terrain-elevate-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-flatten-32.png">
-        <Link>Content\Tools\terrain-flatten-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-flatten-64.png">
-        <Link>Content\Tools\terrain-flatten-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-lower-32.png">
-        <Link>Content\Tools\terrain-lower-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-lower-64.png">
-        <Link>Content\Tools\terrain-lower-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-paint-32.png">
-        <Link>Content\Tools\terrain-paint-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-paint-64.png">
-        <Link>Content\Tools\terrain-paint-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-smooth-32.png">
-        <Link>Content\Tools\terrain-smooth-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-smooth-64.png">
-        <Link>Content\Tools\terrain-smooth-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-subtract-32.png">
-        <Link>Content\Tools\terrain-subtract-32.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\..\assets\client\mapedit\terrain-subtract-64.png">
-        <Link>Content\Tools\terrain-subtract-64.png</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+      <EmbeddedResource Update="ResGeneral.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ResGeneral.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="ResGeneral.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ResGeneral.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

@@ -369,3 +369,4 @@ src/UOStudio.Web/uostudio.db
 
 # Publish build output
 dist/
+/src/UOStudio.Server.Api/uostudio.db

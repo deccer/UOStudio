@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
+      <ProjectReference Include="..\UOStudio.Common.Core\UOStudio.Common.Core.csproj" />
+      <ProjectReference Include="..\UOStudio.Server.Common\UOStudio.Server.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LiteDB" Version="5.0.10" />
+      <PackageReference Include="LiteDB.Async" Version="0.0.8" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.3" />
+      <PackageReference Include="Microsoft.FASTER.Core" Version="1.8.3" />
+    </ItemGroup>
+
+</Project>

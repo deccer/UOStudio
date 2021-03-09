@@ -9,7 +9,7 @@ Complete rewrite of
 - [CentrED](https://redmine.aksdb.de/projects/centred/wiki/CentrED) made by Andreas Schneider
 - [CentrED+](https://uo.wzk.cz/centred-plus/) made by StaticZ
 
- in C#.
+in C#.
 
 Hopefully with many useful additions.
 
