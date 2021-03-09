@@ -1,3 +1,6 @@
 [submodule "external/FNA"]
 	path = external/FNA
 	url = https://github.com/FNA-XNA/FNA.git
+[submodule "external/SpriteFontPlus"]
+	path = external/SpriteFontPlus
+	url = https://github.com/rds1983/SpriteFontPlus
