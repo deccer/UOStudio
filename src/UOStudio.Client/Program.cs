@@ -23,6 +23,7 @@ namespace UOStudio.Client
             var graphicsSettings = serviceProvider.GetRequiredService<GraphicsSettings>();
             Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", graphicsSettings.Backend.ToString());
 
+            /*
             var networkClient = serviceProvider.GetService<INetworkClient>();
             networkClient!.LoginSucceeded += (userId, projects) =>
             {
@@ -34,11 +35,10 @@ namespace UOStudio.Client
                 Console.WriteLine(errorMessage);
             };
             networkClient!.Connect(new Profile { UserName = "admin", Password = "admin" });
+            */
 
-/*
             using var mainGame = serviceProvider.GetService<MainGame>();
             mainGame!.Run();
-            */
         }
 
         private static IServiceProvider CreateServiceProvider()
