@@ -46,7 +46,7 @@ namespace UOStudio.Client
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console()
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .WriteTo.File("client.log")
                 .CreateLogger();
 
