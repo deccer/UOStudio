@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +24,7 @@ namespace UOStudio.Server.Api
     public class Startup
     {
         private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -38,7 +38,7 @@ namespace UOStudio.Server.Api
                 .Enrich.WithMachineName()
                 .Enrich.WithMemoryUsage()
                 .Enrich.WithCorrelationIdHeader()
-                .WriteTo.Console()
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .WriteTo.File(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "server.log"))
                 .CreateLogger();
 
@@ -90,7 +90,7 @@ namespace UOStudio.Server.Api
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "UOStudio.Server.Api", Version = "v1" }); });
             services.AddMediatR(typeof(GetProjectDetailsByNameQueryHandler).Assembly);
-            services.AddDbContextFactory<UOStudioContext>(builder => builder.UseSqlite($"Data Source={Path.Combine(serverSettings.DatabaseLocation, "uostudio.db")}"));
+            services.AddDbContextFactory<UOStudioContext>(builder => builder.UseSqlite($"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uostudio.db")}"));
             services.AddSingleton(serverSettings);
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<IPasswordVerifier, PasswordVerifier>();
@@ -102,6 +102,7 @@ namespace UOStudio.Server.Api
         {
             if (env.IsDevelopment())
             {
+                app.UseSerilogRequestLogging();
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UOStudio.Server.Api v1"));

@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using UOStudio.Common.Contracts;
 using UOStudio.Server.Domain.CreateProject;
 using UOStudio.Server.Domain.GetProjectDetailsById;
@@ -17,14 +16,11 @@ namespace UOStudio.Server.Api.Controllers
     [Route("api/[controller]")]
     public class ProjectController : ControllerBase
     {
-        private readonly ILogger _logger;
         private readonly IMediator _mediator;
 
         public ProjectController(
-            ILogger logger,
             IMediator mediator)
         {
-            _logger = logger.ForContext<ProjectController>();
             _mediator = mediator;
         }
 
@@ -46,13 +42,20 @@ namespace UOStudio.Server.Api.Controllers
             var createProjectResult = await _mediator.Send(createProjectCommand);
 
             return createProjectResult.IsSuccess
-                ? CreatedAtAction(nameof(GetDetailsById), createProjectResult.Value)
+                ? CreatedAtAction(nameof(GetDetails), createProjectResult.Value)
                 : BadRequest(createProjectResult.Error);
         }
 
         [HttpGet]
-        [Route("details/id/{projectId:int}")]
-        public async Task<IActionResult> GetDetailsById([FromRoute] int projectId)
+        [Route("/{projectIdOrName}")]
+        public Task<IActionResult> GetDetails([FromRoute] string projectIdOrName)
+        {
+            return int.TryParse(projectIdOrName, out var projectId)
+                ? GetDetailsById(projectId)
+                : GetDetailsByName(projectIdOrName);
+        }
+
+        private async Task<IActionResult> GetDetailsById(int projectId)
         {
             var getProjectDetailsRequest = new GetProjectDetailsByIdQuery(projectId, User);
             var getProjectDetailsResult = await _mediator.Send(getProjectDetailsRequest);
@@ -62,10 +65,9 @@ namespace UOStudio.Server.Api.Controllers
                 : BadRequest(getProjectDetailsResult.Error);
         }
 
-        [HttpGet]
-        [Route("details/name/{projectName:alpha}")]
-        public async Task<IActionResult> GetDetailsByName([FromRoute] string projectName)
+        private async Task<IActionResult> GetDetailsByName(string projectName)
         {
+            projectName = projectName.Replace("+", " ");
             var getProjectDetailsRequest = new GetProjectDetailsByNameQuery(projectName, User);
             var getProjectDetailsResult = await _mediator.Send(getProjectDetailsRequest);
 
