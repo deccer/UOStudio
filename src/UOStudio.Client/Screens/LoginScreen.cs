@@ -16,6 +16,7 @@ namespace UOStudio.Client.Screens
         private readonly IWindowProvider _windowProvider;
         private SpriteBatch _spriteBatch;
         private MouseState _mouseState;
+        private ButtonState _mouseLeftButton;
         private PointF _mousePosition;
 
         private int _selectedThemeIndex;
@@ -35,6 +36,7 @@ namespace UOStudio.Client.Screens
         {
             _mouseState = Mouse.GetState();
             _mousePosition = new PointF(_mouseState.X, _mouseState.Y);
+            _mouseLeftButton = _mouseState.LeftButton;
             var selectProfileWindow = _windowProvider.GetWindow<SelectProfileWindow>();
             //selectProfileWindow?.Show();
         }
@@ -43,7 +45,9 @@ namespace UOStudio.Client.Screens
         {
             var r = new RectangleF(32, 32, 196, 32);
             var c = r.Contains(_mousePosition)
-                ? Color.Yellow
+                ? _mouseLeftButton == ButtonState.Pressed
+                    ? Color.Firebrick
+                    : Color.Yellow
                 : Color.Peru;
             var t = r.Contains(_mousePosition)
                 ? 4.0f
