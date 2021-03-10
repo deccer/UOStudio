@@ -19,7 +19,6 @@ namespace UOStudio.Client
 
         private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f, 1.0f);
 
-
         private ImGuiRenderer _imGuiRenderer;
 
         private KeyboardState _currentKeyboardState;
@@ -83,7 +82,7 @@ namespace UOStudio.Client
 
             base.Initialize();
             sw.Stop();
-            _logger.Information("Initializing...Done. Took {@TotalSeconds}s.", sw.Elapsed.TotalSeconds);
+            _logger.Information("Initializing...Done. Took {@TotalSeconds}s", sw.Elapsed.TotalSeconds);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -135,7 +134,6 @@ namespace UOStudio.Client
             _currentKeyboardState = Keyboard.GetState();
             _currentMouseState = Mouse.GetState();
 
-            //_camera.Update(Window.ClientBounds.Width, Window.ClientBounds.Height);
             if (_currentKeyboardState.IsKeyDown(Keys.Escape))
             {
                 Exit();

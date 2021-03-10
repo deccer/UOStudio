@@ -36,7 +36,7 @@ namespace UOStudio.Client.Screens
             _mouseState = Mouse.GetState();
             _mousePosition = new PointF(_mouseState.X, _mouseState.Y);
             var selectProfileWindow = _windowProvider.GetWindow<SelectProfileWindow>();
-            selectProfileWindow?.Show();
+            //selectProfileWindow?.Show();
         }
 
         public override void Draw(GameTime gameTime)
@@ -122,7 +122,7 @@ namespace UOStudio.Client.Screens
             base.Dispose();
         }
 
-        private string[] GetThemes()
+        private static string[] GetThemes()
         {
             return new[]
             {
@@ -132,7 +132,7 @@ namespace UOStudio.Client.Screens
             };
         }
 
-        private string[] GetLanguages()
+        private static string[] GetLanguages()
         {
             return new[]
             {
