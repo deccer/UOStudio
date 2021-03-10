@@ -34,6 +34,7 @@ namespace UOStudio.Client.UI
             _networkClient = networkClient;
             _networkClient.LoginSucceeded += NetworkClientOnLoginSucceeded;
             _networkClient.LoginFailed += NetworkClientOnLoginFailed;
+            Show();
         }
 
         private void NetworkClientOnLoginFailed(string errorMessage)

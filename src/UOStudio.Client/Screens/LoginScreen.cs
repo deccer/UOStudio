@@ -37,8 +37,6 @@ namespace UOStudio.Client.Screens
             _mouseState = Mouse.GetState();
             _mousePosition = new PointF(_mouseState.X, _mouseState.Y);
             _mouseLeftButton = _mouseState.LeftButton;
-            var selectProfileWindow = _windowProvider.GetWindow<SelectProfileWindow>();
-            //selectProfileWindow?.Show();
         }
 
         public override void Draw(GameTime gameTime)
