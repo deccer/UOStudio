@@ -10,8 +10,6 @@
       <PackageReference Include="AutoMapper" Version="10.1.1" />
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
       <PackageReference Include="CSharpFunctionalExtensions" Version="2.14.1" />
-      <PackageReference Include="LiteDB" Version="5.0.10" />
-      <PackageReference Include="LiteDB.Async" Version="0.0.8" />
       <PackageReference Include="LiteNetLib" Version="0.9.4" />
       <PackageReference Include="MediatR" Version="9.0.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />

@@ -12,8 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="LiteDB" Version="5.0.10" />
-      <PackageReference Include="LiteDB.Async" Version="0.0.8" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.3" />
       <PackageReference Include="Microsoft.FASTER.Core" Version="1.8.3" />
     </ItemGroup>
