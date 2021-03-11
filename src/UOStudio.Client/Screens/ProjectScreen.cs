@@ -4,17 +4,17 @@ using Serilog;
 
 namespace UOStudio.Client.Screens
 {
-    public class MainScreen : GameScreen
+    public class ProjectScreen : GameScreen
     {
         private readonly ILogger _logger;
         private readonly string _projectDirectory;
         private Map _map;
         private Camera _camera;
 
-        public MainScreen(Game game, ILogger logger, string projectDirectory)
+        public ProjectScreen(Game game, ILogger logger, string projectDirectory)
             : base(game)
         {
-            _logger = logger.ForContext<MainScreen>();
+            _logger = logger.ForContext<ProjectScreen>();
             _projectDirectory = projectDirectory;
             _map = new Map(logger);
         }

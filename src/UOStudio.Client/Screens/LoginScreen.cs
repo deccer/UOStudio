@@ -66,7 +66,7 @@ namespace UOStudio.Client.Screens
                     {
                         if (ImGui.MenuItem("Test"))
                         {
-                            ScreenHandler.LoadScreen(new MainScreen(Game, _logger, @"D:\Private\Code\Projects\UOStudio\src\UOStudio.Client\bin\Debug\Projects\Temp"));
+                            ScreenHandler.LoadScreen(new ProjectScreen(Game, _logger, @"D:\Private\Code\Projects\UOStudio\src\UOStudio.Client\bin\Debug\Projects\Temp"));
                         }
                         if (ImGui.MenuItem("Quit"))
                         {
