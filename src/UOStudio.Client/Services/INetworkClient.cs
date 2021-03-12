@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using LiteNetLib;
 using UOStudio.Common.Contracts;
 
-namespace UOStudio.Client
+namespace UOStudio.Client.Services
 {
     public interface INetworkClient
     {

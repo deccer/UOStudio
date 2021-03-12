@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using CSharpFunctionalExtensions;
 using LiteNetLib;
+using LiteNetLib.Layers;
+using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using UOStudio.Common.Contracts;
@@ -20,6 +23,10 @@ namespace UOStudio.Client.Services
         private readonly string _apiEndpoint;
         private Profile _selectedProfile;
 
+        private readonly NetManager _client;
+        private readonly NetDataWriter _dataWriter;
+        private NetPeer _server;
+
         public NetworkClient(
             ILogger logger,
             IConfiguration configuration,
@@ -27,21 +34,36 @@ namespace UOStudio.Client.Services
             IHttpClientFactory httpClientFactory,
             ITokenService tokenService)
         {
-            _logger = logger;
+            _logger = logger.ForContext<NetworkClient>();
             _context = context;
             _httpClientFactory = httpClientFactory;
             _tokenService = tokenService;
             _apiEndpoint = configuration["Api:ApiEndpoint"];
+
+            var listener = new EventBasedNetListener();
+            listener.PeerConnectedEvent += ListenerOnPeerConnectedEvent;
+            listener.PeerDisconnectedEvent += ListenerOnPeerDisconnectedEvent;
+            listener.NetworkReceiveEvent += ListenerOnNetworkReceiveEvent;
+            listener.NetworkReceiveUnconnectedEvent += ListenerOnNetworkReceiveUnconnectedEvent;
+
+            _dataWriter = new NetDataWriter(true);
+            _client = new NetManager(listener, new XorEncryptLayer("UOStudio"));
         }
 
         public event Action<NetPeer> Connected;
+
         public event Action Disconnected;
+
         public event Action<int, IReadOnlyCollection<ProjectDto>> LoginSucceeded;
+
         public event Action<string> LoginFailed;
 
         public event Action<IReadOnlyCollection<ProjectDto>> GetProjectsSucceeded;
+
         public event Action<string> GetProjectsFailed;
+
         public event Action<ProjectDetailDto> GetProjectDetailsSucceeded;
+
         public event Action<string> GetProjectDetailsFailed;
 
         public void Connect(Profile profile)
@@ -51,6 +73,7 @@ namespace UOStudio.Client.Services
             var getProjectsResult = GetProjectsAfterLogin();
             if (getProjectsResult.IsSuccess)
             {
+                StartClient(_selectedProfile);
                 var loginSucceeded = LoginSucceeded;
                 loginSucceeded?.Invoke(_context.User.GetUserId(), getProjectsResult.Value);
             }
@@ -61,13 +84,33 @@ namespace UOStudio.Client.Services
             }
         }
 
+        private void StartClient(Profile profile)
+        {
+            if (_client.IsRunning)
+            {
+                _client.Stop();
+            }
+
+            if (_client.Start())
+            {
+                _logger.Debug("NetworkClient - Running");
+            }
+            else
+            {
+                _logger.Error("NetworkClient - Unable to run");
+            }
+
+            _client.Connect(profile.ServerName, profile.ServerPort, "UOStudio");
+        }
+
         public void Disconnect()
         {
-            throw new NotImplementedException();
+            _client.Stop();
         }
 
         public void Update()
         {
+            _client.PollEvents();
         }
 
         public void GetProjectDetailsByProjectId(int projectId)
@@ -173,6 +216,38 @@ namespace UOStudio.Client.Services
             {
                 return Result.Failure<IReadOnlyCollection<ProjectDto>>(exception.Message);
             }
+        }
+
+        private void ListenerOnPeerConnectedEvent(NetPeer peer)
+        {
+            _logger.Debug("NetworkClient - Connected to server {@Id}", peer.Id);
+            _server = peer;
+        }
+
+        private void ListenerOnPeerDisconnectedEvent(
+            NetPeer peer,
+            DisconnectInfo disconnectInfo
+        )
+        {
+        }
+
+        private void ListenerOnNetworkReceiveEvent(
+            NetPeer peer,
+            NetDataReader reader,
+            DeliveryMethod deliveryMethod)
+        {
+            var packetId = reader.GetInt();
+            switch (packetId)
+            {
+            }
+        }
+
+        private void ListenerOnNetworkReceiveUnconnectedEvent(
+            IPEndPoint remoteEndpoint,
+            NetDataReader netDataReader,
+            UnconnectedMessageType unconnectedMessageType
+        )
+        {
         }
     }
 }

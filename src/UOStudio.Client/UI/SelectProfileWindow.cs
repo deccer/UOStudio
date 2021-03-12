@@ -4,6 +4,7 @@ using System.Numerics;
 using ImGuiNET;
 using JetBrains.Annotations;
 using Serilog;
+using UOStudio.Client.Services;
 using UOStudio.Common.Contracts;
 
 namespace UOStudio.Client.UI

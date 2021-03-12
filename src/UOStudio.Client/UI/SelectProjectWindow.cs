@@ -4,6 +4,7 @@ using ImGuiNET;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Serilog;
+using UOStudio.Client.Services;
 using UOStudio.Common.Contracts;
 using Vector4 = System.Numerics.Vector4;
 
