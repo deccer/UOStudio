@@ -24,7 +24,7 @@ namespace UOStudio.Server.Services
 
         public async Task<Result<string>> CreateProjectTemplate(string templateName, string clientVersion)
         {
-            var templatePath = Path.Combine(_serverSettings.TemplateDirectory, templateName);
+            var templatePath = Path.Combine(_serverSettings.TemplatesDirectory, templateName);
             if (Directory.Exists(templatePath))
             {
                 return Result.Failure<string>($"Template {templateName} already exists");
