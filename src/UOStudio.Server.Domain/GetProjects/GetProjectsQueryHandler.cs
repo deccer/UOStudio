@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using UOStudio.Common.Contracts;
@@ -11,6 +12,7 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Domain.GetProjects
 {
+    [UsedImplicitly]
     public sealed class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, Result<IList<ProjectDto>>>
     {
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;

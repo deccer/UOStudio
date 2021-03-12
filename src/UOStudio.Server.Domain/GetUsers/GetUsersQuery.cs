@@ -8,11 +8,11 @@ namespace UOStudio.Server.Domain.GetUsers
 {
     public class GetUsersQuery : IRequest<Result<IList<UserDto>>>
     {
-        public GetUsersQuery(IPrincipal principal)
+        public GetUsersQuery(IPrincipal user)
         {
-            Principal = principal;
+            User = user;
         }
 
-        public IPrincipal Principal { get; }
+        public IPrincipal User { get; }
     }
 }

@@ -10,15 +10,15 @@ using Serilog;
 using UOStudio.Common.Contracts;
 using UOStudio.Server.Data;
 
-namespace UOStudio.Server.Domain.GetUsers
+namespace UOStudio.Server.Domain.GetProjectTemplates
 {
     [UsedImplicitly]
-    public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<IList<UserDto>>>
+    public sealed class GetProjectTemplatesQueryHandler : IRequestHandler<GetProjectTemplatesQuery, Result<IList<ProjectTemplateDto>>>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;
 
-        public GetUsersQueryHandler(
+        public GetProjectTemplatesQueryHandler(
             ILogger logger,
             IDbContextFactory<UOStudioContext> contextFactory)
         {
@@ -26,20 +26,17 @@ namespace UOStudio.Server.Domain.GetUsers
             _contextFactory = contextFactory;
         }
 
-        public async Task<Result<IList<UserDto>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IList<ProjectTemplateDto>>> Handle(GetProjectTemplatesQuery request, CancellationToken cancellationToken)
         {
-            if (!request.User.IsInRole(Permission.CanListUser.Name))
-            {
-                return Result.Failure<IList<UserDto>>("No permission");
-            }
-
             await using var db = _contextFactory.CreateDbContext();
-            var users = await db.Users
-                .Include(u => u.Permissions)
-                .Select(u => new UserDto { Id = u.Id, Name = u.Name })
-                .ToListAsync(cancellationToken);
 
-            return Result.Success<IList<UserDto>>(users);
+            var projectTemplates = db.ProjectTemplates.AsQueryable().Select(pt => new ProjectTemplateDto
+            {
+                Id = pt.Id,
+                Name = pt.Name
+            }).ToList();
+
+            return Result.Success<IList<ProjectTemplateDto>>(projectTemplates);
         }
     }
 }
