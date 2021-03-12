@@ -1,66 +1,31 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Threading;
+﻿using System.Security.Principal;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Common.Contracts;
-using UOStudio.Server.Api.Models;
-using UOStudio.Server.Api.Services;
-using UOStudio.Server.Data;
+using UOStudio.Server.Domain.CreateUser;
+using UOStudio.Server.Domain.GetUserById;
 using UOStudio.Server.Domain.GetUsers;
 
 namespace UOStudio.Server.Api.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly IUserService _userService;
         private readonly IMediator _mediator;
 
-        public UserController(
-            ILogger logger,
-            IUserService userService,
-            IMediator mediator)
+        public UserController(ILogger logger, IMediator mediator)
         {
             _logger = logger;
-            _userService = userService;
             _mediator = mediator;
         }
 
-        [HttpPost("accessToken", Name = nameof(Login))]
-        public async Task<IActionResult> Login([FromBody] AuthenticationRequest authenticationRequest)
-        {
-            var loginResult = await _userService.LoginAsync(authenticationRequest, CancellationToken.None);
-
-            return loginResult.IsSuccess
-                ? Ok(loginResult.Value)
-                : BadRequest(loginResult.Error);
-        }
-
-        [Authorize(AuthenticationSchemes = "Refresh")]
-        [HttpPut("accessToken", Name = nameof(RefreshToken))]
-        public async Task<IActionResult> RefreshToken()
-        {
-            if (!int.TryParse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value, out var userId))
-            {
-                return BadRequest();
-            }
-
-            var refreshToken = User.Claims.FirstOrDefault(c => c.Type == "RefreshToken")?.Value;
-            var refreshTokenResult = await _userService.RefreshAsync(userId, refreshToken, CancellationToken.None);
-
-            return refreshTokenResult.IsFailure
-                ? BadRequest(refreshTokenResult.Error)
-                : Ok();
-        }
-
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -71,5 +36,31 @@ namespace UOStudio.Server.Api.Controllers
                 ? Ok(getUsersQueryResult.Value)
                 : Forbid(getUsersQueryResult.Error);
         }
+
+        [HttpGet]
+        [Route("{userId:int}")]
+        public async Task<IActionResult> GetUserById(int userId)
+        {
+            var getUserByIdQuery = new GetUserByIdQuery(User, userId);
+            var getUserByIdResult = await _mediator.Send(getUserByIdQuery).ConfigureAwait(false);
+
+            return getUserByIdResult.IsSuccess
+                ? Ok(getUserByIdResult.Value)
+                : BadRequest(getUserByIdResult.Error);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] CreateUserRequest createUserRequest)
+        {
+            var createUserCommand = ToCommand(User, createUserRequest);
+            var createUserResult = await _mediator.Send(createUserCommand).ConfigureAwait(false);
+
+            return createUserResult.IsSuccess
+                ? CreatedAtAction(nameof(GetUserById), createUserResult.Value)
+                : BadRequest(createUserResult.Error);
+        }
+
+        private static CreateUserCommand ToCommand(IPrincipal principal, CreateUserRequest createUserRequest)
+            => new(principal, createUserRequest.Name, createUserRequest.Password, createUserRequest.Permissions);
     }
 }
