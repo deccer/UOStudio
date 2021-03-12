@@ -9,6 +9,7 @@ namespace UOStudio.Server.Services
         private const string Git = "git";
         private const string CloneArgument = "clone --recursive {0} {1}";
         private const string CloneBranchArgument = "clone --branch {0} --single-branch --recursive {1} {2}";
+
         private readonly ILogger _logger;
         private readonly ICommandRunner _commandRunner;
 
@@ -21,18 +22,18 @@ namespace UOStudio.Server.Services
             _commandRunner = commandRunner;
         }
 
-        public Result Clone(string repository, string repositoryPath)
+        public Result Clone(string repository, string localRepositoryPath)
         {
-            if (Directory.Exists(repositoryPath))
+            if (Directory.Exists(localRepositoryPath))
             {
-                return Result.Failure<string>($"Directory {repositoryPath} already exists");
+                return Result.Failure<string>($"Directory {localRepositoryPath} already exists");
             }
 
-            var arguments = string.Format(CloneArgument, repository, repositoryPath);
+            var arguments = string.Format(CloneArgument, repository, localRepositoryPath);
             var commandResult = _commandRunner.RunCommand(Git, arguments, null);
             return commandResult.IsSuccess
                 ? Result.Success()
-                : Result.Failure($"Unable to Clone repo {repository} to {repositoryPath}");
+                : Result.Failure($"Unable to clone repo {repository} to {localRepositoryPath}");
         }
 
         public Result CloneBranch(string repository, string branchName, string repositoryPath)
@@ -46,7 +47,7 @@ namespace UOStudio.Server.Services
             var commandResult = _commandRunner.RunCommand(Git, arguments, null);
             return commandResult.IsSuccess
                 ? Result.Success()
-                : Result.Failure($"Unable to Clone repo {repository} to {repositoryPath}");
+                : Result.Failure($"Unable to clone repo {repository} to {repositoryPath}");
         }
     }
 }
