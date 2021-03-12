@@ -47,7 +47,7 @@ namespace UOStudio.Server.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/{projectIdOrName}")]
+        [Route("{projectIdOrName}")]
         public Task<IActionResult> GetDetails([FromRoute] string projectIdOrName)
         {
             return int.TryParse(projectIdOrName, out var projectId)
