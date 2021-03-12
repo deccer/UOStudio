@@ -54,7 +54,7 @@ namespace UOStudio.Client.Services
                     Password = password
                 };
 
-                var response = await _httpClient.PostAsJsonAsync($"{_tokenEndpoint}/api/user/accessToken/", authenticationRequest);
+                var response = await _httpClient.PostAsJsonAsync($"{_tokenEndpoint}/api/auth/accessToken/", authenticationRequest);
 
                 var tokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
                 var tokenHandler = new JwtSecurityTokenHandler();
