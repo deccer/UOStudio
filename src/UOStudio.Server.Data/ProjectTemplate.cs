@@ -23,5 +23,7 @@ namespace UOStudio.Server.Data
         public string ClientVersion { get; set; }
 
         public string Location { get; set; }
+
+        public virtual ICollection<Project> Projects { get; set; }
     }
 }
