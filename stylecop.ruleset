@@ -482,4 +482,15 @@
         <Rule Id="SA1643" Action="None" />
         <Rule Id="SA1649" Action="None" />
     </Rules>
+    <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
+        <Rule Id="S927" Action="None" /> <!-- Rename parameter 'x' to 'y' to match the interface declaration -->
+        <Rule Id="S1135" Action="Info" /> <!-- Complete the task associated to this 'TODO' comment -->
+        <Rule Id="S2053" Action="None" />
+        <Rule Id="S2551" Action="Warning" /> <!-- Lock on a dedicated object instance instead -->
+        <Rule Id="S3010" Action="None" /> <!-- Remove this assignment of 'x' or initialize it locally -->
+        <Rule Id="S3263" Action="None" /> <!-- Move this field's initializer into a static constructor -->
+        <Rule Id="S3358" Action="None" /> <!-- Extract this nested ternary operation into an independent statement -->
+        <Rule Id="S3881" Action="Info" /> <!-- Fix this implementation of IDisposable to conform to the dispose pattern -->
+        <Rule Id="S3963" Action="None" /> <!-- Initialize all 'static fields' inline and remove the static constructor -->
+    </Rules>
 </RuleSet>
