@@ -1,0 +1,153 @@
+﻿<UserControl
+    x:Class="UOStudio.Client.Launcher.Views.ProfilesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:UOStudio.Client.Launcher.ViewModels"
+    d:DataContext="{d:DesignInstance viewmodels:ProfilesViewModel}"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
+    <DockPanel LastChildFill="True">
+        <ListBox
+            MinWidth="150"
+            Margin="8"
+            DockPanel.Dock="Left"
+            ItemsSource="{Binding Profiles}"
+            SelectedItem="{Binding SelectedProfileLookupItem}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            Grid.Column="0"
+                            Margin="2"
+                            VerticalAlignment="Center"
+                            Command="{Binding DataContext.DeleteProfileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                            Content="X" />
+                        <TextBlock
+                            Grid.Column="1"
+                            Margin="2"
+                            VerticalAlignment="Center"
+                            Text="{Binding Name}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Margin="8" DataContext="{Binding SelectedProfile}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MinWidth="300" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Name" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Description" />
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Server Name" />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Server Port" />
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Username" />
+            <TextBlock
+                Grid.Row="5"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Password" />
+            <TextBlock
+                Grid.Row="6"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Auth Endpoint" />
+            <TextBlock
+                Grid.Row="7"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Api Endpoint" />
+            <TextBox
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding Name}" />
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding Description}" />
+            <TextBox
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding ServerName}" />
+            <TextBox
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding ServerPort}" />
+            <TextBox
+                Grid.Row="4"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding UserName}" />
+            <TextBox
+                Grid.Row="5"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding Password}" />
+            <TextBox
+                Grid.Row="6"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding AuthBaseUri}" />
+            <TextBox
+                Grid.Row="7"
+                Grid.Column="1"
+                Margin="4"
+                Text="{Binding ApiBaseUri}" />
+            <Button
+                Grid.Row="8"
+                Grid.Column="0"
+                Width="105"
+                Margin="4"
+                Command="{Binding DataContext.AddProfileCommand, IsAsync=True, RelativeSource={RelativeSource AncestorType=DockPanel}}"
+                Content="Add" />
+            <Button
+                Grid.Row="8"
+                Grid.Column="1"
+                Width="105"
+                Margin="4"
+                Command="{Binding DataContext.UpdateProfileCommand, IsAsync=True, RelativeSource={RelativeSource AncestorType=DockPanel}}"
+                Content="Save" />
+        </Grid>
+    </DockPanel>
+</UserControl>

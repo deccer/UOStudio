@@ -1,0 +1,53 @@
+﻿<mah:MetroWindow
+    x:Class="UOStudio.Client.Launcher.Views.ShellView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:UOStudio.Client.Launcher.ViewModels"
+    Title="UOStudio"
+    Width="800"
+    Height="450"
+    d:DataContext="{d:DesignInstance viewModels:ShellViewModel}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <mah:MetroWindow.LeftWindowCommands>
+        <mah:WindowCommands>
+            <Button ToolTip="Open up the GitHub site">
+                <iconPacks:PackIconBoxIcons
+                    Width="22"
+                    Height="22"
+                    Kind="RegularGame" />
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.LeftWindowCommands>
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button Command="{Binding LogoutCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconBoxIcons
+                        Width="22"
+                        Height="22"
+                        VerticalAlignment="Center"
+                        Kind="RegularLogOut" />
+                    <TextBlock
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding UserName}" />
+                </StackPanel>
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+    <DockPanel LastChildFill="True">
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock Text="Version" />
+            <TextBlock Text="1.0.0" />
+        </StatusBar>
+        <ContentControl
+            Margin="8"
+            Content="{Binding CurrentViewModel}"
+            DataContext="{Binding}" />
+    </DockPanel>
+</mah:MetroWindow>

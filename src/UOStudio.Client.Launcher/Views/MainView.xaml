@@ -1,0 +1,55 @@
+﻿<UserControl
+    x:Class="UOStudio.Client.Launcher.Views.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:UOStudio.Client.Launcher.ViewModels"
+    d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    dialog:DialogParticipation.Register="{Binding}"
+    mc:Ignorable="d">
+    <DockPanel LastChildFill="True">
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20*"/>
+                <ColumnDefinition Width="20*"/>
+                <ColumnDefinition Width="60*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                Margin="2"
+                Command="{Binding CreateProjectCommand}"
+                Content="Create Project" />
+            <Button Grid.Column="1"
+                Margin="2"
+                Command="{Binding EditProjectTemplatesCommand}"
+                Content="Edit Templates" />
+        </Grid>
+        <ListBox ItemsSource="{Binding Projects}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Grid.Row="0"
+                            FontSize="16"
+                            Text="{Binding Name}" />
+                        <TextBlock Grid.Row="1" Text="{Binding Description}" />
+                        <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Content="Join" VerticalAlignment="Center" Command="{Binding DataContext.JoinProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="2"/>
+                        <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Content="Remove" VerticalAlignment="Center" Command="{Binding DataContext.RemoveProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="2"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>
