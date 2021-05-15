@@ -9,14 +9,18 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <AdditionalFiles Include="..\..\stylecop.json">
-            <InProject>true</InProject>
-        </AdditionalFiles>
-        <PackageReference Include="JetBrains.Annotations" Version="2020.1.0"/>
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.22.0.31243">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <AdditionalFiles Include="..\..\stylecop.json">
+            <InProject>true</InProject>
+        </AdditionalFiles>
     </ItemGroup>
     <PropertyGroup>
         <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
