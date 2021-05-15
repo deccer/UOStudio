@@ -2,21 +2,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.Mime;
 using System.Text;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using UOStudio.Common.Contracts;
 
 namespace UOStudio.Client.Services
 {
-    public class TokenService : ITokenService
+    public sealed class TokenService : ITokenService
     {
         private readonly IMemoryCache _memoryCache;
         private readonly IContext _context;
@@ -48,7 +43,7 @@ namespace UOStudio.Client.Services
         {
             if (!_memoryCache.TryGetValue("Token", out string token))
             {
-                var authenticationRequest = new AuthenticationRequest
+                var authenticationRequest = new
                 {
                     UserName = userName,
                     Password = password
@@ -56,13 +51,13 @@ namespace UOStudio.Client.Services
 
                 var response = await _httpClient.PostAsJsonAsync($"{_tokenEndpoint}/api/auth/accessToken/", authenticationRequest);
 
-                var tokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
+                var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
                 var tokenHandler = new JwtSecurityTokenHandler();
 
                 SecurityToken accessToken;
                 try
                 {
-                    var principal = tokenHandler.ValidateToken(tokenResponse.AccessToken, _tokenValidationParameters, out accessToken);
+                    var principal = tokenHandler.ValidateToken(tokenResponse!.AccessToken, _tokenValidationParameters, out accessToken);
                     if (principal != null)
                     {
                         _context.User = principal;
