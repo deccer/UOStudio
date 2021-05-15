@@ -6,7 +6,7 @@ using UOStudio.Common.Core.IO;
 
 namespace UOStudio.Client.Engine.Ultima
 {
-    public class TileMatrix
+    public class TileMatrix : IDisposable
     {
         private static readonly List<TileMatrix> _instances = new List<TileMatrix>();
 
@@ -266,7 +266,7 @@ namespace UOStudio.Client.Engine.Ultima
                     _tileBuffer = new StaticTile[count];
                 }
 
-                var staTiles = _tileBuffer; // new StaticTile[tileCount];
+                var staTiles = _tileBuffer;
 
                 fixed (StaticTile* pTiles = staTiles)
                 {
