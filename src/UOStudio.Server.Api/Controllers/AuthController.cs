@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UOStudio.Common.Contracts;
@@ -13,38 +10,65 @@ namespace UOStudio.Server.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthenticationService _authenticationService;
         private readonly IUserService _userService;
 
-        public AuthController(IUserService userService)
+        public AuthController(
+            IAuthenticationService authenticationService,
+            IUserService userService)
         {
+            _authenticationService = authenticationService;
             _userService = userService;
         }
 
-        [HttpPost("accessToken", Name = nameof(Login))]
-        public async Task<IActionResult> Login([FromBody] AuthenticationRequest authenticationRequest)
+        [HttpPost]
+        [Route("")]
+        public async Task<IActionResult> Login([FromBody] UserCredentials userCredentials)
         {
-            var loginResult = await _userService.LoginAsync(authenticationRequest, CancellationToken.None);
-
-            return loginResult.IsSuccess
-                ? Ok(loginResult.Value)
-                : BadRequest(loginResult.Error);
-        }
-
-        [Authorize(AuthenticationSchemes = "Refresh")]
-        [HttpPut("accessToken", Name = nameof(RefreshToken))]
-        public async Task<IActionResult> RefreshToken()
-        {
-            if (!int.TryParse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value, out var userId))
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var refreshToken = User.Claims.FirstOrDefault(c => c.Type == "RefreshToken")?.Value;
-            var refreshTokenResult = await _userService.RefreshAsync(userId, refreshToken, CancellationToken.None);
+            var tokenResult = await _authenticationService.AuthenticateAsync(userCredentials);
+            if (tokenResult.IsFailure)
+            {
+                return Unauthorized(tokenResult.Error);
+            }
 
+            Response.Headers.Add("X-Ticket", tokenResult.Value.ConnectionTicket);
+            return Ok(tokenResult.Value.TokenPair);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("validateTicket/{connectionTicket}")]
+        public async Task<IActionResult> ValidateConnectionTicket([FromRoute] string connectionTicket)
+        {
+            var connectionTicketDecoded = UrlDecodeBase64(connectionTicket);
+            var isValidConnectionTicket = await _userService.ValidateConnectionTicketAsync(connectionTicketDecoded);
+            return isValidConnectionTicket
+                ? Ok()
+                : Unauthorized();
+        }
+
+        [Authorize]
+        [HttpPost("refreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshToken refreshToken)
+        {
+            var token = refreshToken.Token;
+            var refreshTokenResult = await _authenticationService.RefreshTokenAsync(token);
             return refreshTokenResult.IsFailure
                 ? BadRequest(refreshTokenResult.Error)
-                : Ok();
+                : Ok(refreshTokenResult.Value);
+        }
+
+        public static string UrlDecodeBase64(string encodedBase64Input)
+        {
+            return encodedBase64Input
+                .Replace('.', '+')
+                .Replace('_', '/')
+                .Replace('-', '=');
         }
     }
 }
