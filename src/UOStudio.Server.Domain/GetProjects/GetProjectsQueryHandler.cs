@@ -30,11 +30,13 @@ namespace UOStudio.Server.Domain.GetProjects
 
             var userId = request.User.GetUserId();
             var user = await db.Users
+                .AsNoTracking()
                 .Include(u => u.Permissions)
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken)
                 .ConfigureAwait(false);
 
             var publicProjects = db.Projects
+                .AsNoTracking()
                 .Include(p => p.CreatedBy)
                 .Where(p => p.IsPublic)
                 .Select(p => new ProjectDto
@@ -44,6 +46,7 @@ namespace UOStudio.Server.Domain.GetProjects
                 }).ToList();
 
             var projects = db.Projects
+                .AsNoTracking()
                 .Include(p => p.CreatedBy)
                 .Include(p => p.AllowedUsers)
                 .Where(p => !p.IsPublic);
@@ -56,8 +59,9 @@ namespace UOStudio.Server.Domain.GetProjects
             var visibleProjects = projects.Select(p => new ProjectDto
             {
                 Id = p.Id,
-                Name = p.Name
-            }).ToList().Concat(publicProjects);
+                Name = p.Name,
+                Description = p.Description
+            }).AsEnumerable().Concat(publicProjects);
 
             return Result.Success<IList<ProjectDto>>(visibleProjects.ToList());
         }

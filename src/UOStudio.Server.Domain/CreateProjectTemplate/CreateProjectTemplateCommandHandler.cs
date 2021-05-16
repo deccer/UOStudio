@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Server.Data;
+using UOStudio.Server.Services;
 
 namespace UOStudio.Server.Domain.CreateProjectTemplate
 {
@@ -18,10 +19,12 @@ namespace UOStudio.Server.Domain.CreateProjectTemplate
 
         public CreateProjectTemplateCommandHandler(
             ILogger logger,
-            IDbContextFactory<UOStudioContext> contextFactory)
+            IDbContextFactory<UOStudioContext> contextFactory,
+            IProjectTemplateService projectTemplateService)
         {
             _logger = logger.ForContext<CreateProjectTemplateCommandHandler>();
             _contextFactory = contextFactory;
+            _projectTemplateService = projectTemplateService;
         }
 
         public async Task<Result<int>> Handle(CreateProjectTemplateCommand request, CancellationToken cancellationToken)
@@ -42,11 +45,17 @@ namespace UOStudio.Server.Domain.CreateProjectTemplate
                 return Result.Failure<int>($"A project template name '{request.Name}' already exists");
             }
 
+            var createProjectTemplateResult = await _projectTemplateService.CreateProjectTemplateAsync(request.Name);
+            if (createProjectTemplateResult.IsFailure)
+            {
+                return Result.Failure<int>(createProjectTemplateResult.Error);
+            }
+
             projectTemplate = new ProjectTemplate
             {
                 Name = request.Name,
                 ClientVersion = request.ClientVersion,
-                Location = request.Location
+                Location = createProjectTemplateResult.Value
             };
 
             await db.ProjectTemplates.AddAsync(projectTemplate, cancellationToken);

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using UOStudio.Common.Contracts;
@@ -25,6 +26,7 @@ namespace UOStudio.Server.Domain.GetProjectDetailsByName
         {
             await using var db = _contextFactory.CreateDbContext();
             var project = await db.Projects
+                .AsNoTracking()
                 .Include(p => p.Template)
                 .Include(p => p.AllowedUsers)
                 .Include(p => p.CreatedBy)

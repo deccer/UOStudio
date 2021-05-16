@@ -8,11 +8,11 @@ namespace UOStudio.Server.Domain.GetProjects
 {
     public class GetProjectsQuery : IRequest<Result<IList<ProjectDto>>>
     {
-        public IPrincipal User { get; }
-
         public GetProjectsQuery(IPrincipal user)
         {
             User = user;
         }
+
+        public IPrincipal User { get; }
     }
 }

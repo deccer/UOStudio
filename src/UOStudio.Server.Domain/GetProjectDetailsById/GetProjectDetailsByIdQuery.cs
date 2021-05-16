@@ -7,7 +7,7 @@ namespace UOStudio.Server.Domain.GetProjectDetailsById
 {
     public class GetProjectDetailsByIdQuery : IRequest<Result<ProjectDetailDto>>
     {
-        public GetProjectDetailsByIdQuery(int projectId, IPrincipal user)
+        public GetProjectDetailsByIdQuery(IPrincipal user, int projectId)
         {
             ProjectId = projectId;
             User = user;
