@@ -1,94 +1,66 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Common.Contracts;
 using UOStudio.Common.Core;
-using UOStudio.Server.Api.Models;
 using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Api.Services
 {
-    public class UserService : IUserService
+    public sealed class UserService : IUserService
     {
         private readonly ILogger _logger;
-        private readonly ITokenService _tokenService;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;
         private readonly IPasswordVerifier _passwordVerifier;
 
         public UserService(
             ILogger logger,
-            ITokenService tokenService,
             IDbContextFactory<UOStudioContext> contextFactory,
             IPasswordVerifier passwordVerifier)
         {
             _logger = logger;
-            _tokenService = tokenService;
             _contextFactory = contextFactory;
             _passwordVerifier = passwordVerifier;
         }
 
-        public async Task<Result<Tokens>> LoginAsync(
-            AuthenticationRequest authenticationRequest,
-            CancellationToken cancellationToken)
+        public async Task<Result> ValidateCredentialsAsync(UserCredentials userCredentials, CancellationToken cancellationToken = default)
         {
             await using var db = _contextFactory.CreateDbContext();
-            var user = await db.Users
-                .Include(u => u.Permissions)
-                .FirstOrDefaultAsync(u => u.Name == authenticationRequest.UserName, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
 
-            return user == null || !_passwordVerifier.Verify(authenticationRequest.Password, user.Password)
-                ? Result.Failure<Tokens>("Invalid credentials")
-                : Result.Success(await GenerateTokensAsync(db, user, cancellationToken));
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Name == userCredentials.UserName, cancellationToken);
+            var isValid = user != null && AreCredentialsValid(userCredentials, user);
+            return !isValid
+                ? Result.Failure("Invalid credentials")
+                : Result.Success();
         }
 
-        public async Task<Result> RefreshAsync(int userId, string refreshToken, CancellationToken cancellationToken)
+        public async Task<Result> UpdateConnectionTicketAsync(string userName, string connectionTicket, CancellationToken cancellationToken = default)
         {
             await using var db = _contextFactory.CreateDbContext();
-            var user = await db.Users
-                .Include(u => u.RefreshToken)
-                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
 
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Name == userName, cancellationToken);
             if (user == null)
             {
-                return Result.Failure<Task>("User not found");
+                return Result.Failure("User does not exist");
             }
 
-            if (string.IsNullOrEmpty(user.RefreshToken?.Value))
-            {
-                return Result.Failure<Task>("User never logged in");
-            }
+            user.ConnectionTicket = connectionTicket;
+            await db.SaveChangesAsync(cancellationToken);
 
-            return user.RefreshToken.Value != refreshToken
-                ? Result.Failure<Task>("Incorrect refresh token")
-                : Result.Success(await GenerateTokensAsync(db, user, cancellationToken));
+            return Result.Success();
         }
 
-        private async Task<Tokens> GenerateTokensAsync(DbContext db, User user, CancellationToken cancellationToken)
+        public async Task<bool> ValidateConnectionTicketAsync(string connectionTicket)
         {
-            var refreshToken = _tokenService.GenerateRefreshTokenAsync();
-            user.RefreshToken = new RefreshToken { Value = refreshToken };
+            await using var db = _contextFactory.CreateDbContext();
 
-            try
-            {
-                db.Update(user);
-                await db.SaveChangesAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.ToString());
-            }
-
-            var accessToken = await _tokenService.GenerateAccessToken(user, refreshToken);
-            return new Tokens
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken
-            };
+            var userForConnectionTicket = await db.Users.SingleOrDefaultAsync(u => u.ConnectionTicket == connectionTicket);
+            return userForConnectionTicket != null;
         }
+
+        private bool AreCredentialsValid(UserCredentials userCredentials, User user)
+            => user.Name == userCredentials.UserName && _passwordVerifier.Verify(userCredentials.Password, user.Password);
     }
 }

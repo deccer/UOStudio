@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using UOStudio.Common.Contracts;
-using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Api.Services
 {
     public interface ITokenService
     {
-        Task<string> GenerateAccessToken(User user, string refreshToken);
+        Task<Result<TokenPair>> GetTokenAsync(string userName);
 
-        string GenerateRefreshTokenAsync();
+        Task<Result<TokenPair>> GetTokenFromRefreshTokenAsync(string refreshToken);
     }
 }
