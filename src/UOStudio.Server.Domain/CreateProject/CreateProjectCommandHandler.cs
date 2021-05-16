@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -8,6 +9,7 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Domain.CreateProject
 {
+    [UsedImplicitly]
     public sealed class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, Result<int>>
     {
         private readonly ILogger _logger;

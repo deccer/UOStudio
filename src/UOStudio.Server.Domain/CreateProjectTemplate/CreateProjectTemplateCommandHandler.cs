@@ -9,6 +9,7 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Domain.CreateProjectTemplate
 {
+    [UsedImplicitly]
     public sealed class CreateProjectTemplateCommandHandler : IRequestHandler<CreateProjectTemplateCommand, Result<int>>
     {
         private readonly ILogger _logger;

@@ -9,7 +9,8 @@ using UOStudio.Server.Domain.Mappers;
 
 namespace UOStudio.Server.Domain.GetProjectDetailsByName
 {
-    public class GetProjectDetailsByNameQueryHandler : IRequestHandler<GetProjectDetailsByNameQuery, Result<ProjectDetailDto>>
+    [UsedImplicitly]
+    public sealed class GetProjectDetailsByNameQueryHandler : IRequestHandler<GetProjectDetailsByNameQuery, Result<ProjectDetailDto>>
     {
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;
 
