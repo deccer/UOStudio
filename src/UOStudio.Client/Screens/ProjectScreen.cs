@@ -8,7 +8,7 @@ namespace UOStudio.Client.Screens
     {
         private readonly ILogger _logger;
         private readonly string _projectDirectory;
-        private Map _map;
+        private readonly Map _map;
         private Camera _camera;
 
         public ProjectScreen(Game game, ILogger logger, string projectDirectory)

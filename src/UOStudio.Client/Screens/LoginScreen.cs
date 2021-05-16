@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Serilog;
 using UOStudio.Client.Core.Extensions;
+using UOStudio.Client.Services;
 using UOStudio.Client.UI;
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -14,6 +15,8 @@ namespace UOStudio.Client.Screens
     {
         private readonly ILogger _logger;
         private readonly IWindowProvider _windowProvider;
+        private readonly INetworkClient _networkClient;
+        private readonly IContext _context;
         private SpriteBatch _spriteBatch;
         private MouseState _mouseState;
         private ButtonState _mouseLeftButton;
@@ -25,11 +28,15 @@ namespace UOStudio.Client.Screens
         public LoginScreen(
             Game game,
             ILogger logger,
-            IWindowProvider windowProvider)
+            IWindowProvider windowProvider,
+            INetworkClient networkClient,
+            IContext context)
             : base(game)
         {
             _logger = logger;
             _windowProvider = windowProvider;
+            _networkClient = networkClient;
+            _context = context;
         }
 
         public override void Update(GameTime gameTime)
@@ -44,7 +51,7 @@ namespace UOStudio.Client.Screens
             var r = new RectangleF(32, 32, 196, 32);
             var c = r.Contains(_mousePosition)
                 ? _mouseLeftButton == ButtonState.Pressed
-                    ? Color.Firebrick
+                    ? Color.OrangeRed
                     : Color.Yellow
                 : Color.Peru;
             var t = r.Contains(_mousePosition)
@@ -76,6 +83,16 @@ namespace UOStudio.Client.Screens
                         ImGui.EndMenu();
                     }
 
+                    if (_context.User.IsInRole("CanCreateProjectTemplate") && ImGui.BeginMenu("Administrator"))
+                    {
+                        if (ImGui.MenuItem("Project Templates"))
+                        {
+                        }
+
+                        ImGui.EndMenu();
+                    }
+
+                    /*
                     var themes = GetThemes();
                     ImGui.SameLine(ImGui.GetWindowWidth() - 360);
                     ImGui.SetNextItemWidth(60);
@@ -103,6 +120,7 @@ namespace UOStudio.Client.Screens
                     if (ImGui.Combo("##Language", ref _selectedLanguage, languages, languages.Length))
                     {
                     }
+                    */
 
                     ImGui.EndMenuBar();
                 }

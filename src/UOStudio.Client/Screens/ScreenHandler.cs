@@ -96,15 +96,7 @@ namespace UOStudio.Client.Screens
             imGuiRenderer.BeginLayout(gameTime);
             _activeScreen?.DrawUserInterface(gameTime);
 
-            if (ImGui.Begin("Colors"))
-            {
-                ImGui.SliderFloat3("text", ref _colorForText, 0.0f, 1.0f);
-                ImGui.SliderFloat3("head", ref _colorForHead, 0.0f, 1.0f);
-                ImGui.SliderFloat3("area", ref _colorForArea, 0.0f, 1.0f);
-                ImGui.SliderFloat3("body", ref _colorForBody, 0.0f, 1.0f);
-                ImGui.SliderFloat3("pops", ref _colorForPops, 0.0f, 1.0f);
-                imGuiRenderer.EasyTheming(ImGui.GetStyle(), _colorForText, _colorForHead, _colorForArea, _colorForBody);
-            }
+            ImGui.ShowDemoWindow();
 
             _windowProvider.Draw();
             imGuiRenderer.EndLayout();
