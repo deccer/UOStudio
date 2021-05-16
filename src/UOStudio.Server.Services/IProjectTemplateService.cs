@@ -5,6 +5,6 @@ namespace UOStudio.Server.Services
 {
     public interface IProjectTemplateService
     {
-        Task<Result<string>> CreateProjectTemplate(string templateName, string clientVersion);
+        Task<Result<string>> CreateProjectTemplateAsync(string templateName);
     }
 }
