@@ -31,6 +31,8 @@ namespace UOStudio.Server.Data
 
         public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
 
+        public DbSet<BackgroundTask> BackgroundTasks { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -48,6 +50,9 @@ namespace UOStudio.Server.Data
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Permissions)
                 .WithMany(p => p.Users);
+
+            modelBuilder.Entity<BackgroundTask>()
+                .HasKey(t => t.Id);
         }
 
         [Conditional("DEBUG")]
