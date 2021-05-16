@@ -12,7 +12,7 @@ using UOStudio.Server.Data;
 namespace UOStudio.Server.Domain.GetUserById
 {
     [UsedImplicitly]
-    public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<UserDto>>
+    internal sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<UserDto>>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;

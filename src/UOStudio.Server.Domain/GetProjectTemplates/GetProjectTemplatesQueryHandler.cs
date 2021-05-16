@@ -13,7 +13,7 @@ using UOStudio.Server.Data;
 namespace UOStudio.Server.Domain.GetProjectTemplates
 {
     [UsedImplicitly]
-    public sealed class GetProjectTemplatesQueryHandler : IRequestHandler<GetProjectTemplatesQuery, Result<IList<ProjectTemplateDto>>>
+    internal sealed class GetProjectTemplatesQueryHandler : IRequestHandler<GetProjectTemplatesQuery, Result<IList<ProjectTemplateDto>>>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;

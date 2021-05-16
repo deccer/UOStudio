@@ -11,7 +11,7 @@ using UOStudio.Server.Services;
 namespace UOStudio.Server.Domain.CreateProjectTemplate
 {
     [UsedImplicitly]
-    public sealed class CreateProjectTemplateCommandHandler : IRequestHandler<CreateProjectTemplateCommand, Result<int>>
+    internal sealed class CreateProjectTemplateCommandHandler : IRequestHandler<CreateProjectTemplateCommand, Result<int>>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;

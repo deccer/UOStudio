@@ -15,7 +15,7 @@ using UOStudio.Server.Services;
 namespace UOStudio.Server.Domain.JoinProject
 {
     [UsedImplicitly]
-    public sealed class JoinProjectCommandHandler : IRequestHandler<JoinProjectCommand, Result<JoinProjectResult>>
+    internal sealed class JoinProjectCommandHandler : IRequestHandler<JoinProjectCommand, Result<JoinProjectResult>>
     {
         private readonly ILogger _logger;
         private readonly IProjectService _projectService;
@@ -43,7 +43,8 @@ namespace UOStudio.Server.Domain.JoinProject
 
             var userId = request.User.GetUserId();
             await using var db = _contextFactory.CreateDbContext();
-            var user = await db.Users.FindAsync(new object[] { userId }, cancellationToken);
+            var user = await db.Users
+                .FindAsync(new object[] { userId }, cancellationToken);
             if (user == null)
             {
                 return Result.Failure<JoinProjectResult>("User not found");

@@ -12,7 +12,7 @@ using UOStudio.Server.Data;
 namespace UOStudio.Server.Domain.CreateUser
 {
     [UsedImplicitly]
-    public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<int>>
+    internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<int>>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;

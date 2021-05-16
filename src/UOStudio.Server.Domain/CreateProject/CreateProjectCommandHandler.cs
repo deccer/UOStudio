@@ -10,7 +10,7 @@ using UOStudio.Server.Data;
 namespace UOStudio.Server.Domain.CreateProject
 {
     [UsedImplicitly]
-    public sealed class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, Result<int>>
+    internal sealed class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, Result<int>>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;

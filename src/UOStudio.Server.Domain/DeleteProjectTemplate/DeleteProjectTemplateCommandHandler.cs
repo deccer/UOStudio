@@ -11,7 +11,7 @@ using UOStudio.Server.Data;
 namespace UOStudio.Server.Domain.DeleteProjectTemplate
 {
     [UsedImplicitly]
-    public sealed class DeleteProjectTemplateCommandHandler : IRequestHandler<DeleteProjectTemplateCommand, Result>
+    internal sealed class DeleteProjectTemplateCommandHandler : IRequestHandler<DeleteProjectTemplateCommand, Result>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;

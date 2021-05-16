@@ -11,7 +11,7 @@ using UOStudio.Server.Domain.Mappers;
 namespace UOStudio.Server.Domain.GetProjectDetailsByName
 {
     [UsedImplicitly]
-    public sealed class GetProjectDetailsByNameQueryHandler : IRequestHandler<GetProjectDetailsByNameQuery, Result<ProjectDetailDto>>
+    internal sealed class GetProjectDetailsByNameQueryHandler : IRequestHandler<GetProjectDetailsByNameQuery, Result<ProjectDetailDto>>
     {
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;
 

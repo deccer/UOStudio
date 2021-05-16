@@ -13,7 +13,7 @@ using UOStudio.Server.Data;
 namespace UOStudio.Server.Domain.GetUsers
 {
     [UsedImplicitly]
-    public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<IList<UserDto>>>
+    internal sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<IList<UserDto>>>
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;
@@ -35,6 +35,7 @@ namespace UOStudio.Server.Domain.GetUsers
 
             await using var db = _contextFactory.CreateDbContext();
             var users = await db.Users
+                .AsNoTracking()
                 .Include(u => u.Permissions)
                 .Select(u => new UserDto { Id = u.Id, Name = u.Name })
                 .ToListAsync(cancellationToken);
