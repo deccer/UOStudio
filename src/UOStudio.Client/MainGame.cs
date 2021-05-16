@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Serilog;
 using UOStudio.Client.Screens;
+using UOStudio.Client.Services;
 using UOStudio.Client.UI;
 using Num = System.Numerics;
 
@@ -15,6 +16,7 @@ namespace UOStudio.Client
         private readonly IScreenHandler _screenHandler;
         private readonly INetworkClient _networkClient;
         private readonly IWindowProvider _windowProvider;
+        private readonly IContext _context;
         private readonly FrameTimeCalculator _ftc;
 
         private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f, 1.0f);
@@ -30,7 +32,8 @@ namespace UOStudio.Client
             GraphicsSettings graphicsSettings,
             IScreenHandler screenHandler,
             INetworkClient networkClient,
-            IWindowProvider windowProvider)
+            IWindowProvider windowProvider,
+            IContext context)
         {
             _logger = logger;
             FNALoggerEXT.LogError = message => _logger.Error("FNA: {@Message}", message);
@@ -40,6 +43,7 @@ namespace UOStudio.Client
             _screenHandler = screenHandler;
             _networkClient = networkClient;
             _windowProvider = windowProvider;
+            _context = context;
             _windowProvider.Load();
             _ftc = new FrameTimeCalculator(this);
 
@@ -61,7 +65,6 @@ namespace UOStudio.Client
                 GraphicsProfile = GraphicsProfile.HiDef,
                 SynchronizeWithVerticalRetrace = false
             };
-            graphics.ApplyChanges();
 
             IsMouseVisible = true;
             IsFixedTimeStep = false;
@@ -74,7 +77,7 @@ namespace UOStudio.Client
 
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
-            _screenHandler.LoadScreen(new LoginScreen(this, _logger, _windowProvider));
+            _screenHandler.LoadScreen(new LoginScreen(this, _logger, _windowProvider, _networkClient, _context));
             _screenHandler.Initialize(this);
 
             _currentKeyboardState = Keyboard.GetState();

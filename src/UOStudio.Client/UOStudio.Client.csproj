@@ -26,6 +26,8 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Polly" Version="7.2.1" />
+        <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
@@ -41,6 +43,7 @@
         <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
         <ProjectReference Include="..\..\external\SpriteFontPlus\src\SpriteFontPlus.FNA.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Services\UOStudio.Client.Services.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Core\UOStudio.Common.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Network\UOStudio.Common.Network.csproj" />
@@ -111,6 +114,12 @@
         <None Update="Content\Fonts\AdventPro-Regular.ttf">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Content\Fonts\Ruda-Regular.ttf">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="UOStudio.Client.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -126,5 +135,9 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>ResGeneral.resx</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Extensions" />
     </ItemGroup>
 </Project>
