@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
@@ -55,9 +56,11 @@ namespace UOStudio.Client.UI
             var io = ImGui.GetIO();
             io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
 
+            io.Fonts.AddFontFromFileTTF("Content/Fonts/Ruda-Regular.ttf", 20);
+
             var style = ImGui.GetStyle();
 
-            SetStyle2(style);
+            SetStyleDarker(style);
 
             style.Colors[(int)ImGuiCol.DockingEmptyBg] = Num.Vector4.Zero;
             SetupInput(io);
@@ -117,6 +120,7 @@ namespace UOStudio.Client.UI
             RenderDrawData(ImGui.GetDrawData());
         }
 
+        [SuppressMessage("ReSharper", "S1121")]
         protected void SetupInput(ImGuiIOPtr io)
         {
             _keys.Add(io.KeyMap[(int)ImGuiKey.Tab] = (int)Keys.Tab);
@@ -412,6 +416,57 @@ namespace UOStudio.Client.UI
             style.Colors[(int)ImGuiCol.PlotHistogramHovered] = ch2;
             style.Colors[(int)ImGuiCol.TextSelectedBg] = new Num.Vector4(0.00f, 0.00f, 1.00f, 0.35f);
             style.Colors[(int)ImGuiCol.ModalWindowDimBg] = new Num.Vector4(0.20f, 0.20f, 0.20f, 0.35f);
+        }
+
+        private void SetStyleDarker(ImGuiStylePtr style)
+        {
+            style.WindowPadding = new Num.Vector2(12, 12);
+            style.WindowRounding = 5.0f;
+            style.FramePadding = new Num.Vector2(4, 4);
+            style.FrameRounding = 4.0f;
+            style.ItemSpacing = new Num.Vector2(8, 8);
+            style.ItemInnerSpacing = new Num.Vector2(4, 4);
+            style.IndentSpacing = 16.0f;
+            style.ScrollbarSize = 16.0f;
+            style.ScrollbarRounding = 8.0f;
+            style.GrabMinSize = 4.0f;
+            style.GrabRounding = 3.0f;
+
+            style.Colors[(int)ImGuiCol.Text] = new Num.Vector4(0.80f, 0.80f, 0.83f, 1.00f);
+            style.Colors[(int)ImGuiCol.TextDisabled] = new Num.Vector4(0.24f, 0.23f, 0.29f, 1.00f);
+            style.Colors[(int)ImGuiCol.WindowBg] = new Num.Vector4(0.06f, 0.05f, 0.07f, 1.00f);
+            style.Colors[(int)ImGuiCol.ChildBg] = new Num.Vector4(0.07f, 0.07f, 0.09f, 1.00f);
+            style.Colors[(int)ImGuiCol.PopupBg] = new Num.Vector4(0.07f, 0.07f, 0.09f, 1.00f);
+            style.Colors[(int)ImGuiCol.Border] = new Num.Vector4(0.20f, 0.20f, 0.23f, 0.88f);
+            style.Colors[(int)ImGuiCol.BorderShadow] = new Num.Vector4(0.92f, 0.91f, 0.88f, 0.00f);
+            style.Colors[(int)ImGuiCol.FrameBg] = new Num.Vector4(0.10f, 0.09f, 0.12f, 1.00f);
+            style.Colors[(int)ImGuiCol.FrameBgHovered] = new Num.Vector4(0.24f, 0.23f, 0.29f, 1.00f);
+            style.Colors[(int)ImGuiCol.FrameBgActive] = new Num.Vector4(0.56f, 0.56f, 0.58f, 1.00f);
+            style.Colors[(int)ImGuiCol.TitleBg] = new Num.Vector4(0.10f, 0.09f, 0.12f, 1.00f);
+            style.Colors[(int)ImGuiCol.TitleBgCollapsed] = new Num.Vector4(1.00f, 0.98f, 0.95f, 0.75f);
+            style.Colors[(int)ImGuiCol.TitleBgActive] = new Num.Vector4(0.07f, 0.07f, 0.09f, 1.00f);
+            style.Colors[(int)ImGuiCol.MenuBarBg] = new Num.Vector4(0.10f, 0.09f, 0.12f, 1.00f);
+            style.Colors[(int)ImGuiCol.ScrollbarBg] = new Num.Vector4(0.10f, 0.09f, 0.12f, 1.00f);
+            style.Colors[(int)ImGuiCol.ScrollbarGrab] = new Num.Vector4(0.80f, 0.80f, 0.83f, 0.31f);
+            style.Colors[(int)ImGuiCol.ScrollbarGrabHovered] = new Num.Vector4(0.56f, 0.56f, 0.58f, 1.00f);
+            style.Colors[(int)ImGuiCol.ScrollbarGrabActive] = new Num.Vector4(0.06f, 0.05f, 0.07f, 1.00f);
+            style.Colors[(int)ImGuiCol.CheckMark] = new Num.Vector4(0.80f, 0.80f, 0.83f, 0.31f);
+            style.Colors[(int)ImGuiCol.SliderGrab] = new Num.Vector4(0.80f, 0.80f, 0.83f, 0.31f);
+            style.Colors[(int)ImGuiCol.SliderGrabActive] = new Num.Vector4(0.06f, 0.05f, 0.07f, 1.00f);
+            style.Colors[(int)ImGuiCol.Button] = new Num.Vector4(0.10f, 0.09f, 0.12f, 1.00f);
+            style.Colors[(int)ImGuiCol.ButtonHovered] = new Num.Vector4(0.24f, 0.23f, 0.29f, 1.00f);
+            style.Colors[(int)ImGuiCol.ButtonActive] = new Num.Vector4(0.56f, 0.56f, 0.58f, 1.00f);
+            style.Colors[(int)ImGuiCol.Header] = new Num.Vector4(0.10f, 0.09f, 0.12f, 1.00f);
+            style.Colors[(int)ImGuiCol.HeaderHovered] = new Num.Vector4(0.56f, 0.56f, 0.58f, 1.00f);
+            style.Colors[(int)ImGuiCol.HeaderActive] = new Num.Vector4(0.06f, 0.05f, 0.07f, 1.00f);
+            style.Colors[(int)ImGuiCol.ResizeGrip] = new Num.Vector4(0.00f, 0.00f, 0.00f, 0.00f);
+            style.Colors[(int)ImGuiCol.ResizeGripHovered] = new Num.Vector4(0.56f, 0.56f, 0.58f, 1.00f);
+            style.Colors[(int)ImGuiCol.ResizeGripActive] = new Num.Vector4(0.06f, 0.05f, 0.07f, 1.00f);
+            style.Colors[(int)ImGuiCol.PlotLines] = new Num.Vector4(0.40f, 0.39f, 0.38f, 0.63f);
+            style.Colors[(int)ImGuiCol.PlotLinesHovered] = new Num.Vector4(0.25f, 1.00f, 0.00f, 1.00f);
+            style.Colors[(int)ImGuiCol.PlotHistogram] = new Num.Vector4(0.40f, 0.39f, 0.38f, 0.63f);
+            style.Colors[(int)ImGuiCol.PlotHistogramHovered] = new Num.Vector4(0.25f, 1.00f, 0.00f, 1.00f);
+            style.Colors[(int)ImGuiCol.TextSelectedBg] = new Num.Vector4(0.25f, 1.00f, 0.00f, 0.43f);
         }
 
         private void SetStyle2(ImGuiStylePtr style)
