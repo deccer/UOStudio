@@ -32,11 +32,13 @@ namespace UOStudio.Server.Domain.GetProjectTemplates
         {
             await using var db = _contextFactory.CreateDbContext();
 
-            var projectTemplates = db.ProjectTemplates.AsQueryable().Select(pt => new ProjectTemplateDto
-            {
-                Id = pt.Id,
-                Name = pt.Name
-            }).ToList();
+            var projectTemplates = db.ProjectTemplates
+                .AsNoTracking()
+                .AsQueryable().Select(pt => new ProjectTemplateDto
+                {
+                    Id = pt.Id,
+                    Name = pt.Name
+                }).ToList();
 
             return Result.Success<IList<ProjectTemplateDto>>(projectTemplates);
         }

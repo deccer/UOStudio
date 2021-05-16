@@ -26,6 +26,7 @@ namespace UOStudio.Server.Domain.GetProjectDetailsById
         {
             await using var db = _contextFactory.CreateDbContext();
             var project = await db.Projects
+                .AsNoTracking()
                 .Include(p => p.Template)
                 .Include(p => p.AllowedUsers)
                 .Include(p => p.CreatedBy)
