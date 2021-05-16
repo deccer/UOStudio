@@ -12,9 +12,9 @@ using UOStudio.Server.Domain.GetProjectTemplates;
 
 namespace UOStudio.Server.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProjectTemplateController : ControllerBase
     {
         private readonly ILogger _logger;
