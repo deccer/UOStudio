@@ -23,7 +23,9 @@ namespace UOStudio.Server.Data
 
         public string Password { get; set; }
 
-        public virtual RefreshToken RefreshToken { get; set; }
+        public string RefreshToken { get; set; }
+
+        public string ConnectionTicket { get; set; }
 
         public virtual ICollection<Permission> Permissions { get; set; }
 

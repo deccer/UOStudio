@@ -64,10 +64,10 @@ namespace UOStudio.Server.Data
                 return;
             }
 
-            var adminUser = await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(Users, u => u.Name == "admin", CancellationToken.None);
-            var userRex = await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(Users, u => u.Name == "rex", CancellationToken.None);
-            var userQuick = await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(Users, u => u.Name == "quick", CancellationToken.None);
-            var userBlocked = await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(Users, u => u.Name == "blocked", CancellationToken.None);
+            var adminUser = await Users.FirstOrDefaultAsync(u => u.Name == "admin", CancellationToken.None);
+            var userRex = await Users.FirstOrDefaultAsync(u => u.Name == "rex", CancellationToken.None);
+            var userQuick = await Users.FirstOrDefaultAsync(u => u.Name == "quick", CancellationToken.None);
+            var userBlocked = await Users.FirstOrDefaultAsync(u => u.Name == "blocked", CancellationToken.None);
 
             adminUser ??= new User
             {
@@ -97,32 +97,32 @@ namespace UOStudio.Server.Data
             await Users.AddRangeAsync(adminUser, userRex, userQuick, userBlocked);
             await SaveChangesAsync();
 
-            ProjectTemplate projectTemplate5000 = null;
-            ProjectTemplate projectTemplate7000 = null;
-            ProjectTemplate projectTemplate708711 = null;
+            ProjectTemplate projectTemplateVanilla5000 = null;
+            ProjectTemplate projectTemplateVanilla7000 = null;
+            ProjectTemplate projectTemplateVanilla708711 = null;
 
-            projectTemplate5000 = new ProjectTemplate
+            projectTemplateVanilla5000 = new ProjectTemplate
             {
-                Name = "Template 5.0.0.0",
+                Name = "Vanilla 5.0.0.0",
                 ClientVersion = "5.0.0.0",
                 Location = "D:\\UO\\Vanilla\\5.0.0.0\\5.0.0.0\\Server"
             };
 
-            projectTemplate7000 = new ProjectTemplate
+            projectTemplateVanilla7000 = new ProjectTemplate
             {
-                Name = "Template 7.0.0.0",
+                Name = "Vanilla 7.0.0.0",
                 ClientVersion = "7.0.0.0",
-                Location = "D:\\UO\\Vanilla\\7.0.0.0\\7.0.0.0\\Server"
+                Location = @"D:\Private\Code\Projects\UOStudio\src\UOStudio.Server.Api\bin\Debug\ProjectTemplates\Vanilla-7.0.0.0\"
             };
 
-            projectTemplate708711 = new ProjectTemplate
+            projectTemplateVanilla708711 = new ProjectTemplate
             {
-                Name = "Template 7.0.87.11",
+                Name = "Vanilla 7.0.87.11",
                 ClientVersion = "7.0.87.11",
                 Location = "D:\\UO\\Vanilla\\7.0.87.11\\7.0.87.11\\Server"
             };
 
-            await ProjectTemplates.AddRangeAsync(projectTemplate5000, projectTemplate7000, projectTemplate708711);
+            await ProjectTemplates.AddRangeAsync(projectTemplateVanilla5000, projectTemplateVanilla7000, projectTemplateVanilla708711);
             await SaveChangesAsync();
 
             var privateProject5000 = new Project
@@ -130,7 +130,7 @@ namespace UOStudio.Server.Data
                 Name = "Private Project 1",
                 Description = "Some Private Project Rex is working on, based on 5.0.0.0",
                 IsPublic = false,
-                Template = projectTemplate5000,
+                Template = projectTemplateVanilla5000,
                 CreatedBy = userRex,
                 CreatedAt = DateTimeOffset.Now,
                 AllowedUsers = new List<User> { userQuick, userRex }
@@ -141,7 +141,7 @@ namespace UOStudio.Server.Data
                 Name = "Private Project 1",
                 Description = "Some Private Project Rex is working on, based on 7.0.0.0",
                 IsPublic = false,
-                Template = projectTemplate7000,
+                Template = projectTemplateVanilla7000,
                 CreatedBy = userQuick,
                 CreatedAt = DateTimeOffset.Now,
                 AllowedUsers = new List<User> { userQuick, adminUser }
@@ -152,7 +152,7 @@ namespace UOStudio.Server.Data
                 Name = "Public Project",
                 Description = "Anybody can join",
                 IsPublic = true,
-                Template = projectTemplate708711,
+                Template = projectTemplateVanilla708711,
                 CreatedBy = adminUser,
                 CreatedAt = DateTimeOffset.Now,
             };
