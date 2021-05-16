@@ -1,6 +1,6 @@
 ﻿namespace UOStudio.Common.Contracts
 {
-    public class AuthenticationRequest
+    public class UserCredentials
     {
         public string UserName { get; set; }
 

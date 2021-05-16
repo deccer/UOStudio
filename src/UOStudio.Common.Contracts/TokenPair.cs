@@ -1,6 +1,6 @@
-﻿namespace UOStudio.Server.Api.Models
+﻿namespace UOStudio.Common.Contracts
 {
-    public class Tokens
+    public class TokenPair
     {
         public string AccessToken { get; set; }
 
