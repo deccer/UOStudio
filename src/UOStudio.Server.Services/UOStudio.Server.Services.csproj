@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" Version="2.14.1" />
+      <PackageReference Include="CSharpFunctionalExtensions" Version="2.15.1" />
       <PackageReference Include="Serilog" Version="2.10.0" />
     </ItemGroup>
 
