@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -12,12 +13,13 @@ namespace UOStudio.Server.Domain.CreateProjectTemplate
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly IProjectTemplateService _projectTemplateService;
 
         public CreateProjectTemplateCommandHandler(
             ILogger logger,
             IDbContextFactory<UOStudioContext> contextFactory)
         {
-            _logger = logger;
+            _logger = logger.ForContext<CreateProjectTemplateCommandHandler>();
             _contextFactory = contextFactory;
         }
 

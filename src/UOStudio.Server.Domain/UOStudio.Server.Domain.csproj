@@ -15,5 +15,6 @@
     <ItemGroup>
       <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
       <ProjectReference Include="..\UOStudio.Server.Data\UOStudio.Server.Data.csproj" />
+      <ProjectReference Include="..\UOStudio.Server.Services\UOStudio.Server.Services.csproj" />
     </ItemGroup>
 </Project>

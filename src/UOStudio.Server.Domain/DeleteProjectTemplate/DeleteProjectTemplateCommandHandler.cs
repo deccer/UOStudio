@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -9,6 +10,7 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Domain.DeleteProjectTemplate
 {
+    [UsedImplicitly]
     public sealed class DeleteProjectTemplateCommandHandler : IRequestHandler<DeleteProjectTemplateCommand, Result>
     {
         private readonly ILogger _logger;
@@ -18,7 +20,7 @@ namespace UOStudio.Server.Domain.DeleteProjectTemplate
             ILogger logger,
             IDbContextFactory<UOStudioContext> contextFactory)
         {
-            _logger = logger;
+            _logger = logger.ForContext<DeleteProjectTemplateCommandHandler>();
             _contextFactory = contextFactory;
         }
 

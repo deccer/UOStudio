@@ -22,11 +22,13 @@ namespace UOStudio.Server.Domain.GetProjectTemplates
             ILogger logger,
             IDbContextFactory<UOStudioContext> contextFactory)
         {
-            _logger = logger;
+            _logger = logger.ForContext<GetProjectTemplatesQueryHandler>();
             _contextFactory = contextFactory;
         }
 
-        public async Task<Result<IList<ProjectTemplateDto>>> Handle(GetProjectTemplatesQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IList<ProjectTemplateDto>>> Handle(
+            GetProjectTemplatesQuery request,
+            CancellationToken cancellationToken)
         {
             await using var db = _contextFactory.CreateDbContext();
 

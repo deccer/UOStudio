@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -10,6 +11,7 @@ using UOStudio.Server.Data;
 
 namespace UOStudio.Server.Domain.CreateUser
 {
+    [UsedImplicitly]
     public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<int>>
     {
         private readonly ILogger _logger;
@@ -17,7 +19,7 @@ namespace UOStudio.Server.Domain.CreateUser
 
         public CreateUserCommandHandler(ILogger logger, IDbContextFactory<UOStudioContext> contextFactory)
         {
-            _logger = logger;
+            _logger = logger.ForContext<CreateUserCommandHandler>();
             _contextFactory = contextFactory;
         }
 

@@ -17,7 +17,7 @@ namespace UOStudio.Server.Domain.CreateProject
             ILogger logger,
             IDbContextFactory<UOStudioContext> contextFactory)
         {
-            _logger = logger;
+            _logger = logger.ForContext<CreateProjectCommandHandler>();
             _contextFactory = contextFactory;
         }
 
