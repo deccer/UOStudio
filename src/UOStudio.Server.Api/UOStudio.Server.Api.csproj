@@ -25,6 +25,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UOStudio.Server.Domain\UOStudio.Server.Domain.csproj" />
+      <ProjectReference Include="..\UOStudio.Server\UOStudio.Server.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models" />
     </ItemGroup>
 
 </Project>
