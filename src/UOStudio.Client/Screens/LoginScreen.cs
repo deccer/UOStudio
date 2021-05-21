@@ -83,45 +83,6 @@ namespace UOStudio.Client.Screens
                         ImGui.EndMenu();
                     }
 
-                    if (_context.User.IsInRole("CanCreateProjectTemplate") && ImGui.BeginMenu("Administrator"))
-                    {
-                        if (ImGui.MenuItem("Project Templates"))
-                        {
-                        }
-
-                        ImGui.EndMenu();
-                    }
-
-                    /*
-                    var themes = GetThemes();
-                    ImGui.SameLine(ImGui.GetWindowWidth() - 360);
-                    ImGui.SetNextItemWidth(60);
-                    ImGui.TextUnformatted("Theme");
-                    ImGui.SameLine(ImGui.GetWindowWidth() - 300);
-                    ImGui.SetNextItemWidth(112);
-                    if (ImGui.Combo("##Theme", ref _selectedThemeIndex, themes, themes.Length))
-                    {
-                        if (_selectedThemeIndex == 0)
-                        {
-                            ImGui.StyleColorsLight();
-                        }
-                        else if (_selectedThemeIndex == 1)
-                        {
-                            ImGui.StyleColorsDark();
-                        }
-                    }
-
-                    var languages = GetLanguages();
-                    ImGui.SetNextItemWidth(60);
-                    ImGui.SameLine(ImGui.GetWindowWidth() - 180);
-                    ImGui.TextUnformatted("Language");
-                    ImGui.SameLine(ImGui.GetWindowWidth() - 120);
-                    ImGui.SetNextItemWidth(112);
-                    if (ImGui.Combo("##Language", ref _selectedLanguage, languages, languages.Length))
-                    {
-                    }
-                    */
-
                     ImGui.EndMenuBar();
                 }
 
