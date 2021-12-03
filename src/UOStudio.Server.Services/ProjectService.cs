@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Options;
 using Serilog;
 using UOStudio.Server.Common;
 
@@ -21,12 +22,12 @@ namespace UOStudio.Server.Services
         public ProjectService(
             ILogger logger,
             ISevenZipService sevenZipService,
-            ServerSettings serverSettings
+            IOptions<ServerSettings> serverSettings
         )
         {
             _logger = logger;
             _sevenZipService = sevenZipService;
-            _serverSettings = serverSettings;
+            _serverSettings = serverSettings.Value;
         }
 
         public Result<bool> CreateProject(string projectTemplatePath, int projectId)

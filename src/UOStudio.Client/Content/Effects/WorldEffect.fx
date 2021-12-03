@@ -11,6 +11,8 @@ struct VSOutput
     float3 Normal     : NORMAL0;
     float3 Position   : POSITION1;
     float4 PositionPS : SV_Position;
+
+    int VertexIndex;
 };
 
 Texture3D T_Atlas : register(t0);
@@ -27,7 +29,7 @@ cbuffer ProjectionMatrix : register(b1)
     float4x4 M_WorldViewProj;
 };
 
-VSOutput VSMain(VSInput input)
+VSOutput VSMain(VSInput input, uint primitiveId : SV_PrimitiveID)
 {
     VSOutput output;
 
@@ -36,6 +38,7 @@ VSOutput VSMain(VSInput input)
     output.PositionPS = mul(position, M_WorldViewProj);
     output.UVW = float3(input.UV, input.Position.z);
     output.Normal = input.Normal;
+    output.VertexIndex = primitiveId;
 
     return output;
 }
@@ -49,7 +52,13 @@ float4 PSMain(VSOutput input) : SV_Target0
 
     float3 diffuse = float3(0.5, 0.5, 0.5) + saturate(dot(lightDirection, input.Normal)) * lightColor;
 
-    return tex3D(S_Atlas, input.UVW);// * float4(diffuse, 1.0f);
+    float3 c = float3(1.0, 0.1, 1.0);
+    if (input.VertexIndex % 2 == 0)
+    {
+        c = float3(0.9, 0.7, 0.0);
+    }
+
+    return (1.0000 * float4(c, 1.0f));
 }
 
 technique WorldEffect

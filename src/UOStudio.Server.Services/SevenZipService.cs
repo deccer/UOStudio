@@ -1,16 +1,19 @@
-﻿using System.IO;
+using System.IO;
 using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Options;
 
 namespace UOStudio.Server.Services
 {
     public sealed class SevenZipService : ISevenZipService
     {
-        private readonly SevenZipOptions _sevenZipOptions;
+        private readonly SevenZipSettings _sevenZipOptions;
         private readonly ICommandRunner _commandRunner;
 
-        public SevenZipService(ICommandRunner commandRunner, SevenZipOptions sevenZipOptions)
+        public SevenZipService(
+            ICommandRunner commandRunner,
+            IOptions<SevenZipSettings> sevenZipOptions)
         {
-            _sevenZipOptions = sevenZipOptions;
+            _sevenZipOptions = sevenZipOptions.Value;
             _commandRunner = commandRunner;
         }
 

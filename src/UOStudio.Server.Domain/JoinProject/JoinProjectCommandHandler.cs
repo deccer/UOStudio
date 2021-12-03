@@ -8,7 +8,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Common.Core.Extensions;
-using UOStudio.Server.Common;
 using UOStudio.Server.Data;
 using UOStudio.Server.Services;
 
@@ -19,18 +18,15 @@ namespace UOStudio.Server.Domain.JoinProject
     {
         private readonly ILogger _logger;
         private readonly IProjectService _projectService;
-        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly IDbContextFactory<UOStudioContext> _contextFactory;
 
         public JoinProjectCommandHandler(
             ILogger logger,
             IProjectService projectService,
-            IBackgroundTaskQueue backgroundTaskQueue,
             IDbContextFactory<UOStudioContext> contextFactory)
         {
             _logger = logger.ForContext<JoinProjectCommandHandler>();
             _projectService = projectService;
-            _backgroundTaskQueue = backgroundTaskQueue;
             _contextFactory = contextFactory;
         }
 
@@ -75,7 +71,7 @@ namespace UOStudio.Server.Domain.JoinProject
             if (request.AtlasHash != atlasHash)
             {
                 var taskId = Guid.NewGuid();
-                _backgroundTaskQueue.QueueBackgroundWorkItem(ct => QueueWorkItem(ct, taskId, request.ProjectId));
+                //_backgroundTaskQueue.QueueBackgroundWorkItem(ct => QueueWorkItem(ct, taskId, request.ProjectId));
 
                 return Result.Success(new JoinProjectResult { NeedsPreparation = true, TaskId = taskId });
             }

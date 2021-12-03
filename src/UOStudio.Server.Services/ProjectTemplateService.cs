@@ -1,6 +1,7 @@
-﻿using System.IO;
+using System.IO;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Options;
 using Serilog;
 using UOStudio.Server.Common;
 
@@ -13,10 +14,10 @@ namespace UOStudio.Server.Services
 
         public ProjectTemplateService(
             ILogger logger,
-            ServerSettings serverSettings)
+            IOptions<ServerSettings> serverSettings)
         {
             _logger = logger.ForContext<ProjectTemplateService>();
-            _serverSettings = serverSettings;
+            _serverSettings = serverSettings.Value;
         }
 
         public async Task<Result<string>> CreateProjectTemplateAsync(string templateName)

@@ -20,14 +20,10 @@ namespace UOStudio.Server.Api.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
-        public ProjectController(
-            IMediator mediator,
-            IBackgroundTaskQueue backgroundTaskQueue)
+        public ProjectController(IMediator mediator)
         {
             _mediator = mediator;
-            _backgroundTaskQueue = backgroundTaskQueue;
         }
 
         [HttpGet]

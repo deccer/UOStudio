@@ -22,7 +22,7 @@ namespace UOStudio.Server.Api.BackgroundJobs
         }
 
         public async Task<Guid> CreateBackgroundJobAsync<TJob, TJobPayload>(TJobPayload jobPayload, CancellationToken cancellationToken)
-            where TJob: IJob
+            where TJob : IJob
         {
             await using var context = _contextFactory.CreateDbContext();
             var job = new Job

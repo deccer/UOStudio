@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -52,6 +52,7 @@ namespace UOStudio.Client
 
             _mapEffect.Parameters["M_WorldViewProj"].SetValue(world * view * projection);
             _mapEffect.CurrentTechnique.Passes[0].Apply();
+
             graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             if (graphicsDevice.Textures[0] != _textureAtlas!.AtlasTexture)
             {

@@ -1,7 +1,9 @@
-﻿namespace UOStudio.Server.Common
+namespace UOStudio.Server.Common
 {
     public class ServerSettings
     {
+        public const string ServerSection = "Server";
+
         public int MaximumConnectedPeersCount { get; set; }
 
         public int Port { get; set; }

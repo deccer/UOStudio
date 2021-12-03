@@ -6,7 +6,7 @@ namespace UOStudio.Client
     public class FrameTimeCalculator
     {
         private const int DesiredFrameRate = 60;
-        private const int NumberSamples = 50;
+        private const int NumberSamples = 128;
 
         private readonly int[] _samples = new int[NumberSamples];
         private float _fps;
@@ -40,7 +40,7 @@ namespace UOStudio.Client
             }
         }
 
-        private float Sum(int[] samples)
+        private static float Sum(int[] samples)
         {
             float value = 0f;
             for (int i = 0; i < samples.Length; i++)

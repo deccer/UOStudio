@@ -14,8 +14,6 @@ namespace UOStudio.Client
         private Matrix _viewMatrix;
         private Matrix _projectionMatrix;
 
-        private KeyboardState _currentKeyboardState;
-        private MouseState _currentMouseState;
         private float _aspectRatio;
 
         public Camera(float width, float height)
@@ -57,56 +55,73 @@ namespace UOStudio.Client
 
         public Matrix ProjectionMatrix => _projectionMatrix;
 
-        public void Update(float width, float height)
+        public bool Update(
+            float width,
+            float height,
+            KeyboardState currentKeyboardState,
+            MouseState currentMouseState,
+            KeyboardState previousKeyboardState,
+            MouseState previousMouseState)
         {
-            _currentKeyboardState = Keyboard.GetState();
-            _currentMouseState = Mouse.GetState();
-
+            var wasMoved = false;
             var speedFactor = 1.0f;
 
-            if (_currentKeyboardState.IsKeyDown(Keys.LeftShift) || _currentKeyboardState.IsKeyDown(Keys.RightShift))
+            if ((currentKeyboardState.IsKeyDown(Keys.LeftShift) || currentKeyboardState.IsKeyDown(Keys.RightShift)) &&
+                (previousKeyboardState.IsKeyUp(Keys.LeftShift) || previousKeyboardState.IsKeyUp(Keys.RightShift)))
             {
                 speedFactor = 10.0f;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.A) || _currentKeyboardState.IsKeyDown(Keys.Left))
+            if ((currentKeyboardState.IsKeyDown(Keys.A) || currentKeyboardState.IsKeyDown(Keys.Left)) &&
+                (previousKeyboardState.IsKeyUp(Keys.A) || previousKeyboardState.IsKeyUp(Keys.Left)))
             {
                 _position += Vector3.Left * speedFactor;
+                wasMoved = true;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.D) || _currentKeyboardState.IsKeyDown(Keys.Right))
+            if ((currentKeyboardState.IsKeyDown(Keys.D) || currentKeyboardState.IsKeyDown(Keys.Right)) &&
+                (previousKeyboardState.IsKeyUp(Keys.D) || previousKeyboardState.IsKeyUp(Keys.Right)))
             {
                 _position += Vector3.Right * speedFactor;
+                wasMoved = true;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.W) || _currentKeyboardState.IsKeyDown(Keys.Up))
+            if ((currentKeyboardState.IsKeyDown(Keys.W) || currentKeyboardState.IsKeyDown(Keys.Up)) &&
+                (previousKeyboardState.IsKeyUp(Keys.W) || previousKeyboardState.IsKeyUp(Keys.Up)))
             {
                 _position += Vector3.Up * speedFactor;
+                wasMoved = true;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.S) || _currentKeyboardState.IsKeyDown(Keys.Down))
+            if ((currentKeyboardState.IsKeyDown(Keys.S) || currentKeyboardState.IsKeyDown(Keys.Down)) &&
+                (previousKeyboardState.IsKeyUp(Keys.S) || previousKeyboardState.IsKeyUp(Keys.Down)))
             {
                 _position += Vector3.Down * speedFactor;
+                wasMoved = true;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.Q) || _currentKeyboardState.IsKeyDown(Keys.PageUp))
+            if (currentKeyboardState.IsKeyDown(Keys.Q) && previousKeyboardState.IsKeyUp(Keys.Q))
             {
                 _position += Vector3.Forward * speedFactor;
+                wasMoved = true;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.Z) || _currentKeyboardState.IsKeyDown(Keys.PageDown))
+            if (currentKeyboardState.IsKeyDown(Keys.Z) && previousKeyboardState.IsKeyUp(Keys.Z))
             {
                 _position += Vector3.Backward * speedFactor;
+                wasMoved = true;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.PageUp))
+            if (currentKeyboardState.IsKeyDown(Keys.PageUp))
             {
                 _position += Vector3.Up * speedFactor;
+                wasMoved = true;
             }
 
-            if (_currentKeyboardState.IsKeyDown(Keys.PageUp))
+            if (currentKeyboardState.IsKeyDown(Keys.PageUp))
             {
                 _position += Vector3.Down * speedFactor;
+                wasMoved = true;
             }
 
             if (Math.Abs(_aspectRatio - width / height) > Epsilon)
@@ -115,6 +130,8 @@ namespace UOStudio.Client
             }
 
             UpdateViewMatrix();
+
+            return wasMoved;
         }
 
         private void UpdateProjectionMatrix(float width, float height)

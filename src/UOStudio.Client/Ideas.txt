@@ -1,0 +1,13 @@
+﻿Client
+------
+
+- launcher creates some sort of token
+  contains servername/port/connectionticket/username/projectname/projectid
+- passes it to client
+- client validates ticket against api/auth
+  validation ok, connect to server on port
+
+
+Server
+------
+- find a platform agnostic way of 7zipping files

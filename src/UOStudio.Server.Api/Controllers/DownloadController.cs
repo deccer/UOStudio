@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Serilog;
 using UOStudio.Server.Common;
 
@@ -20,10 +21,10 @@ namespace UOStudio.Server.Api.Controllers
 
         public DownloadController(
             ILogger logger,
-            ServerSettings serverSettings)
+            IOptions<ServerSettings> serverSettings)
         {
             _logger = logger.ForContext<DownloadController>();
-            _serverSettings = serverSettings;
+            _serverSettings = serverSettings.Value;
         }
 
         [HttpGet("{downloadId:guid}", Name = nameof(GetDownload))]

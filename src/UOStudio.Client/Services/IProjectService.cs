@@ -1,4 +1,4 @@
-﻿namespace UOStudio.Client
+﻿namespace UOStudio.Client.Services
 {
     public interface IProjectService
     {

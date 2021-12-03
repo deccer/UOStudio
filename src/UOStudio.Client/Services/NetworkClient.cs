@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Net;
-using System.Threading.Tasks;
 using LiteNetLib;
 using LiteNetLib.Layers;
 using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Xna.Framework;
 using Serilog;
+using UOStudio.Common.Network;
 
 namespace UOStudio.Client.Services
 {
@@ -18,6 +19,8 @@ namespace UOStudio.Client.Services
         private readonly NetManager _client;
         private readonly NetDataWriter _dataWriter;
         private NetPeer _server;
+
+        private bool _isConnected;
 
         public NetworkClient(
             ILogger logger,
@@ -43,22 +46,9 @@ namespace UOStudio.Client.Services
 
         public event Action Disconnected;
 
-        public async Task ConnectAsync()
-        {
-            // add later
-        }
+        public event Action<ChunkData> ChunkReceived;
 
-        public void Disconnect()
-        {
-            _client.Stop();
-        }
-
-        public void Update()
-        {
-            _client.PollEvents();
-        }
-
-        private void StartClient()
+        public void Connect(string hostname, int port)
         {
             if (_client.IsRunning)
             {
@@ -74,13 +64,43 @@ namespace UOStudio.Client.Services
                 _logger.Error("NetworkClient - Unable to run");
             }
 
-            _client.Connect("servername", 0, "UOStudio");
+            _logger.Debug("NetworkClient: Contacting server {@HostName}:{@Port}", hostname, port);
+            _client.Connect(hostname, port, "UOStudio");
+        }
+
+        public void Disconnect()
+        {
+            _client.Stop();
+        }
+
+        public void Update()
+        {
+            _client.PollEvents();
+        }
+
+        public void RequestChunk(int worldId, Point chunkPosition)
+        {
+            if (!_isConnected)
+            {
+                _logger.Debug("NetworkClient: Not connected");
+                return;
+            }
+
+            _logger.Debug("NetworkClient: Requesting Chunk {@ChunkPositionX},{@ChunkPositionY}", chunkPosition.X, chunkPosition.Y);
+            _dataWriter.Reset();
+            _dataWriter.Put(PacketIds.C2S.RequestChunk);
+            _dataWriter.Put(worldId); // worldId
+            _dataWriter.Put(chunkPosition.X);
+            _dataWriter.Put(chunkPosition.Y);
+
+            _server.Send(_dataWriter, DeliveryMethod.ReliableOrdered);
         }
 
         private void ListenerOnPeerConnectedEvent(NetPeer peer)
         {
             _logger.Debug("NetworkClient - Connected to server {@Id}", peer.Id);
             _server = peer;
+            _isConnected = true;
         }
 
         private void ListenerOnPeerDisconnectedEvent(
@@ -88,7 +108,7 @@ namespace UOStudio.Client.Services
             DisconnectInfo disconnectInfo
         )
         {
-            // add later
+            _isConnected = false;
         }
 
         private void ListenerOnNetworkReceiveEvent(
@@ -97,6 +117,12 @@ namespace UOStudio.Client.Services
             DeliveryMethod deliveryMethod)
         {
             var packetId = reader.GetInt();
+            switch (packetId)
+            {
+                case PacketIds.S2C.RequestedChunk:
+                    HandleChunkReceived(reader);
+                    break;
+            }
         }
 
         private void ListenerOnNetworkReceiveUnconnectedEvent(
@@ -106,6 +132,37 @@ namespace UOStudio.Client.Services
         )
         {
             // add later
+        }
+
+        private void HandleChunkReceived(NetDataReader reader)
+        {
+            var worldId = reader.GetInt();
+            var chunkPositionX = reader.GetInt();
+            var chunkPositionY = reader.GetInt();
+            var chunkSize = reader.GetInt();
+            var chunkLength = chunkSize * chunkSize;
+
+            var chunkStaticTileData = new ChunkStaticTileData[chunkLength];
+            for (var i = 0; i < chunkLength; i++)
+            {
+                var tileId = reader.GetUShort();
+                var z = reader.GetInt();
+                var hue = reader.GetInt();
+                chunkStaticTileData[i] = new ChunkStaticTileData(tileId, z, hue);
+            }
+
+            var chunkItemTileData = new ChunkItemTileData[chunkLength];
+            for (var i = 0; i < chunkLength; i++)
+            {
+                var tileId = reader.GetUShort();
+                var z = reader.GetInt();
+                var hue = reader.GetInt();
+                chunkItemTileData[i] = new ChunkItemTileData(tileId, z, hue);
+            }
+
+            var chunkData = new ChunkData(worldId, new Point(chunkPositionX, chunkPositionY), chunkStaticTileData, chunkItemTileData);
+            var chunkReceived = ChunkReceived;
+            chunkReceived?.Invoke(chunkData);
         }
     }
 }

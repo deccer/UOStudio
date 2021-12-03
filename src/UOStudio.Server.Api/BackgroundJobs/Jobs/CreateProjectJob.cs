@@ -41,7 +41,7 @@ namespace UOStudio.Server.Api.BackgroundJobs.Jobs
             }
             else
             {
-                var x = new {Xo = 234, Fr = $"Project {_name} created"};
+                var x = new { Xo = 234, Fr = $"Project {_name} created" };
                 await _jobUpdater.JobSucceededAsync(jobId, x, cancellationToken);
             }
         }

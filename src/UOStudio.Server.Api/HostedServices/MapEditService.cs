@@ -1,6 +1,7 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Serilog;
 using UOStudio.Server.Common;
 
@@ -17,11 +18,11 @@ namespace UOStudio.Server.Api.HostedServices
             ILogger logger,
             IHostApplicationLifetime hostApplicationLifetime,
             INetworkServer networkServer,
-            ServerSettings serverSettings)
+            IOptions<ServerSettings> serverSettings)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _networkServer = networkServer;
-            _serverSettings = serverSettings;
+            _serverSettings = serverSettings.Value;
             _logger = logger.ForContext<MapEditService>();
         }
 

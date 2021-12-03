@@ -1,15 +1,48 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Security.Cryptography;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using UOStudio.Server.Api.BackgroundJobs;
+using UOStudio.Server.Api.BackgroundJobs.Jobs;
+using UOStudio.Server.Common;
+using UOStudio.Server.Services;
 
 namespace UOStudio.Server.Api.Extensions
 {
-    public static class AuthenticationExtensions
+    public static class ServiceCollectionExtensions
     {
+        public static void AddBackgroundJobs(this IServiceCollection services)
+        {
+            services.AddDbContextFactory<JobDbContext>((provider, builder) =>
+            {
+                var ss = provider.GetRequiredService<IOptions<ServerSettings>>();
+                var serverSettings = ss.Value;
+                var databaseDirectory = string.IsNullOrEmpty(Path.GetDirectoryName(serverSettings.DatabaseDirectory))
+                    ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, serverSettings.DatabaseDirectory)
+                    : serverSettings.DatabaseDirectory;
+                Directory.CreateDirectory(databaseDirectory);
+                builder.UseSqlite($"Data Source={Path.Combine(databaseDirectory, "Jobs.db")}");
+            });
+            services.AddSingleton<IJobCreator, JobCreator>();
+            services.AddSingleton<IJobDequeuer, JobDequeuer>();
+            services.AddSingleton<IJobEnqueuer, JobEnqueuer>();
+            services.AddSingleton<IJobUpdater, JobUpdater>();
+            services.AddSingleton<IJobRepository, JobRepository>();
+            services.AddSingleton<IJobFactory, JobFactory>();
+            services.AddSingleton(_ => Channel.CreateUnbounded<Guid>(new UnboundedChannelOptions { SingleReader = true }));
+            services.AddSingleton<IProjectService, ProjectService>();
+
+            services.AddSingleton<CreateProjectJob>();
+            services.AddHostedService<JobHandler>();
+        }
+
         public static IServiceCollection AddAsymmetricAuthentication(
             this IServiceCollection services, IConfiguration configuration)
         {

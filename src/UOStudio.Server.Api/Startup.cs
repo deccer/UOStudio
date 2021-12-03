@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using UOStudio.Common.Core;
@@ -15,7 +16,7 @@ using UOStudio.Server.Api.HostedServices;
 using UOStudio.Server.Api.Services;
 using UOStudio.Server.Common;
 using UOStudio.Server.Data;
-using UOStudio.Server.Domain.GetProjectDetailsByName;
+using UOStudio.Server.Domain.GetProjects;
 using UOStudio.Server.Services;
 
 namespace UOStudio.Server.Api
@@ -41,11 +42,8 @@ namespace UOStudio.Server.Api
                 .WriteTo.File(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "server.log"), rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
-            var serverSettings = new ServerSettings();
-            _configuration.GetSection("Server").Bind(serverSettings);
-
-            var sevenZipOptions = new SevenZipOptions();
-            _configuration.GetSection("SevenZip").Bind(sevenZipOptions);
+            services.Configure<ServerSettings>(_configuration.GetSection(ServerSettings.ServerSection));
+            services.Configure<SevenZipSettings>(_configuration.GetSection(SevenZipSettings.SevenZipSection));
 
             services.AddAsymmetricAuthentication(_configuration);
 
@@ -53,17 +51,18 @@ namespace UOStudio.Server.Api
             services.AddSingleton(Log.Logger);
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "UOStudio.Server.Api", Version = "v1" }); });
-            services.AddMediatR(typeof(GetProjectDetailsByNameQueryHandler).Assembly);
+            services.AddMediatR(typeof(GetProjectsQuery).Assembly);
             services.AddDbContextFactory<UOStudioContext>((provider, builder) =>
                 {
-                    var ss = provider.GetRequiredService<ServerSettings>();
-                    builder.UseSqlite(string.IsNullOrEmpty(Path.GetDirectoryName(ss.DatabaseDirectory))
-                        ? $"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database", ss.DatabaseDirectory)}"
-                        : $"Data Source={ss.DatabaseDirectory}");
+                    var ss = provider.GetRequiredService<IOptions<ServerSettings>>();
+                    var serverSettings = ss.Value;
+                    var databaseDirectory = string.IsNullOrEmpty(Path.GetDirectoryName(serverSettings.DatabaseDirectory))
+                        ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, serverSettings.DatabaseDirectory)
+                        : serverSettings.DatabaseDirectory;
+                    Directory.CreateDirectory(databaseDirectory);
+                    builder.UseSqlite($"Data Source={Path.Combine(databaseDirectory, "UOStudio.db")}");
                 }
             );
-            services.AddSingleton(serverSettings);
-            services.AddSingleton(sevenZipOptions);
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<IPasswordVerifier, PasswordVerifier>();
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
@@ -73,13 +72,14 @@ namespace UOStudio.Server.Api
 
             services.AddSingleton<IProjectService, ProjectService>();
             services.AddSingleton<IProjectTemplateService, ProjectTemplateService>();
+
             services.AddSingleton<ISevenZipService, SevenZipService>();
             services.AddSingleton<ICommandRunner, CommandRunner>();
 
             services.AddSingleton<INetworkServer, NetworkServer>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<MapEditService>();
-            services.AddHostedService<QueuedHostedService>();
+
+            services.AddBackgroundJobs();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,13 +1,12 @@
 using System;
-using System.Net.Http;
-using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Serilog;
-using UOStudio.Client.Screens;
 using UOStudio.Client.Services;
 using UOStudio.Client.UI.Extensions;
+using UOStudio.Client.Worlds;
 using UOStudio.Common.Contracts;
 using UOStudio.Common.Core;
 
@@ -23,6 +22,11 @@ namespace UOStudio.Client
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
+            ClientStartParameters clientStartParameters = new ClientStartParameters
+            {
+                ProjectId = 1,
+            };
+#if RELEASE
             if (args.Length == 0)
             {
                 Console.WriteLine("Unable to start client. Use the launcher.");
@@ -36,7 +40,7 @@ namespace UOStudio.Client
                 var clientStartParameters = JsonSerializer.Deserialize<ClientStartParameters>(clientStartParametersJson);
                 if (clientStartParameters == null)
                 {
-                    Console.WriteLine("Unable to start client. Use the launcher. Illegal StartParameters");
+                    Console.WriteLine("Illegal StartParameters, unable to start client. Use the launcher.");
                     Console.ReadLine();
                     return;
                 }
@@ -54,18 +58,19 @@ namespace UOStudio.Client
                     return;
                 }
             }
+#endif
 
             DllMap.Initialise();
-            using var serviceProvider = CreateServiceProvider();
+            using var serviceProvider = CreateServiceProvider(clientStartParameters);
 
-            var graphicsSettings = serviceProvider.GetRequiredService<GraphicsSettings>();
-            Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", graphicsSettings.Backend.ToString());
+            var graphicsSettings = serviceProvider.GetRequiredService<IOptions<GraphicsSettings>>();
+            Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", graphicsSettings.Value.Backend.ToString());
 
-            var mainGame = serviceProvider.GetService<MainGame>();
-            mainGame!.Run();
+            using var mainGame = serviceProvider.GetRequiredService<MainGame>();
+            mainGame.Run();
         }
 
-        private static ServiceProvider CreateServiceProvider()
+        private static ServiceProvider CreateServiceProvider(ClientStartParameters clientStartParameters)
         {
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -74,17 +79,12 @@ namespace UOStudio.Client
                 .WriteTo.File("client.log")
                 .CreateLogger();
 
-            var graphicsSettings = new GraphicsSettings();
-            _configuration.GetSection(GraphicsSettings.Key).Bind(graphicsSettings);
-            var clientSettings = new ClientSettings();
-            _configuration.GetSection(ClientSettings.Key).Bind(clientSettings);
-
             var services = new ServiceCollection();
+            services.AddSingleton(clientStartParameters);
+            services.Configure<GraphicsSettings>(_configuration.GetSection(GraphicsSettings.Key));
+            services.Configure<ClientSettings>(_configuration.GetSection(ClientSettings.Key));
             services.AddSingleton(Log.Logger);
             services.AddSingleton(_configuration);
-            services.AddSingleton(graphicsSettings);
-            services.AddSingleton(clientSettings);
-            services.AddSingleton<IScreenHandler, ScreenHandler>();
             services.AddSingleton<INetworkClient, NetworkClient>();
             services.AddSingleton<IProjectService, ProjectService>();
             services.AddSingleton<ITokenService, TokenService>();
@@ -92,6 +92,8 @@ namespace UOStudio.Client
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<IContext, Context>();
             services.AddWindows();
+            services.AddSingleton<IWorldProvider, WorldProvider>();
+            services.AddSingleton<IWorldRenderer, WorldRenderer>();
             services.AddSingleton<MainGame>();
 
             return services.BuildServiceProvider();
