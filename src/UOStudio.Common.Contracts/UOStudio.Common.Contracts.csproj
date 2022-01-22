@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.34.0.42011">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Remove="Microsoft.NETFramework.ReferenceAssemblies.net40" />
+      <PackageReference Update="JetBrains.Annotations" Version="2021.3.0" />
+    </ItemGroup>
 
 </Project>

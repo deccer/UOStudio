@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Serilog;
+using UOStudio.Client.Engine;
+using UOStudio.Client.Engine.Graphics;
+using UOStudio.Client.Engine.Mathematics;
 using UOStudio.TextureAtlasGenerator.Client;
 
 namespace UOStudio.Client
@@ -13,71 +11,70 @@ namespace UOStudio.Client
     public class Map : IDisposable
     {
         private readonly ILogger _logger;
-        private VertexBuffer _landVertexBuffer;
-        private VertexBuffer _itemVertexBuffer;
+        private IBuffer _landVertexBuffer;
+        private IBuffer _itemVertexBuffer;
         private TextureAtlas _textureAtlas;
 
-        private readonly IList<VertexPositionColorTexture> _landVertices;
-        private readonly IList<VertexPositionTexture> _itemVertices;
+        private readonly IList<VertexPositionColorUv> _landVertices;
+        private readonly IList<VertexPositionUv> _itemVertices;
 
         private readonly IDictionary<(int, int), LandTile> _landTiles;
         private readonly IDictionary<(int, int), ItemTile[]> _itemTiles;
 
         private IDictionary<Point, MapChunk> _mapChunks;
 
-        private Effect _mapEffect;
+        //private Effect _mapEffect;
 
         public Map(ILogger logger)
         {
             _logger = logger.ForContext<Map>();
-            _landVertices = new List<VertexPositionColorTexture>();
-            _itemVertices = new List<VertexPositionTexture>();
+            _landVertices = new List<VertexPositionColorUv>();
+            _itemVertices = new List<VertexPositionUv>();
             _landTiles = new Dictionary<(int, int), LandTile>();
             _itemTiles = new Dictionary<(int, int), ItemTile[]>();
         }
 
         public void Dispose()
         {
-            _mapEffect?.Dispose();
+            //_mapEffect?.Dispose();
             _landVertexBuffer?.Dispose();
             _itemVertexBuffer?.Dispose();
             _textureAtlas?.Dispose();
         }
 
-        public void Draw(GraphicsDevice graphicsDevice, Camera camera)
+        public void Draw(IGraphicsDevice graphicsDevice, Camera camera)
         {
-            var world = Matrix.Identity * Matrix.CreateScale(new Vector3(1, -1, 1));
+            var world = Matrix.Identity * Matrix.Scaling(new Vector3(1, -1, 1));
             var view = camera.ViewMatrix;
             var projection = camera.ProjectionMatrix;
 
-            _mapEffect.Parameters["M_WorldViewProj"].SetValue(world * view * projection);
-            _mapEffect.CurrentTechnique.Passes[0].Apply();
+            //_mapEffect.Parameters["M_WorldViewProj"].SetValue(world * view * projection);
+            //_mapEffect.CurrentTechnique.Passes[0].Apply();
 
-            graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-            if (graphicsDevice.Textures[0] != _textureAtlas!.AtlasTexture)
-            {
-                graphicsDevice.Textures[0] = _textureAtlas.AtlasTexture;
-            }
+            //graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            //if (graphicsDevice.Textures[0] != _textureAtlas!.AtlasTexture)
+            //{
+            //    graphicsDevice.Textures[0] = _textureAtlas.AtlasTexture;
+            //}
 
-            graphicsDevice.RasterizerState = RasterizerState.CullNone;
-            graphicsDevice.BlendState = BlendState.AlphaBlend;
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            //graphicsDevice.RasterizerState = RasterizerState.CullNone;
+            //graphicsDevice.BlendState = BlendState.AlphaBlend;
+            //graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            graphicsDevice.SetVertexBuffer(_landVertexBuffer);
-            graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, _landVertices.Count / 3);
+            //graphicsDevice.SetVertexBuffer(_landVertexBuffer);
+            //graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, _landVertices.Count / 3);
         }
 
-        public void LoadContent(ContentManager contentManager, GraphicsDevice graphicsDevice, string mapDirectory, string mapName)
+        public void LoadContent(IGraphicsDevice graphicsDevice, string mapDirectory, string mapName)
         {
-            _mapEffect = contentManager.Load<Effect>("Effects/WorldEffect.fxc");
-
             _landVertices.Clear();
             _itemVertices.Clear();
 
+            /*
             _textureAtlas = new TextureAtlas(_logger, graphicsDevice, mapName);
             _textureAtlas.LoadContent(contentManager);
             LoadMapTiles(mapDirectory);
-
+            */
             _landVertexBuffer?.Dispose();
             _landVertexBuffer = BuildLandVertexBuffer(graphicsDevice, 64, 64);
 
@@ -135,7 +132,7 @@ namespace UOStudio.Client
             ? tile.Z
             : defaultZ;
 
-        private VertexBuffer BuildLandVertexBuffer(GraphicsDevice graphicsDevice, int width, int height)
+        private IBuffer BuildLandVertexBuffer(IGraphicsDevice graphicsDevice, int width, int height)
         {
             const int TileSize = 44;
             const int TileSizeHalf = TileSize / 2;
@@ -167,14 +164,14 @@ namespace UOStudio.Client
                 var uv3 = new Vector2(tile.Uvws.V4.U, tile.Uvws.V4.V);
 
                 var n1 = Vector3.Cross(p2 - p0, p1 - p0);
-                _landVertices.Add(new VertexPositionColorTexture(p0, Color.Red, uv0));
-                _landVertices.Add(new VertexPositionColorTexture(p1, Color.Red, uv1));
-                _landVertices.Add(new VertexPositionColorTexture(p2, Color.Red, uv2));
+                _landVertices.Add(new VertexPositionColorUv(p0, Color.Red.ToVector3(), uv0));
+                _landVertices.Add(new VertexPositionColorUv(p1, Color.Red.ToVector3(), uv1));
+                _landVertices.Add(new VertexPositionColorUv(p2, Color.Red.ToVector3(), uv2));
 
                 var n2 = Vector3.Cross(p2 - p3, p1 - p3);
-                _landVertices.Add(new VertexPositionColorTexture(p1, Color.Black, uv1));
-                _landVertices.Add(new VertexPositionColorTexture(p3, Color.Green, uv3));
-                _landVertices.Add(new VertexPositionColorTexture(p2, Color.Black, uv2));
+                _landVertices.Add(new VertexPositionColorUv(p1, Color.Black.ToVector3(), uv1));
+                _landVertices.Add(new VertexPositionColorUv(p3, Color.Green.ToVector3(), uv3));
+                _landVertices.Add(new VertexPositionColorUv(p2, Color.Black.ToVector3(), uv2));
             }
 
             for (var x = 0; x < width; ++x)
@@ -191,14 +188,7 @@ namespace UOStudio.Client
                 }
             }
 
-            var vertexBuffer = new VertexBuffer(
-                graphicsDevice,
-                typeof(VertexPositionColorTexture),
-                _landVertices.Count,
-                BufferUsage.WriteOnly
-            );
-            vertexBuffer.SetData(_landVertices.ToArray());
-            return vertexBuffer;
+            return graphicsDevice.CreateBuffer(_landVertices);
         }
 
         private readonly struct LandTile

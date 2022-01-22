@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 
 namespace UOStudio.Client
 {
@@ -14,18 +13,17 @@ namespace UOStudio.Client
         private int _ticksAggregate;
         private float _averageFrameTime;
 
-        public FrameTimeCalculator(Game game)
+        public FrameTimeCalculator()
         {
-            game.TargetElapsedTime = new TimeSpan(TimeSpan.TicksPerSecond / DesiredFrameRate);
         }
 
         public float Fps => _fps;
 
         public float AverageFrameTime => _averageFrameTime;
 
-        public void Calculate(GameTime gameTime)
+        public void Calculate(float elapsedTime)
         {
-            var ticks = (int)gameTime.ElapsedGameTime.Ticks;
+            var ticks = (int)elapsedTime;
             _samples[_currentSample++] = ticks;
             _ticksAggregate += ticks;
             if (_ticksAggregate > TimeSpan.TicksPerSecond)

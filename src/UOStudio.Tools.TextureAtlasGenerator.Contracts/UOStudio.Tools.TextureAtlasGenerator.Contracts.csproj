@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>deccer</Authors>
+        <Copyright>2021</Copyright>
+        <RepositoryUrl>https://github.com/deccer/UOStudio-Tools</RepositoryUrl>
+        <Title>UOStudio.TextureAtlasGenerator.Abstractions</Title>
+        <PackageProjectUrl>https://github.com/deccer/UOStudio-Tools</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/deccer/UOStudio-Tools/LICENSE</PackageLicenseUrl>
+        <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
+        <PackageTags>UOStudio</PackageTags>
+        <PackageVersion>1.2.0</PackageVersion>
+        <PackageReleaseNotes>Added new TileType</PackageReleaseNotes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\stylecop.json">
+            <InProject>false</InProject>
+        </AdditionalFiles>
+    </ItemGroup>
+
+</Project>

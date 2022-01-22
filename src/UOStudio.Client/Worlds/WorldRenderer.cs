@@ -1,25 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System.Collections.Generic;
+using UOStudio.Client.Engine;
+using UOStudio.Client.Engine.Graphics;
+using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Common.Network;
 
 namespace UOStudio.Client.Worlds
 {
     internal sealed class WorldRenderer : IWorldRenderer
     {
-        private GraphicsDevice _graphicsDevice;
+        private IGraphicsDevice _graphicsDevice;
 
-        private VertexBuffer _staticTileVertexBuffer;
-        private VertexBuffer _itemTileVertexBuffer;
-        private Effect _mapEffect;
+        private IBuffer _staticTileVertexBuffer;
+        private IBuffer _itemTileVertexBuffer;
+        private IShader _mapEffect;
 
-        private readonly IDictionary<Point, VertexBuffer> _vertexBufferCache;
+        private readonly IDictionary<Point, IBuffer> _vertexBufferCache;
 
         public WorldRenderer()
         {
-            _vertexBufferCache = new Dictionary<Point, VertexBuffer>(256);
+            _vertexBufferCache = new Dictionary<Point, IBuffer>(256);
         }
 
         public void Dispose()
@@ -28,16 +27,14 @@ namespace UOStudio.Client.Worlds
             _itemTileVertexBuffer?.Dispose();
         }
 
-        public void Draw(GraphicsDevice graphicsDevice, World world, Camera camera)
+        public void Draw(IGraphicsDevice graphicsDevice, World world, Camera camera)
         {
-            var modelMatrix = Matrix.Identity * Matrix.CreateScale(new Vector3(1, -1, 1));
+            var modelMatrix = Matrix.Identity * Matrix.Scaling(new Vector3(1, -1, 1));
             var view = camera.ViewMatrix;
             var projection = camera.ProjectionMatrix;
 
-            _mapEffect.Parameters["M_WorldViewProj"].SetValue(modelMatrix * view * projection);
-            _mapEffect.CurrentTechnique.Passes[0].Apply();
-
-            graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            //_mapEffect.Parameters["M_WorldViewProj"].SetValue(modelMatrix * view * projection);
+            //_mapEffect.CurrentTechnique.Passes[0].Apply();
 
             /*
             if (graphicsDevice.Textures[0] != _textureAtlas!.AtlasTexture)
@@ -46,21 +43,18 @@ namespace UOStudio.Client.Worlds
             }
             */
 
-            graphicsDevice.RasterizerState = RasterizerState.CullNone;
-            graphicsDevice.BlendState = BlendState.AlphaBlend;
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
-
             foreach (var kvp in _vertexBufferCache)
             {
-                graphicsDevice.SetVertexBuffer(kvp.Value);
-                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, kvp.Value.VertexCount / 3);
+                //graphicsDevice.SetVertexBuffer(kvp.Value);
+                //graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, kvp.Value.VertexCount / 3);
             }
         }
 
-        public void LoadContent(ContentManager contentManager, GraphicsDevice graphicsDevice)
+        public bool Load(IGraphicsDevice graphicsDevice)
         {
-            _mapEffect = contentManager.Load<Effect>("Effects/WorldEffect.fxc");
+            //_mapEffect = contentManager.Load<Effect>("Effects/WorldEffect.fxc");
             _graphicsDevice = graphicsDevice;
+            return true;
         }
 
         public void Update(World world, Camera camera)
@@ -85,9 +79,9 @@ namespace UOStudio.Client.Worlds
             _vertexBufferCache.Add(worldChunk.Position, worldChunkVertexBuffer);
         }
 
-        private VertexBuffer BuildVertexBuffer(WorldChunk worldChunk)
+        private IBuffer BuildVertexBuffer(WorldChunk worldChunk)
         {
-            var landVertices = new List<VertexPositionColorTexture>();
+            var landVertices = new List<VertexPositionColorUv>();
 
             const int TileSize = 44;
             const int TileSizeHalf = TileSize / 2;
@@ -130,14 +124,14 @@ namespace UOStudio.Client.Worlds
                 var uv3 = Vector2.Zero;
 
                 var n1 = Vector3.Cross(p2 - p0, p1 - p0);
-                landVertices.Add(new VertexPositionColorTexture(p0, Color.Red, uv0));
-                landVertices.Add(new VertexPositionColorTexture(p1, Color.Red, uv1));
-                landVertices.Add(new VertexPositionColorTexture(p2, Color.Red, uv2));
+                landVertices.Add(new VertexPositionColorUv(p0, Color.Red.ToVector3(), uv0));
+                landVertices.Add(new VertexPositionColorUv(p1, Color.Red.ToVector3(), uv1));
+                landVertices.Add(new VertexPositionColorUv(p2, Color.Red.ToVector3(), uv2));
 
                 var n2 = Vector3.Cross(p2 - p3, p1 - p3);
-                landVertices.Add(new VertexPositionColorTexture(p1, Color.Black, uv1));
-                landVertices.Add(new VertexPositionColorTexture(p3, Color.Green, uv3));
-                landVertices.Add(new VertexPositionColorTexture(p2, Color.Black, uv2));
+                landVertices.Add(new VertexPositionColorUv(p1, Color.Black.ToVector3(), uv1));
+                landVertices.Add(new VertexPositionColorUv(p3, Color.Green.ToVector3(), uv3));
+                landVertices.Add(new VertexPositionColorUv(p2, Color.Black.ToVector3(), uv2));
             }
 
             for (var x = 0; x < ChunkData.ChunkSize; ++x)
@@ -155,14 +149,7 @@ namespace UOStudio.Client.Worlds
                 }
             }
 
-            var vertexBuffer = new VertexBuffer(
-                _graphicsDevice,
-                typeof(VertexPositionColorTexture),
-                landVertices.Count,
-                BufferUsage.WriteOnly
-            );
-            vertexBuffer.SetData(landVertices.ToArray());
-            return vertexBuffer;
+            return _graphicsDevice.CreateBuffer(landVertices);
         }
 
         private IReadOnlyCollection<WorldChunk> GetVisibleChunks(Camera camera, World world)

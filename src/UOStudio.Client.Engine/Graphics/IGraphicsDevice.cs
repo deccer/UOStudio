@@ -5,6 +5,8 @@ namespace UOStudio.Client.Engine.Graphics
 {
     public interface IGraphicsDevice : IDisposable
     {
+        void Clear(UOStudio.Client.Engine.Mathematics.Color clearColor);
+
         Result<IShader> CreateShaderProgramFromFiles(
             string label,
             string vertexShaderFileName,
@@ -53,7 +55,7 @@ namespace UOStudio.Client.Engine.Graphics
         IBuffer CreateBuffer<T>(T item) where T: unmanaged;
 
         IBuffer CreateBuffer<T>(string name, T item) where T: unmanaged;
-        
+
         IBuffer CreateBuffer<T>(string name, int itemCount) where T: unmanaged;
 
         IBuffer CreateBuffer<T>(T[] items) where T: unmanaged;
@@ -63,5 +65,7 @@ namespace UOStudio.Client.Engine.Graphics
         IBuffer CreateBuffer<T>(IEnumerable<T> items) where T: unmanaged;
 
         IInputLayout GetInputLayout(VertexType vertexType);
+
+        void SetViewport(int left, int top, int width, int height);
     }
 }

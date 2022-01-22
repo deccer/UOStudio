@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
-
-namespace UOStudio.Common.Network
+﻿namespace UOStudio.Common.Network
 {
     public readonly struct ChunkItemTileData
     {

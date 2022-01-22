@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
+using UOStudio.Client.Engine;
+using UOStudio.Client.Engine.Graphics;
 
 namespace UOStudio.Client.Worlds
 {
     internal interface IWorldRenderer : IDisposable
     {
-        void Draw(GraphicsDevice graphicsDevice, World world, Camera camera);
+        void Draw(IGraphicsDevice graphicsDevice, World world, Camera camera);
 
-        void LoadContent(ContentManager contentManager, GraphicsDevice graphicsDevice);
+        bool Load(IGraphicsDevice graphicsDevice);
 
         void Update(World world, Camera camera);
 

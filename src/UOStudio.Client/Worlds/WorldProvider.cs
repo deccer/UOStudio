@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Serilog;
+using UOStudio.Client.Engine.Mathematics;
 
 namespace UOStudio.Client.Worlds
 {

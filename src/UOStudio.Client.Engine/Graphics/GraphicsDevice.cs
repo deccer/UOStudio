@@ -1,11 +1,14 @@
 ﻿using CSharpFunctionalExtensions;
 using SixLabors.ImageSharp;
+using UOStudio.Client.Engine.Native.OpenGL;
+using Color = UOStudio.Client.Engine.Mathematics.Color;
 
 namespace UOStudio.Client.Engine.Graphics
 {
     internal sealed class GraphicsDevice : IGraphicsDevice
     {
         private readonly IInputLayoutProvider _inputLayoutProvider;
+        private Color _clearColor;
 
         public GraphicsDevice(
             IInputLayoutProvider inputLayoutProvider)
@@ -15,6 +18,16 @@ namespace UOStudio.Client.Engine.Graphics
 
         public void Dispose()
         {
+        }
+
+        public void Clear(Color clearColor)
+        {
+            if (!_clearColor.Equals(clearColor))
+            {
+                GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
+                _clearColor = clearColor;
+            }
+            GL.Clear(GL.ClearBufferMask.ColorBufferBit | GL.ClearBufferMask.DepthBufferBit);
         }
 
         public Result<IShader> CreateShaderProgramFromFiles(
@@ -40,7 +53,7 @@ namespace UOStudio.Client.Engine.Graphics
         {
             return new Framebuffer(label, colorAttachments, depthAttachment);
         }
-        
+
         public ITexture CreateDepthTexture(
             int width,
             int height,
@@ -61,7 +74,7 @@ namespace UOStudio.Client.Engine.Graphics
             IntPtr? initialData = null)
         {
             return initialData == null
-                ? new Texture(width, height, textureFormat, minFilter, magFilter, wrapMode, name: label) 
+                ? new Texture(width, height, textureFormat, minFilter, magFilter, wrapMode, name: label)
                 : new Texture(width, height, textureFormat, minFilter, magFilter, wrapMode, initialData.Value, label);
         }
 
@@ -122,6 +135,11 @@ namespace UOStudio.Client.Engine.Graphics
         public IInputLayout GetInputLayout(VertexType vertexType)
         {
             return _inputLayoutProvider.GetInputLayout(vertexType);
+        }
+
+        public void SetViewport(int left, int top, int width, int height)
+        {
+            GL.Viewport(left, top, width, height);
         }
     }
 }
