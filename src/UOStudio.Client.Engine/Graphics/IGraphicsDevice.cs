@@ -50,6 +50,16 @@ namespace UOStudio.Client.Engine.Graphics
             MinFilter minFilter = MinFilter.Nearest,
             WrapMode wrapMode = WrapMode.Repeat);
 
+        ITextureArray CreateTextureArrayFromBytes(
+            int width,
+            int height,
+            int layers,
+            byte[] imageBytes,
+            TextureFormat textureFormat,
+            MagFilter magFilter = MagFilter.Nearest,
+            MinFilter minFilter = MinFilter.Nearest,
+            WrapMode wrapMode = WrapMode.Repeat);
+
         IBuffer CreateBuffer<T>(int itemCount) where T : unmanaged;
 
         IBuffer CreateBuffer<T>(T item) where T: unmanaged;

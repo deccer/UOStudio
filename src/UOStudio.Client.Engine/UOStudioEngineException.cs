@@ -3,25 +3,25 @@
 namespace UOStudio.Client.Engine
 {
     [Serializable]
-    public class SpaceConflictException : Exception
+    public class UOStudioEngineException : Exception
     {
-        public SpaceConflictException()
+        public UOStudioEngineException()
         {
         }
 
-        protected SpaceConflictException(
+        protected UOStudioEngineException(
             SerializationInfo info,
             StreamingContext context)
             : base(info, context)
         {
         }
 
-        public SpaceConflictException(string? message)
+        public UOStudioEngineException(string? message)
             : base(message)
         {
         }
 
-        public SpaceConflictException(
+        public UOStudioEngineException(
             string? message,
             Exception? innerException)
             : base(message, innerException)
