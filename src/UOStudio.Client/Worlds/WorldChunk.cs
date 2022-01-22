@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Common.Network;
 
 namespace UOStudio.Client.Worlds

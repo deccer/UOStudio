@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Serilog;
+using UOStudio.Client.Engine;
+using UOStudio.Client.Engine.Extensions;
 using UOStudio.Client.Services;
 using UOStudio.Client.UI.Extensions;
 using UOStudio.Client.Worlds;
@@ -14,12 +16,11 @@ namespace UOStudio.Client
 {
     internal static class Program
     {
-        private static IConfiguration _configuration;
-
         public static void Main(string[] args)
         {
-            _configuration = new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, true)
+                .AddCommandLine(args)
                 .Build();
 
             ClientStartParameters clientStartParameters = new ClientStartParameters
@@ -60,19 +61,18 @@ namespace UOStudio.Client
             }
 #endif
 
-            DllMap.Initialise();
-            using var serviceProvider = CreateServiceProvider(clientStartParameters);
+            using var serviceProvider = CreateServiceProvider(configuration, clientStartParameters);
 
-            var graphicsSettings = serviceProvider.GetRequiredService<IOptions<GraphicsSettings>>();
-            Environment.SetEnvironmentVariable("FNA3D_FORCE_DRIVER", graphicsSettings.Value.Backend.ToString());
-
-            using var mainGame = serviceProvider.GetRequiredService<MainGame>();
-            mainGame.Run();
+            var clientApplication = serviceProvider.GetRequiredService<IApplication>();
+            clientApplication.Run();
         }
 
-        private static ServiceProvider CreateServiceProvider(ClientStartParameters clientStartParameters)
+        private static ServiceProvider CreateServiceProvider(
+            IConfiguration configuration,
+            ClientStartParameters clientStartParameters)
         {
             Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
                 .Enrich.FromLogContext()
                 .MinimumLevel.Verbose()
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
@@ -81,10 +81,10 @@ namespace UOStudio.Client
 
             var services = new ServiceCollection();
             services.AddSingleton(clientStartParameters);
-            services.Configure<GraphicsSettings>(_configuration.GetSection(GraphicsSettings.Key));
-            services.Configure<ClientSettings>(_configuration.GetSection(ClientSettings.Key));
+            services.AddSingleton(configuration);
+            services.AddEngineKit(configuration);
             services.AddSingleton(Log.Logger);
-            services.AddSingleton(_configuration);
+
             services.AddSingleton<INetworkClient, NetworkClient>();
             services.AddSingleton<IProjectService, ProjectService>();
             services.AddSingleton<ITokenService, TokenService>();

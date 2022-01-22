@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using UOStudio.Client.Engine;
+using UOStudio.Client.Engine.Mathematics;
 
 namespace UOStudio.Client.Worlds
 {

@@ -1,28 +1,28 @@
 using System;
 using System.Diagnostics;
-using System.Drawing;
 using ImGuiNET;
 using LiteNetLib;
-using Microsoft.Extensions.Options;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Serilog;
-using UOStudio.Client.Core.Extensions;
+using UOStudio.Client.Engine;
+using UOStudio.Client.Engine.Graphics;
+using UOStudio.Client.Engine.Input;
+using UOStudio.Client.Engine.Mathematics;
+using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Services;
 using UOStudio.Client.UI;
 using UOStudio.Client.Worlds;
 using UOStudio.Common.Contracts;
 using UOStudio.Common.Network;
-using Color = Microsoft.Xna.Framework.Color;
 using Num = System.Numerics;
-using Point = Microsoft.Xna.Framework.Point;
 
 namespace UOStudio.Client
 {
-    internal sealed class MainGame : Game
+    internal sealed class MainGame : Application
     {
+        private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f, 1.0f);
         private readonly ILogger _logger;
+        private readonly IGraphicsDevice _graphicsDevice;
+        private ImGuiController _imGuiController;
 
         private readonly ClientStartParameters _clientStartParameters;
 
@@ -30,40 +30,33 @@ namespace UOStudio.Client
         private readonly IWindowProvider _windowProvider;
         private readonly IWorldProvider _worldProvider;
         private readonly IContext _context;
-        private readonly FrameTimeCalculator _ftc;
-        private readonly IOptions<GraphicsSettings> _graphicsSettings;
         private readonly IWorldRenderer _worldRenderer;
 
         private readonly Camera _camera;
 
         private World _currentWorld;
-
-        private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f, 1.0f);
-
-        private ImGuiRenderer _imGuiRenderer;
-
-        private SpriteBatch _spriteBatch;
-
-        private KeyboardState _previousKeyboardState;
-        private MouseState _previousMouseState;
         private bool _isWindowFocused;
 
         public MainGame(
             ILogger logger,
+            WindowSettings windowSettings,
+            ContextSettings contextSettings,
+            IGraphicsDevice graphicsDevice,
+            IMeshLibrary meshLibrary,
+            IMaterialLibrary materialLibrary,
+            IShaderProgramLibrary shaderProgramLibrary,
             ClientStartParameters clientStartParameters,
-            IOptions<GraphicsSettings> graphicsSettings,
             INetworkClient networkClient,
             IWindowProvider windowProvider,
             IWorldProvider worldProvider,
             IWorldRenderer worldRenderer,
             IContext context)
+            : base(logger, windowSettings, contextSettings, graphicsDevice)
         {
             _logger = logger;
+            _graphicsDevice = graphicsDevice;
+
             _clientStartParameters = clientStartParameters;
-            _graphicsSettings = graphicsSettings;
-            FNALoggerEXT.LogError = message => _logger.Error("FNA: {@Message}", message);
-            FNALoggerEXT.LogInfo = message => _logger.Information("FNA: {@Message}", message);
-            FNALoggerEXT.LogWarn = message => _logger.Warning("FNA: {@Message}", message);
 
             _networkClient = networkClient;
             _networkClient.Connected += NetworkClientConnected;
@@ -73,92 +66,136 @@ namespace UOStudio.Client
             _windowProvider = windowProvider;
             _context = context;
             _windowProvider.Load();
-            _ftc = new FrameTimeCalculator(this);
+
             _worldProvider = worldProvider;
             _worldRenderer = worldRenderer;
 
-            Content.RootDirectory = nameof(Content);
-            Window.Title = "UO-Studio";
-            Window.AllowUserResizing = true;
-            Activated += WindowActivated;
-            Deactivated += WindowDeactivated;
-
-            _ = new GraphicsDeviceManager(this)
-            {
-                PreferredBackBufferWidth = graphicsSettings.Value.ResolutionWidth,
-                PreferredBackBufferHeight = graphicsSettings.Value.ResolutionHeight,
-                PreferMultiSampling = graphicsSettings.Value.IsMultiSamplingEnabled,
-                GraphicsProfile = GraphicsProfile.HiDef,
-                SynchronizeWithVerticalRetrace = graphicsSettings.Value.IsVsyncEnabled
-            };
-
-            _camera = new Camera(graphicsSettings.Value.ResolutionWidth, graphicsSettings.Value.ResolutionHeight)
-            {
-                Mode = CameraMode.Perspective
-            };
-
-            IsMouseVisible = true;
-            IsFixedTimeStep = false;
+            _camera = new Camera(FrameWidth, FrameHeight, new Vector3(0, 0, 3), Vector3.Up);
         }
 
-        protected override void Initialize()
+        protected override bool Load()
         {
             var sw = Stopwatch.StartNew();
             _logger.Information("App: Initializing...");
 
-            _imGuiRenderer = new ImGuiRenderer(this);
-            _imGuiRenderer.RebuildFontAtlas();
-
-            _previousKeyboardState = Keyboard.GetState();
-            _previousMouseState = Mouse.GetState();
-
-            base.Initialize();
+            _imGuiController = new ImGuiController(_graphicsDevice, ResolutionWidth, ResolutionHeight);
 
             _currentWorld = _worldProvider.GetWorld(_clientStartParameters.ProjectId);
 
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
             sw.Stop();
             _logger.Information("App: Initializing...Done. Took {@TotalSeconds}s", sw.Elapsed.TotalSeconds);
+
+            _logger.Information("Content: Loading...");
+            _worldRenderer.Load(_graphicsDevice);
+            _logger.Information("Content: Loading...Done");
+
+            _networkClient.Connect("localhost", 9050);
+
+            return true;
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Render(float elapsedTime, float deltaTime)
         {
             if (!_isWindowFocused)
             {
                 return;
             }
 
-            GraphicsDevice.Clear(_clearColor);
-            var r = new RectangleF(32, 32, 196, 32);
-            var c = r.Contains(new PointF(_previousMouseState.X, _previousMouseState.Y))
-                ? _previousMouseState.LeftButton == ButtonState.Pressed
-                    ? Color.OrangeRed
-                    : Color.Yellow
-                : Color.Peru;
-            var t = r.Contains(new PointF(_previousMouseState.X, _previousMouseState.Y))
-                ? 4.0f
-                : 1.0f;
+            _graphicsDevice.Clear(_clearColor);
 
-            _spriteBatch.Begin();
-            _spriteBatch.DrawRectangle(r, c, t);
-            _spriteBatch.End();
+            _worldRenderer.Draw(_graphicsDevice, _currentWorld, _camera);
 
-            _worldRenderer.Draw(GraphicsDevice, _currentWorld, _camera);
 
-            _imGuiRenderer.BeginLayout(gameTime);
-            DrawUserInterface(gameTime);
-
-            ImGui.ShowDemoWindow();
-
-            _windowProvider.Draw();
-            _imGuiRenderer.EndLayout();
-
-            base.Draw(gameTime);
+            RenderUserInterface();
         }
 
-        protected void DrawUserInterface(GameTime gameTime)
+        protected override void Resized(int width, int height)
         {
+            base.Resized(width, height);
+            _graphicsDevice.SetViewport(0, 0, FrameWidth, FrameHeight);
+            _camera.Resize(FrameWidth, FrameHeight);
+
+            _imGuiController?.Dispose();
+            _imGuiController?.WindowResized(ResolutionWidth, ResolutionHeight);
+            _imGuiController = new ImGuiController(_graphicsDevice, ResolutionWidth, ResolutionHeight);
+        }
+
+        protected override void Unload()
+        {
+            _networkClient.Disconnect();
+
+            _logger.Information("Content: Unloading...");
+            _imGuiController?.Dispose();
+            _logger.Information("Content: Unloading...Done");
+            base.Unload();
+        }
+
+        protected override void Update(float elapsedTime, float deltaTime)
+        {
+            _networkClient.Update();
+
+            if (!_isWindowFocused)
+            {
+                return;
+            }
+
+            _imGuiController.Update(deltaTime);
+
+            if (Keyboard.GetKey(Keys.Escape))
+            {
+                Close();
+            }
+
+            var movement = Vector3.Zero;
+            var speedFactor = 200f;
+            if (Keyboard.GetKey(Keys.W))
+            {
+                movement += _camera.Direction;
+            }
+
+            if (Keyboard.GetKey(Keys.S))
+            {
+                movement -= _camera.Direction;
+            }
+
+            if (Keyboard.GetKey(Keys.A))
+            {
+                movement -= _camera.Right;
+            }
+
+            if (Keyboard.GetKey(Keys.D))
+            {
+                movement += _camera.Right;
+            }
+
+            if (Keyboard.GetKey(Keys.Escape))
+            {
+                Close();
+            }
+
+            if (Keyboard.GetKey(Keys.F1))
+            {
+                _camera.Position = new Vector3(0, 0, 8);
+            }
+
+            movement = Vector3.Normalize(movement);
+            if (Keyboard.GetKey(Keys.LeftShift))
+            {
+                movement *= speedFactor;
+            }
+
+            _camera.ProcessKeyboard(movement, deltaTime);
+            var mouseState = Mouse.GetState();
+            if (mouseState.RightButton == ButtonState.Pressed)
+            {
+                _camera.ProcessMouseMovement();
+            }
+        }
+
+        private void RenderUserInterface()
+        {
+            _imGuiController.BeginLayout();
+
             if (ImGui.BeginMainMenuBar())
             {
                 if (ImGui.BeginMenuBar())
@@ -167,7 +204,7 @@ namespace UOStudio.Client
                     {
                         if (ImGui.MenuItem("Quit"))
                         {
-                            Exit();
+                            Close();
                         }
 
                         ImGui.EndMenu();
@@ -178,69 +215,11 @@ namespace UOStudio.Client
 
                 ImGui.EndMainMenuBar();
             }
-        }
 
-        protected override void LoadContent()
-        {
-            _logger.Information("Content: Loading...");
-            base.LoadContent();
-            _worldRenderer.LoadContent(Content, GraphicsDevice);
-            _logger.Information("Content: Loading...Done");
+            ImGui.ShowDemoWindow();
 
-            _networkClient.Connect("localhost", 9050);
-        }
-
-        protected override void UnloadContent()
-        {
-            _networkClient.Disconnect();
-
-            _logger.Information("Content: Unloading...");
-            base.UnloadContent();
-            _logger.Information("Content: Unloading...Done");
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            _networkClient.Update();
-
-            if (!_isWindowFocused)
-            {
-                return;
-            }
-            _ftc.Calculate(gameTime);
-            _imGuiRenderer.UpdateInput();
-
-            Window.Title = $"MSPF: {_ftc.AverageFrameTime / 10000.0f:F2} | FPS: {_ftc.Fps:F0}";
-
-            var currentKeyboardState = Keyboard.GetState();
-            var currentMouseState = Mouse.GetState();
-            var cameraWasMoved = _camera.Update(
-                Window.ClientBounds.Width,
-                Window.ClientBounds.Height,
-                currentKeyboardState,
-                currentMouseState,
-                _previousKeyboardState,
-                _previousMouseState);
-
-            if (cameraWasMoved)
-            {
-                var cameraChunkPositionX = MathF.Floor(_camera.Position.X / ChunkData.ChunkSize);
-                var cameraChunkPositionY = MathF.Floor(_camera.Position.Y / ChunkData.ChunkSize);
-                var cameraChunkPositionZ = MathF.Floor(_camera.Position.Z / ChunkData.ChunkSize);
-                _logger.Debug("Camera: {@CamChkX}:{@CamChkY}:{@CamChkZ}", cameraChunkPositionX, cameraChunkPositionY, cameraChunkPositionZ);
-                var chunkPosition = new Point((int)cameraChunkPositionX, (int)cameraChunkPositionY);
-                _networkClient.RequestChunk(_clientStartParameters.ProjectId, chunkPosition);
-            }
-
-            if (currentKeyboardState.IsKeyDown(Keys.Escape))
-            {
-                Exit();
-            }
-
-            _previousKeyboardState = currentKeyboardState;
-            _previousMouseState = currentMouseState;
-
-            base.Update(gameTime);
+            _windowProvider.Draw();
+            _imGuiController.EndLayout();
         }
 
         private static string[] GetThemes()
@@ -286,7 +265,6 @@ namespace UOStudio.Client
         private void WindowDeactivated(object sender, EventArgs eventArgs)
         {
             _isWindowFocused = false;
-            Window.Title = $"UO-Studio {_graphicsSettings.Value.Backend}";
         }
     }
 }

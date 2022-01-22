@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,8 +9,8 @@ using LiteNetLib.Utils;
 using MediatR;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
-using Microsoft.Xna.Framework;
 using Serilog;
+using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Common.Network;
 using UOStudio.Server.Common;
 
@@ -24,7 +25,7 @@ namespace UOStudio.Server
 
         private readonly Thread _clientThread;
         private readonly CancellationTokenSource _cancellationToken;
-        private readonly SynchronizedCollection<NetworkClient> _clients;
+        private readonly IList<NetworkClient> _clients;
 
         private readonly ObjectPool<NetDataWriter> _writerPool;
 
@@ -46,7 +47,7 @@ namespace UOStudio.Server
             listener.NetworkReceiveEvent += async (peer, reader, deliveryMethod) => await ListenerOnNetworkReceiveEvent(peer, reader, deliveryMethod);
 
             _server = new NetManager(listener, new XorEncryptLayer("UOStudio"));
-            _clients = new SynchronizedCollection<NetworkClient>(16);
+            _clients = new List<NetworkClient>(16);
             _clientThread = new Thread(ClientThreadProc);
             _cancellationToken = new CancellationTokenSource();
         }

@@ -4,8 +4,8 @@ using LiteNetLib;
 using LiteNetLib.Layers;
 using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Xna.Framework;
 using Serilog;
+using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Common.Network;
 
 namespace UOStudio.Client.Services

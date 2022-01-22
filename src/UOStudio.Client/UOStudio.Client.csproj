@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Product>UOStudio</Product>
@@ -13,47 +13,39 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CSharpFunctionalExtensions" Version="2.18.0" />
-        <PackageReference Include="ImGui.NET" Version="1.78.0" />
-        <PackageReference Include="LiteNetLib" Version="0.9.5" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.1" />
+        <PackageReference Include="LiteNetLib" Version="0.9.5.2" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.13" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="5.0.8" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Primitives" Version="5.0.1" />
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.12.0" />
-        <PackageReference Include="Microsoft.IdentityModel.Logging" Version="6.12.0" />
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.15.1" />
+        <PackageReference Include="Microsoft.IdentityModel.Logging" Version="6.15.1" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.15.1" />
         <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.8" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Polly" Version="7.2.2" />
+        <PackageReference Include="Polly" Version="7.2.3" />
         <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
         <PackageReference Include="Serilog" Version="2.10.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
         <PackageReference Include="System.Buffers" Version="4.5.1" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -61,47 +53,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\..\Projects\UOStudio-Tools\src\UOStudio.TextureAtlasGenerator.Client\UOStudio.TextureAtlasGenerator.Client.csproj" />
-        <ProjectReference Include="..\..\..\..\Projects\UOStudio-Tools\src\UOStudio.TextureAtlasGenerator.Contracts\UOStudio.TextureAtlasGenerator.Contracts.csproj" />
-        <ProjectReference Include="..\..\external\FNA\FNA.Core.csproj" />
-        <ProjectReference Include="..\..\external\SpriteFontPlus\src\SpriteFontPlus.FNA.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Engine.Mathematics\UOStudio.Client.Engine.Mathematics.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Engine.Native.OpenGL\UOStudio.Client.Engine.Native.OpenGL.csproj" />
+        <ProjectReference Include="..\UOStudio.Client.Engine\UOStudio.Client.Engine.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Services\UOStudio.Client.Services.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Core\UOStudio.Common.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Network\UOStudio.Common.Network.csproj" />
+        <ProjectReference Include="..\UOStudio.Tools.TextureAtlasGenerator.Client\UOStudio.Tools.TextureAtlasGenerator.Client.csproj" />
+        <ProjectReference Include="..\UOStudio.Tools.TextureAtlasGenerator.Contracts\UOStudio.Tools.TextureAtlasGenerator.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="$(ProjectDir)..\..\external\fnalibs\32bit\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'win-x86' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'true') ">
+        <Content Include="..\..\lib\SDL2\Win64\SDL2.dll" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))'">
+            <Link>SDL2.dll</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <InProject>false</InProject>
-        </None>
-        <None Include="$(ProjectDir)..\..\external\fnalibs\64bit\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'win-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' and '$(Prefer32Bit)' == 'false') ">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <InProject>false</InProject>
-        </None>
-        <None Include="$(ProjectDir)..\..\external\fnalibs\osx\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'osx-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false') ">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <InProject>false</InProject>
-        </None>
-        <None Include="$(ProjectDir)..\..\external\fnalibs\vulkan\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'osx-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' and '$(Prefer32Bit)' == 'false') ">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <InProject>false</InProject>
-        </None>
-        <None Include="$(ProjectDir)..\..\external\fnalibs\lib64\**\*.*" Condition=" '$(RuntimeIdentifier)' == 'linux-x64' or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' and '$(Prefer32Bit)' == 'false') ">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <InProject>false</InProject>
-        </None>
+            <Visible>false</Visible>
+        </Content>
         <None Update="appsettings.json">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Effects\WorldEffect.fxc">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Content\Textures\control-login-32.png">
@@ -158,10 +128,6 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>ResGeneral.resx</DependentUpon>
       </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Extensions" />
     </ItemGroup>
 
     <ItemGroup>
