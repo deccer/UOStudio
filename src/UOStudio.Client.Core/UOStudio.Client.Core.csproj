@@ -10,8 +10,4 @@
       <ProjectReference Include="..\UOStudio.Common.Core\UOStudio.Common.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Extensions" />
-    </ItemGroup>
-
 </Project>
