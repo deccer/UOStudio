@@ -88,7 +88,7 @@ namespace UOStudio.Client.Engine.Graphics
         {
             if (!_vertexBuffers.Any())
             {
-                throw new SpaceConflictException("No vertex buffers bound");
+                throw new UOStudioEngineException("No vertex buffers bound");
             }
 
             foreach (var attribute in _attributes)

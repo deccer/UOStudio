@@ -7,7 +7,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
         public static uint CreateRenderbuffer()
         {
             uint name = 0;
-            GL.CreateRenderbuffers(1, &name);
+            CreateRenderbuffers(1, &name);
             return name;
         }
 
@@ -101,7 +101,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
         {
             fixed (ulong* parameters_ptr = &parameters)
             {
-                GL.GetQueryObjectui64v(id, pname, parameters_ptr);
+                GetQueryObjectui64v(id, pname, parameters_ptr);
             }
         }
 
@@ -120,6 +120,69 @@ namespace UOStudio.Client.Engine.Native.OpenGL
         public static void GetQueryBufferObjectui(int id, int buffer, QueryObjectParameterName pname, IntPtr offset)
         {
             GetQueryBufferObjectuiv(id, buffer, pname, offset);
+        }
+
+        public static void GetTextureImage(
+            uint texture,
+            int level,
+            PixelFormat format,
+            PixelType type,
+            int bufSize,
+            IntPtr pixels)
+        {
+            void* pixelsPtr = (void*)pixels;
+            GetTextureImage(texture, level, format, type, bufSize, pixelsPtr);
+        }
+
+        public static void GetTextureImage<TPixel>(
+            uint texture,
+            int level,
+            PixelFormat format,
+            PixelType type,
+            int bufSize,
+            ref TPixel pixels)
+            where TPixel : unmanaged
+        {
+            fixed (void* pixelsPtr = &pixels)
+            {
+                GetTextureImage(texture, level, format, type, bufSize, pixelsPtr);
+            }
+        }
+
+        public static void GetTextureImage(
+            uint texture,
+            int level,
+            PixelFormat format,
+            PixelType type,
+            int bufSize,
+            ref byte[] pixels)
+        {
+            fixed (void* pixelsPtr = &pixels[0])
+            {
+                GetTextureImage(texture, level, format, type, bufSize, pixelsPtr);
+            }
+        }
+
+        public static void GetCompressedTextureImage(
+            uint texture,
+            int level,
+            int bufSize,
+            IntPtr pixels)
+        {
+            void* pixelsPtr = (void*)pixels;
+            GetCompressedTextureImage(texture, level, bufSize, pixelsPtr);
+        }
+        public static unsafe void GetCompressedTextureImage<TPixel>(
+            uint texture,
+            int level,
+            int bufSize,
+            ref TPixel pixels)
+            where TPixel : unmanaged
+        {
+            fixed (void* pixelsPtr = &pixels)
+            {
+                GetCompressedTextureImage(texture, level, bufSize, pixelsPtr);
+            }
         }
     }
 }

@@ -309,6 +309,14 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             }
         }
 
+        public static unsafe void TextureSubImage3D(uint texture, int level, int xOffset, int yOffset, int zOffset, int width, int height, int depth, PixelFormat format, PixelType type, byte[] pixels)
+        {
+            fixed (void* pixelPtr = &pixels[0])
+            {
+                TextureSubImage3D(texture, level, xOffset, yOffset, zOffset, width, height, depth, format, type, pixelPtr);
+            }
+        }
+
         public static unsafe void DeleteTexture(in uint textures)
         {
             fixed(uint* texturesHandle = &textures)

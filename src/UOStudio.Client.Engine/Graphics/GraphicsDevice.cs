@@ -97,6 +97,19 @@ namespace UOStudio.Client.Engine.Graphics
             return new TextureArray(images, textureFormat, magFilter, minFilter, wrapMode);
         }
 
+        public ITextureArray CreateTextureArrayFromBytes(
+            int width,
+            int height,
+            int layers,
+            byte[] imageBytes,
+            TextureFormat textureFormat,
+            MagFilter magFilter = MagFilter.Nearest,
+            MinFilter minFilter = MinFilter.Nearest,
+            WrapMode wrapMode = WrapMode.Repeat)
+        {
+            return new TextureArray(width, height, layers, imageBytes, textureFormat, magFilter, minFilter, wrapMode);
+        }
+
         public IBuffer CreateBuffer<T>(int itemCount) where T: unmanaged
         {
             return new Buffer<T>(typeof(T).Name, itemCount);

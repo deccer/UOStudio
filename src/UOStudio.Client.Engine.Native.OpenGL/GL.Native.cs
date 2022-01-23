@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace UOStudio.Client.Engine.Native.OpenGL
 {
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1023:Dereference and access of symbols should be spaced correctly")]
     public unsafe partial class GL
     {
         public static void Clear(ClearBufferMask mask)
@@ -178,7 +180,6 @@ namespace UOStudio.Client.Engine.Native.OpenGL
                 (delegate* unmanaged<int, uint*, void>)Sdl.GetProcAddress("glCreateRenderbuffers");
             _createRenderbuffersDelegate(n, renderbuffers);
         }
-
 
         private static delegate* unmanaged<int, uint*, void> _createBuffersDelegate = &CreateBuffers_Lazy;
         private static void CreateBuffers(int n, uint* buffers)
@@ -1100,9 +1101,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
         private static void TextureSubImage2D_Lazy(uint texture, int level, int xOffset, int yOffset, int width,
             int height, PixelFormat format, PixelType type, void* pixels)
         {
-            _textureSubImage2DDelegate =
-                (delegate* unmanaged<uint, int, int, int, int, int, PixelFormat, PixelType, void*, void>)
-                Sdl.GetProcAddress("glTextureSubImage2D");
+            _textureSubImage2DDelegate = (delegate* unmanaged<uint, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Sdl.GetProcAddress("glTextureSubImage2D");
             _textureSubImage2DDelegate(texture, level, xOffset, yOffset, width, height, format, type, pixels);
         }
 
@@ -1117,14 +1116,21 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _textureSubImage3DDelegate = &TextureSubImage3D_Lazy;
 
         [UnmanagedCallersOnly]
-        private static void TextureSubImage3D_Lazy(uint texture, int level, int xOffset, int yOffset, int zOffset,
-            int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
+        private static void TextureSubImage3D_Lazy(
+            uint texture,
+            int level,
+            int xOffset,
+            int yOffset,
+            int zOffset,
+            int width,
+            int height,
+            int depth,
+            PixelFormat format,
+            PixelType type,
+            void* pixels)
         {
-            _textureSubImage3DDelegate =
-                (delegate* unmanaged<uint, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)
-                Sdl.GetProcAddress("glTextureSubImage3D");
-            _textureSubImage3DDelegate(texture, level, xOffset, yOffset, zOffset, width, height, depth, format, type,
-                pixels);
+            _textureSubImage3DDelegate = (delegate* unmanaged<uint, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Sdl.GetProcAddress("glTextureSubImage3D");
+            _textureSubImage3DDelegate(texture, level, xOffset, yOffset, zOffset, width, height, depth, format, type, pixels);
         }
 
         public static void DeleteTextures(int n, uint* textures)
@@ -1499,12 +1505,19 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             void> _texImage3DDelegate = &TexImage3D_Lazy;
 
         [UnmanagedCallersOnly]
-        private static void TexImage3D_Lazy(TextureTarget target, int level, int internalformat, int width, int height,
-            int depth, int border, PixelFormat format, PixelType type, void* pixels)
+        private static void TexImage3D_Lazy(
+            TextureTarget target,
+            int level,
+            int internalformat,
+            int width,
+            int height,
+            int depth,
+            int border,
+            PixelFormat format,
+            PixelType type,
+            void* pixels)
         {
-            _texImage3DDelegate =
-                (delegate* unmanaged<TextureTarget, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)
-                Sdl.GetProcAddress("glTexImage3D");
+            _texImage3DDelegate = (delegate* unmanaged<TextureTarget, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Sdl.GetProcAddress("glTexImage3D");
             _texImage3DDelegate(target, level, internalformat, width, height, depth, border, format, type, pixels);
         }
 
@@ -2198,9 +2211,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             int baseVertex,
             uint baseInstance)
         {
-            _drawElementsInstancedBaseVertexBaseInstanceDelegate =
-                (delegate* unmanaged<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void>)
-                Sdl.GetProcAddress("glDrawElementsInstancedBaseVertexBaseInstance");
+            _drawElementsInstancedBaseVertexBaseInstanceDelegate = (delegate* unmanaged<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void>)Sdl.GetProcAddress("glDrawElementsInstancedBaseVertexBaseInstance");
             _drawElementsInstancedBaseVertexBaseInstanceDelegate(
                 primitiveType,
                 elementCount,
@@ -2267,16 +2278,20 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _bindImageTextureDelegate = &BindImageTexture_Lazy;
 
         [UnmanagedCallersOnly]
-        private static void BindImageTexture_Lazy(uint unit, uint texture, int level, byte layered, int layer,
-            BufferAccess bufferAccess, SizedInternalFormat format)
+        private static void BindImageTexture_Lazy(
+            uint unit,
+            uint texture,
+            int level,
+            byte layered,
+            int layer,
+            BufferAccess bufferAccess,
+            SizedInternalFormat format)
         {
-            _bindImageTextureDelegate =
-                (delegate* unmanaged<uint, uint, int, byte, int, BufferAccess, SizedInternalFormat, void>)
-                Sdl.GetProcAddress("glBindImageTexture");
+            _bindImageTextureDelegate = (delegate* unmanaged<uint, uint, int, byte, int, BufferAccess, SizedInternalFormat, void>)Sdl.GetProcAddress("glBindImageTexture");
             _bindImageTextureDelegate(unit, texture, level, layered, layer, bufferAccess, format);
         }
 
-                private static delegate* unmanaged<int, int*, void> _genQueriesDelegate = &GenQueries_Lazy;
+        private static delegate* unmanaged<int, int*, void> _genQueriesDelegate = &GenQueries_Lazy;
         public static void GenQueries(int n, int* ids) => _genQueriesDelegate(n, ids);
         [UnmanagedCallersOnly]
         private static void GenQueries_Lazy(int n, int* ids)
@@ -2284,7 +2299,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _genQueriesDelegate = (delegate* unmanaged<int, int*, void>)Sdl.GetProcAddress("glGenQueries");
             _genQueriesDelegate(n, ids);
         }
-        
+
         private static delegate* unmanaged<int, int*, void> _deleteQueriesDelegate = &DeleteQueries_Lazy;
         public static void DeleteQueries(int n, int* ids) => _deleteQueriesDelegate(n, ids);
         [UnmanagedCallersOnly]
@@ -2302,7 +2317,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _isQueryDelegate = (delegate* unmanaged<int, byte>)Sdl.GetProcAddress("glIsQuery");
             return _isQueryDelegate(id);
         }
-        
+
         private static delegate* unmanaged<QueryTarget, int, void> _beginQueryDelegate = &BeginQuery_Lazy;
         public static void BeginQuery(QueryTarget target, int id) => _beginQueryDelegate(target, id);
         [UnmanagedCallersOnly]
@@ -2311,7 +2326,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _beginQueryDelegate = (delegate* unmanaged<QueryTarget, int, void>)Sdl.GetProcAddress("glBeginQuery");
             _beginQueryDelegate(target, id);
         }
-        
+
         private static delegate* unmanaged<QueryTarget, void> _endQueryDelegate = &EndQuery_Lazy;
         public static void EndQuery(QueryTarget target) => _endQueryDelegate(target);
         [UnmanagedCallersOnly]
@@ -2320,7 +2335,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _endQueryDelegate = (delegate* unmanaged<QueryTarget, void>)Sdl.GetProcAddress("glEndQuery");
             _endQueryDelegate(target);
         }
-        
+
         private static delegate* unmanaged<QueryTarget, QueryParameterName, int*, void> _getQueryivDelegate = &GetQueryiv_Lazy;
         public static void GetQueryiv(QueryTarget target, QueryParameterName pname, int* parameters) => _getQueryivDelegate(target, pname, parameters);
         [UnmanagedCallersOnly]
@@ -2329,7 +2344,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _getQueryivDelegate = (delegate* unmanaged<QueryTarget, QueryParameterName, int*, void>)Sdl.GetProcAddress("glGetQueryiv");
             _getQueryivDelegate(target, pname, parameters);
         }
-        
+
         private static delegate* unmanaged<int, QueryObjectParameterName, int*, void> _getQueryObjectivDelegate = &GetQueryObjectiv_Lazy;
         public static void GetQueryObjectiv(int id, QueryObjectParameterName pname, int* parameters) => _getQueryObjectivDelegate(id, pname, parameters);
         [UnmanagedCallersOnly]
@@ -2338,7 +2353,7 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _getQueryObjectivDelegate = (delegate* unmanaged<int, QueryObjectParameterName, int*, void>)Sdl.GetProcAddress("glGetQueryObjectiv");
             _getQueryObjectivDelegate(id, pname, parameters);
         }
-        
+
         private static delegate* unmanaged<int, QueryObjectParameterName, uint*, void> _getQueryObjectuivDelegate = &GetQueryObjectuiv_Lazy;
         public static void GetQueryObjectuiv(int id, QueryObjectParameterName pname, uint* parameters) => _getQueryObjectuivDelegate(id, pname, parameters);
         [UnmanagedCallersOnly]
@@ -2407,6 +2422,26 @@ namespace UOStudio.Client.Engine.Native.OpenGL
         {
             _getQueryObjectui64vDelegate = (delegate* unmanaged<int, QueryObjectParameterName, ulong*, void>)Sdl.GetProcAddress("glGetQueryObjectui64v");
             _getQueryObjectui64vDelegate(id, pname, parameters);
+        }
+
+        private static delegate* unmanaged<uint, int, PixelFormat, PixelType, int, void*, void> _getTextureImageDelegate = &GetTextureImage_Lazy;
+        private static void GetTextureImage(uint texture, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
+            => _getTextureImageDelegate(texture, level, format, type, bufSize, pixels);
+        [UnmanagedCallersOnly]
+        private static void GetTextureImage_Lazy(uint texture, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
+        {
+            _getTextureImageDelegate = (delegate* unmanaged<uint, int, PixelFormat, PixelType, int, void*, void>)Sdl.GetProcAddress("glGetTextureImage");
+            _getTextureImageDelegate(texture, level, format, type, bufSize, pixels);
+        }
+
+        private static delegate* unmanaged<uint, int, int, void*, void> _getCompressedTextureImageDelegate = &GetCompressedTextureImage_Lazy;
+        private static void GetCompressedTextureImage(uint texture, int level, int bufSize, void* pixels)
+            => _getCompressedTextureImageDelegate(texture, level, bufSize, pixels);
+        [UnmanagedCallersOnly]
+        private static void GetCompressedTextureImage_Lazy(uint texture, int level, int bufSize, void* pixels)
+        {
+            _getCompressedTextureImageDelegate = (delegate* unmanaged<uint, int, int, void*, void>)Sdl.GetProcAddress("glGetCompressedTextureImage");
+            _getCompressedTextureImageDelegate(texture, level, bufSize, pixels);
         }
     }
 }
