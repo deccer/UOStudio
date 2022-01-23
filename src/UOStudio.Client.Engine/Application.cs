@@ -33,6 +33,8 @@ namespace UOStudio.Client.Engine
         protected int ResolutionWidth;
         protected int ResolutionHeight;
 
+        public bool IsFocused { get; private set; }
+
         public string Title
         {
             get => Sdl.GetWindowTitle(_windowHandle);
@@ -127,6 +129,14 @@ namespace UOStudio.Client.Engine
             Unload();
             _graphicsDevice.Dispose();
             UnInitialize();
+        }
+
+        protected virtual void FocusGained()
+        {
+        }
+
+        protected virtual void FocusLost()
+        {
         }
 
         protected virtual bool Initialize()
@@ -288,9 +298,13 @@ namespace UOStudio.Client.Engine
                     break;
                 case Sdl.WindowEventId.FocusGained:
                     _logger.Debug("SDL: FocusGained");
+                    IsFocused = true;
+                    FocusGained();
                     break;
                 case Sdl.WindowEventId.FocusLost:
                     _logger.Debug("SDL: FocusLost");
+                    IsFocused = false;
+                    FocusLost();
                     break;
             }
         }
