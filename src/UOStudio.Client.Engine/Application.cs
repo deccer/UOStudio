@@ -7,13 +7,11 @@ using UOStudio.Client.Engine.Native;
 using UOStudio.Client.Engine.Native.OpenGL;
 using UOStudio.Client.Engine.Platform;
 using Buffer = System.Buffer;
-using Timer = UOStudio.Client.Engine.Timer;
 
 namespace UOStudio.Client.Engine
 {
     public class Application : IApplication
     {
-        private readonly GL.GLDebugProc _debugProcCallback;
         private readonly bool _listExtensions = false;
 
         private readonly ILogger _logger;
@@ -26,7 +24,6 @@ namespace UOStudio.Client.Engine
         private readonly int _showUpdatesPerSecondRate = 1000;
 
         private IntPtr _windowHandle;
-        private IntPtr _renderContext;
         private int _updatesPerSecond;
         private int _framesPerSecond;
         private bool _isRunning;
@@ -52,7 +49,6 @@ namespace UOStudio.Client.Engine
             _windowSettings = windowSettings;
             _contextSettings = contextSettings;
             _graphicsDevice = graphicsDevice;
-            _debugProcCallback = DebugCallback;
 
             FrameWidth = (int)(_windowSettings.ResolutionWidth * _windowSettings.ResolutionScale);
             FrameHeight = (int)(_windowSettings.ResolutionHeight * _windowSettings.ResolutionScale);
@@ -191,32 +187,13 @@ namespace UOStudio.Client.Engine
 
             Mouse.WindowHandle = _windowHandle;
 
-            var targetOpenGLVersion = Version.Parse(_contextSettings.TargetGLVersion);
-            if (_contextSettings.IsDebugContext)
+            if (!_graphicsDevice.Initialize(_contextSettings, _windowHandle))
             {
-                Sdl.SetGlAttribute(Sdl.GlAttribute.ContextFlags, Sdl.SdlContext.Debug);
-            }
-            Sdl.SetGlAttribute(Sdl.GlAttribute.Profile, Sdl.SdlProfile.Core);
-            Sdl.SetGlAttribute(Sdl.GlAttribute.ContextMajorVersion, targetOpenGLVersion.Major);
-            Sdl.SetGlAttribute(Sdl.GlAttribute.ContextMinorVersion, targetOpenGLVersion.Minor);
-            _renderContext = Sdl.CreateRenderContext(_windowHandle);
-            if (_renderContext == IntPtr.Zero)
-            {
-                _logger.Error("SDL: GL_CreateContext failed");
-                UnInitialize();
+                _logger.Error("App: Unable to initialize graphics device");
                 return false;
             }
 
-            Sdl.MakeCurrent(_windowHandle, _renderContext);
-
-            if (_contextSettings.IsDebugContext)
-            {
-                GL.DebugMessageCallback(_debugProcCallback, IntPtr.Zero);
-                GL.Enable(GL.EnableCap.DebugOutput);
-                GL.Enable(GL.EnableCap.DebugOutputSynchronous);
-            }
-
-            Sdl.SetSwapInterval(_windowSettings.IsVsyncEnabled ? 1 : 0);
+            _graphicsDevice.VSync = _windowSettings.IsVsyncEnabled;
             Resized(windowWidth, windowHeight);
             return true;
         }
@@ -243,11 +220,6 @@ namespace UOStudio.Client.Engine
             if (_windowHandle != IntPtr.Zero)
             {
                 Sdl.MakeCurrent(_windowHandle, IntPtr.Zero);
-                if (_renderContext != IntPtr.Zero)
-                {
-                    Sdl.DeleteRenderContext(_renderContext);
-                }
-
                 Sdl.DestroyWindow(_windowHandle);
             }
             Sdl.Quit();
@@ -264,42 +236,6 @@ namespace UOStudio.Client.Engine
         protected void Close()
         {
             _isRunning = false;
-        }
-
-        private void DebugCallback(
-            GL.DebugSource source,
-            GL.DebugType type,
-            uint id,
-            GL.DebugSeverity severity,
-            int length,
-            IntPtr message,
-            IntPtr userParam)
-        {
-            var messageString = Marshal.PtrToStringAnsi(message, length);
-
-            switch (severity)
-            {
-                case GL.DebugSeverity.Notification or GL.DebugSeverity.DontCare:
-                    _logger.Verbose("GL: {@Type} | {@MessageString}", type, messageString);
-                    break;
-                case GL.DebugSeverity.High:
-                    _logger.Error("GL: {@Type} | {@MessageString}", type, messageString);
-                    break;
-                case GL.DebugSeverity.Medium:
-                    _logger.Warning("GL: {@Type} | {@MessageString}", type, messageString);
-                    break;
-                case GL.DebugSeverity.Low:
-                    _logger.Information("GL: {@Type} | {@MessageString}", type, messageString);
-                    break;
-            }
-
-            if (type == GL.DebugType.Error)
-            {
-                _logger.Error("{@MessageString}", messageString);
-                #if DEBUG
-                Debugger.Break();
-                #endif
-            }
         }
 
         private void HandleEvents()

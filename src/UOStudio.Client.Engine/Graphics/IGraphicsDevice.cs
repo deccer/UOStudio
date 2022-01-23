@@ -5,7 +5,11 @@ namespace UOStudio.Client.Engine.Graphics
 {
     public interface IGraphicsDevice : IDisposable
     {
+        bool VSync { get; set; }
+
         void Clear(UOStudio.Client.Engine.Mathematics.Color clearColor);
+
+        bool Initialize(ContextSettings contextSettings, IntPtr windowHandle);
 
         Result<IShader> CreateShaderProgramFromFiles(
             string label,

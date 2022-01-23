@@ -1,5 +1,9 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using CSharpFunctionalExtensions;
+using Serilog;
 using SixLabors.ImageSharp;
+using UOStudio.Client.Engine.Native;
 using UOStudio.Client.Engine.Native.OpenGL;
 using Color = UOStudio.Client.Engine.Mathematics.Color;
 
@@ -7,17 +11,70 @@ namespace UOStudio.Client.Engine.Graphics
 {
     internal sealed class GraphicsDevice : IGraphicsDevice
     {
+        private readonly ILogger _logger;
         private readonly IInputLayoutProvider _inputLayoutProvider;
+        private readonly GL.GLDebugProc _debugProcCallback;
+        private IntPtr _renderContext;
         private Color _clearColor;
+        private bool _vSync;
+
+        public bool VSync
+        {
+            get { return _vSync; }
+            set
+            {
+                if (_vSync != value)
+                {
+                    _vSync = value;
+                    Sdl.SetSwapInterval(_vSync ? 1 : 0);
+                }
+            }
+        }
 
         public GraphicsDevice(
+            ILogger logger,
             IInputLayoutProvider inputLayoutProvider)
         {
+            _logger = logger;
             _inputLayoutProvider = inputLayoutProvider;
+            _debugProcCallback = DebugCallback;
         }
 
         public void Dispose()
         {
+            if (_renderContext != IntPtr.Zero)
+            {
+                Sdl.DeleteRenderContext(_renderContext);
+            }
+        }
+
+        public bool Initialize(ContextSettings contextSettings, IntPtr windowHandle)
+        {
+            var targetOpenGLVersion = Version.Parse(contextSettings.TargetGLVersion);
+            if (contextSettings.IsDebugContext)
+            {
+                Sdl.SetGlAttribute(Sdl.GlAttribute.ContextFlags, Sdl.SdlContext.Debug);
+            }
+            Sdl.SetGlAttribute(Sdl.GlAttribute.Profile, Sdl.SdlProfile.Core);
+            Sdl.SetGlAttribute(Sdl.GlAttribute.ContextMajorVersion, targetOpenGLVersion.Major);
+            Sdl.SetGlAttribute(Sdl.GlAttribute.ContextMinorVersion, targetOpenGLVersion.Minor);
+            _renderContext = Sdl.CreateRenderContext(windowHandle);
+            if (_renderContext == IntPtr.Zero)
+            {
+                _logger.Error("SDL: GL_CreateContext failed");
+                return false;
+            }
+
+            Sdl.MakeCurrent(windowHandle, _renderContext);
+
+            if (contextSettings.IsDebugContext)
+            {
+                GL.DebugMessageCallback(_debugProcCallback, IntPtr.Zero);
+                GL.Enable(GL.EnableCap.DebugOutput);
+                GL.Enable(GL.EnableCap.DebugOutputSynchronous);
+            }
+
+            return true;
         }
 
         public void Clear(Color clearColor)
@@ -153,6 +210,42 @@ namespace UOStudio.Client.Engine.Graphics
         public void SetViewport(int left, int top, int width, int height)
         {
             GL.Viewport(left, top, width, height);
+        }
+
+        private void DebugCallback(
+            GL.DebugSource source,
+            GL.DebugType type,
+            uint id,
+            GL.DebugSeverity severity,
+            int length,
+            IntPtr message,
+            IntPtr userParam)
+        {
+            var messageString = Marshal.PtrToStringAnsi(message, length);
+
+            switch (severity)
+            {
+                case GL.DebugSeverity.Notification or GL.DebugSeverity.DontCare:
+                    _logger.Verbose("GL: {@Type} | {@MessageString}", type, messageString);
+                    break;
+                case GL.DebugSeverity.High:
+                    _logger.Error("GL: {@Type} | {@MessageString}", type, messageString);
+                    break;
+                case GL.DebugSeverity.Medium:
+                    _logger.Warning("GL: {@Type} | {@MessageString}", type, messageString);
+                    break;
+                case GL.DebugSeverity.Low:
+                    _logger.Information("GL: {@Type} | {@MessageString}", type, messageString);
+                    break;
+            }
+
+            if (type == GL.DebugType.Error)
+            {
+                _logger.Error("{@MessageString}", messageString);
+#if DEBUG
+                Debugger.Break();
+#endif
+            }
         }
     }
 }
