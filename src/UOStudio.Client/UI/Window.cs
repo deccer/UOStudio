@@ -32,10 +32,14 @@ namespace UOStudio.Client.UI
         }
 
         public void Hide()
-            => IsVisible = false;
+        {
+            IsVisible = false;
+        }
 
         public void Show()
-            => IsVisible = true;
+        {
+            IsVisible = true;
+        }
 
         protected abstract void InternalDraw();
     }

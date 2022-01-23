@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -32,7 +31,9 @@ namespace UOStudio.Client.UI
 
         public TWindow GetWindow<TWindow>()
             where TWindow : Window
-            => _windows.OfType<TWindow>().FirstOrDefault();
+        {
+            return _windows.OfType<TWindow>().FirstOrDefault();
+        }
 
         public void Load()
         {
