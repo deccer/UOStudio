@@ -46,7 +46,7 @@ namespace UOStudio.Client.Engine.Graphics
             {
                 return;
             }
-            
+
             _textureFilePaths.Add(name, filePath);
         }
 
