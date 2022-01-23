@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using CSharpFunctionalExtensions;
 using Serilog;
 using SixLabors.ImageSharp;
+using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Client.Engine.Native;
 using UOStudio.Client.Engine.Native.OpenGL;
 using Color = UOStudio.Client.Engine.Mathematics.Color;
@@ -15,7 +16,7 @@ namespace UOStudio.Client.Engine.Graphics
         private readonly IInputLayoutProvider _inputLayoutProvider;
         private readonly GL.GLDebugProc _debugProcCallback;
         private IntPtr _renderContext;
-        private Color _clearColor;
+        private Vector3 _clearColor;
         private bool _vSync;
 
         public bool VSync
@@ -42,6 +43,7 @@ namespace UOStudio.Client.Engine.Graphics
 
         public void Dispose()
         {
+            _inputLayoutProvider.Dispose();
             if (_renderContext != IntPtr.Zero)
             {
                 Sdl.DeleteRenderContext(_renderContext);
@@ -77,11 +79,11 @@ namespace UOStudio.Client.Engine.Graphics
             return true;
         }
 
-        public void Clear(Color clearColor)
+        public void Clear(Vector3 clearColor)
         {
             if (!_clearColor.Equals(clearColor))
             {
-                GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
+                GL.ClearColor(clearColor.X, clearColor.Y, clearColor.Z, 1.0f);
                 _clearColor = clearColor;
             }
             GL.Clear(GL.ClearBufferMask.ColorBufferBit | GL.ClearBufferMask.DepthBufferBit);

@@ -19,7 +19,7 @@ namespace UOStudio.Client
 {
     internal sealed class MainGame : Application
     {
-        private readonly Color _clearColor = new Color(0.1f, 0.1f, 0.1f, 1.0f);
+        private readonly Vector3 _clearColor = new Vector3(0.1f, 0.1f, 0.1f);
         private readonly ILogger _logger;
         private readonly IGraphicsDevice _graphicsDevice;
         private ImGuiController _imGuiController;

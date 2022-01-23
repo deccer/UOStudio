@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using SixLabors.ImageSharp;
+using UOStudio.Client.Engine.Mathematics;
 
 namespace UOStudio.Client.Engine.Graphics
 {
@@ -7,7 +8,7 @@ namespace UOStudio.Client.Engine.Graphics
     {
         bool VSync { get; set; }
 
-        void Clear(UOStudio.Client.Engine.Mathematics.Color clearColor);
+        void Clear(Vector3 clearColor);
 
         bool Initialize(ContextSettings contextSettings, IntPtr windowHandle);
 
