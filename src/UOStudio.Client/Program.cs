@@ -85,6 +85,7 @@ namespace UOStudio.Client
             services.AddEngineKit(configuration);
             services.AddSingleton(Log.Logger);
 
+            services.Configure<ClientSettings>(options => configuration.GetSection(nameof(ClientSettings)).Bind(options));
             services.AddSingleton<INetworkClient, NetworkClient>();
             services.AddSingleton<IProjectService, ProjectService>();
             services.AddSingleton<ITokenService, TokenService>();
@@ -94,7 +95,7 @@ namespace UOStudio.Client
             services.AddWindows();
             services.AddSingleton<IWorldProvider, WorldProvider>();
             services.AddSingleton<IWorldRenderer, WorldRenderer>();
-            services.AddSingleton<MainGame>();
+            services.AddSingleton<IApplication, MainGame>();
 
             return services.BuildServiceProvider();
         }
