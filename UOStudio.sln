@@ -82,6 +82,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UOStudio.Tools.TextureAtlas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UOStudio.Tools.TextureAtlasGenerator.Ultima", "src\UOStudio.Tools.TextureAtlasGenerator.Ultima\UOStudio.Tools.TextureAtlasGenerator.Ultima.csproj", "{90EA5131-DE8F-4176-A715-8A223829CB69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UOStudio.Client.Assets", "src\UOStudio.Client.Assets\UOStudio.Client.Assets.csproj", "{B112F58E-B6B0-447F-8EAD-CD4539D4B907}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +124,7 @@ Global
 		{49CFA9E8-CDB6-4A7B-BA39-8C55A9030AEE} = {CB4C7F00-FE5F-4E47-8384-7DC837398E94}
 		{9BA5BBA4-39C5-445E-AA19-71E47CFE14E7} = {CB4C7F00-FE5F-4E47-8384-7DC837398E94}
 		{90EA5131-DE8F-4176-A715-8A223829CB69} = {CB4C7F00-FE5F-4E47-8384-7DC837398E94}
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907} = {03A7F572-9CA9-4E7D-93E9-6C72C5F0CE61}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7F4DAC08-587D-4741-A09D-5B842CAA60C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -400,5 +403,17 @@ Global
 		{90EA5131-DE8F-4176-A715-8A223829CB69}.Release|x64.Build.0 = Release|Any CPU
 		{90EA5131-DE8F-4176-A715-8A223829CB69}.Release|x86.ActiveCfg = Release|Any CPU
 		{90EA5131-DE8F-4176-A715-8A223829CB69}.Release|x86.Build.0 = Release|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Debug|x64.Build.0 = Debug|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Debug|x86.Build.0 = Debug|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Release|x64.ActiveCfg = Release|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Release|x64.Build.0 = Release|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Release|x86.ActiveCfg = Release|Any CPU
+		{B112F58E-B6B0-447F-8EAD-CD4539D4B907}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
