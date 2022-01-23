@@ -95,7 +95,7 @@ namespace UOStudio.Client
             services.AddWindows();
             services.AddSingleton<IWorldProvider, WorldProvider>();
             services.AddSingleton<IWorldRenderer, WorldRenderer>();
-            services.AddSingleton<IApplication, MainGame>();
+            services.AddSingleton<IApplication, ClientApplication>();
 
             return services.BuildServiceProvider();
         }

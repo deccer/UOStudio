@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using ImGuiNET;
 using LiteNetLib;
 using Serilog;
@@ -7,6 +9,7 @@ using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.Graphics;
 using UOStudio.Client.Engine.Input;
 using UOStudio.Client.Engine.Mathematics;
+using UOStudio.Client.Engine.Native.OpenGL;
 using UOStudio.Client.Engine.UI;
 using UOStudio.Client.Services;
 using UOStudio.Client.UI;
@@ -17,7 +20,7 @@ using Num = System.Numerics;
 
 namespace UOStudio.Client
 {
-    internal sealed class MainGame : Application
+    internal sealed class ClientApplication : Application
     {
         private readonly Vector3 _clearColor = new Vector3(0.1f, 0.1f, 0.1f);
         private readonly ILogger _logger;
@@ -25,6 +28,9 @@ namespace UOStudio.Client
         private ImGuiController _imGuiController;
 
         private readonly ClientStartParameters _clientStartParameters;
+        private readonly IMeshLibrary _meshLibrary;
+        private readonly IMaterialLibrary _materialLibrary;
+        private readonly IShaderProgramLibrary _shaderProgramLibrary;
 
         private readonly INetworkClient _networkClient;
         private readonly IWindowProvider _windowProvider;
@@ -32,20 +38,26 @@ namespace UOStudio.Client
         private readonly IContext _context;
         private readonly IWorldRenderer _worldRenderer;
 
+        private IShader _basicShader;
+        private ITextureArray _basicTextureAtlas;
+        private IInputLayout _basicInputLayout;
+        private IBuffer _basicVertexBuffer;
+        private IBuffer _basicIndexBuffer;
+        private int _uvIndex;
+
         private readonly Camera _camera;
 
         private World _currentWorld;
-        private bool _isWindowFocused;
 
-        public MainGame(
+        public ClientApplication(
             ILogger logger,
             WindowSettings windowSettings,
             ContextSettings contextSettings,
             IGraphicsDevice graphicsDevice,
+            ClientStartParameters clientStartParameters,
             IMeshLibrary meshLibrary,
             IMaterialLibrary materialLibrary,
             IShaderProgramLibrary shaderProgramLibrary,
-            ClientStartParameters clientStartParameters,
             INetworkClient networkClient,
             IWindowProvider windowProvider,
             IWorldProvider worldProvider,
@@ -57,6 +69,9 @@ namespace UOStudio.Client
             _graphicsDevice = graphicsDevice;
 
             _clientStartParameters = clientStartParameters;
+            _meshLibrary = meshLibrary;
+            _materialLibrary = materialLibrary;
+            _shaderProgramLibrary = shaderProgramLibrary;
 
             _networkClient = networkClient;
             _networkClient.Connected += NetworkClientConnected;
@@ -77,6 +92,21 @@ namespace UOStudio.Client
         {
             var sw = Stopwatch.StartNew();
             _logger.Information("App: Initializing...");
+            if (!LoadShaders())
+            {
+                return false;
+            }
+
+            var meshDates = MeshData.CreateMeshDataFromFile("Models/SM_UnitCube.fbx", _materialLibrary);
+            var meshData = MeshData.Combine(meshDates.ToArray());
+            _basicVertexBuffer = meshData.CreateVertexBuffer(_graphicsDevice);
+            _basicIndexBuffer = meshData.CreateIndexBuffer(_graphicsDevice);
+            _basicInputLayout = _graphicsDevice.GetInputLayout(meshData.VertexType);
+            _basicInputLayout.AddVertexBuffer(_basicVertexBuffer, 0);
+            _basicInputLayout.AddElementBuffer(_basicIndexBuffer);
+
+            var imageBytes = File.ReadAllBytes("C:\\Temp\\TestBytes.bytes");
+            _basicTextureAtlas = _graphicsDevice.CreateTextureArrayFromBytes(128, 128, 5, imageBytes, TextureFormat.Rgba8);
 
             _imGuiController = new ImGuiController(_graphicsDevice, ResolutionWidth, ResolutionHeight);
 
@@ -91,20 +121,40 @@ namespace UOStudio.Client
 
             _networkClient.Connect("localhost", 9050);
 
+            GL.Disable(GL.EnableCap.Multisample);
+            GL.Enable(GL.EnableCap.ScissorTest);
+            GL.Enable(GL.EnableCap.DepthTest);
+            GL.Enable(GL.EnableCap.CullFace);
+            GL.Enable(GL.EnableCap.Blend);
+            GL.CullFace(GL.CullFaceMode.Front);
+            GL.FrontFace(GL.FrontFaceDirection.Cw);
+            GL.DepthFunc(GL.DepthFunction.Less);
+            GL.BlendEquation(GL.BlendEquationMode.FuncAdd);
+            GL.BlendFunc(GL.BlendingFactor.One, GL.BlendingFactor.OneMinusSrcAlpha);
+
             return true;
         }
 
         protected override void Render(float elapsedTime, float deltaTime)
         {
-            if (!_isWindowFocused)
+            if (!IsFocused)
             {
                 return;
             }
-
+            GL.Enable(GL.EnableCap.DepthTest);
             _graphicsDevice.Clear(_clearColor);
 
-            _worldRenderer.Draw(_graphicsDevice, _currentWorld, _camera);
+            _basicInputLayout.Bind();
+            _basicShader.SetVertexUniform("u_projection", _camera.ProjectionMatrix);
+            _basicShader.SetVertexUniform("u_view", _camera.ViewMatrix);
+            _basicShader.SetVertexUniform("u_world", Matrix.Identity);
+            _basicShader.SetFragmentUniform("u_uv_index", _uvIndex);
+            _basicShader.Bind();
+            _basicTextureAtlas.Bind(0);
 
+            GL.DrawElementsInstanced(GL.PrimitiveType.Triangles, _basicIndexBuffer.Count, GL.DrawElementsType.UnsignedInt, 0, 1);
+
+            _worldRenderer.Draw(_graphicsDevice, _currentWorld, _camera);
 
             RenderUserInterface();
         }
@@ -122,6 +172,7 @@ namespace UOStudio.Client
 
         protected override void Unload()
         {
+            _logger.Information("Network: Disconnecting...");
             _networkClient.Disconnect();
 
             _logger.Information("Content: Unloading...");
@@ -134,7 +185,7 @@ namespace UOStudio.Client
         {
             _networkClient.Update();
 
-            if (!_isWindowFocused)
+            if (!IsFocused)
             {
                 return;
             }
@@ -192,6 +243,18 @@ namespace UOStudio.Client
             }
         }
 
+        private bool LoadShaders()
+        {
+            if (!_shaderProgramLibrary.AddShaderProgram("Basic", "Shaders/Basic.vs.glsl", "Shaders/Basic.fs.glsl"))
+            {
+                return false;
+            }
+
+            _basicShader = _shaderProgramLibrary.GetShaderProgram("Basic");
+
+            return true;
+        }
+
         private void RenderUserInterface()
         {
             _imGuiController.BeginLayout();
@@ -217,6 +280,16 @@ namespace UOStudio.Client
             }
 
             ImGui.ShowDemoWindow();
+
+            if (ImGui.Begin("Debug"))
+            {
+                var uvIndex = _uvIndex;
+                if (ImGui.SliderInt("Uv Index", ref uvIndex, 0, 4))
+                {
+                    _uvIndex = uvIndex;
+                }
+                ImGui.End();
+            }
 
             _windowProvider.Draw();
             _imGuiController.EndLayout();
@@ -255,16 +328,6 @@ namespace UOStudio.Client
             var chunk = _worldProvider.GetChunk(_clientStartParameters.ProjectId, chunkData.Position);
             chunk.UpdateWorldChunk(ref chunkData);
             _worldRenderer.UpdateChunk(chunk);
-        }
-
-        private void WindowActivated(object sender, EventArgs eventArgs)
-        {
-            _isWindowFocused = true;
-        }
-
-        private void WindowDeactivated(object sender, EventArgs eventArgs)
-        {
-            _isWindowFocused = false;
         }
     }
 }
