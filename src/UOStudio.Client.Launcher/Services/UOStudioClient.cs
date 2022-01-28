@@ -9,14 +9,14 @@ using UOStudio.Client.Launcher.Contracts;
 
 namespace UOStudio.Client.Launcher.Services
 {
-    public class UoStudioClient : IUoStudioClient
+    public class IuoStudioClient : IUOStudioClient
     {
         private readonly ILogger _logger;
         private readonly ClientSettings _clientSettings;
         private readonly IUserContext _userContext;
         private readonly HttpClient _httpClient;
 
-        public UoStudioClient(
+        public IuoStudioClient(
             ILogger logger,
             ClientSettings clientSettings,
             IUserContext userContext,

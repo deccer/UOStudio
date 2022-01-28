@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Serilog;
 using UOStudio.Client.Launcher.Commands;
 using UOStudio.Client.Launcher.Contracts;
+using UOStudio.Client.Launcher.Data.Repositories;
 using UOStudio.Client.Launcher.Services;
 
 namespace UOStudio.Client.Launcher.ViewModels
@@ -19,7 +20,7 @@ namespace UOStudio.Client.Launcher.ViewModels
         
         private readonly ILogger _logger;
         private readonly INavigator _navigator;
-        private readonly IProfileService _profileService;
+        private readonly IProfileRepository _profileRepository;
 
         public IAsyncDelegateCommand DeleteProfileCommand { get; }
         public IAsyncDelegateCommand AddProfileCommand { get; }
@@ -46,11 +47,11 @@ namespace UOStudio.Client.Launcher.ViewModels
         public ProfilesViewModel(
             ILogger logger,
             INavigator navigator,
-            IProfileService profileService)
+            IProfileRepository profileRepository)
         {
             _logger = logger;
             _navigator = navigator;
-            _profileService = profileService;
+            _profileRepository = profileRepository;
 
             DeleteProfileCommand = new AsyncDelegateCommand(async () => await DeleteProfileAsync());
             AddProfileCommand = new AsyncDelegateCommand(async () => await AddProfileAsync());
@@ -59,7 +60,7 @@ namespace UOStudio.Client.Launcher.ViewModels
 
         public Task LoadAsync()
         {
-            var profiles = _profileService.GetProfiles();
+            var profiles = _profileRepository.GetProfiles();
             Profiles = new ObservableCollection<LookupItem>(profiles);
 
             return Task.CompletedTask;
@@ -67,19 +68,19 @@ namespace UOStudio.Client.Launcher.ViewModels
 
         private async Task DeleteProfileAsync()
         {
-            await _profileService.DeleteProfileAsync(_selectedProfileLookupItem.Id);
+            await _profileRepository.DeleteProfileAsync(_selectedProfileLookupItem.Id);
             await LoadAsync();
         }
 
         private async Task AddProfileAsync()
         {
-            await _profileService.AddProfileAsync(_selectedProfile);
+            await _profileRepository.AddProfileAsync(_selectedProfile);
             await LoadAsync();
         }
 
         private async Task UpdateProfileAsync()
         {
-            await _profileService.UpdateProfileAsync(SelectedProfileLookupItem.Id, SelectedProfile);
+            await _profileRepository.UpdateProfileAsync(SelectedProfileLookupItem.Id, SelectedProfile);
         }
 
         private async void OnSelectedProfileChanged()
@@ -89,7 +90,7 @@ namespace UOStudio.Client.Launcher.ViewModels
                 return;
             }
 
-            var profile = await _profileService.GetProfileAsync(SelectedProfileLookupItem.Id);
+            var profile = await _profileRepository.GetProfileAsync(SelectedProfileLookupItem.Id);
             SelectedProfile = profile;
         }
     }

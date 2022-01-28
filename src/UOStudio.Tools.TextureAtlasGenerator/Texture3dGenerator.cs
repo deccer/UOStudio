@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using SharpDX.Direct3D11;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.Graphics;
 using UOStudio.TextureAtlasGenerator.Abstractions;
@@ -69,7 +68,7 @@ namespace UOStudio.TextureAtlasGenerator
         {
         }
 
-        private static Texture2D BitmapToTexture2D(IGraphicsDevice graphicsDevice, Bitmap atlasPage)
+        private static ITexture BitmapToTexture2D(IGraphicsDevice graphicsDevice, Bitmap atlasPage)
         {
             /*
             var texture2D = new Texture2D(graphicsDevice, atlasPage.Width, atlasPage.Height, false, SurfaceFormat.Color);

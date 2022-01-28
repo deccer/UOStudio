@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using UOStudio.Client.Launcher.Contracts;
 
-namespace UOStudio.Client.Launcher.Services
+namespace UOStudio.Client.Launcher.Data.Repositories
 {
-    public interface IProfileService
+    public interface IProfileRepository
     {
         IReadOnlyCollection<ProfileNameAndDescriptionDto> GetProfilesWithNameAndDescription();
 

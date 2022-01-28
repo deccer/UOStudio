@@ -1,4 +1,4 @@
-﻿namespace UOStudio.Client.Launcher
+﻿namespace UOStudio.Client.Launcher.Contracts
 {
     public class ClientSettings
     {

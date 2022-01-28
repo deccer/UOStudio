@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 using Serilog;
+using UOStudio.Client.Launcher.Contracts;
 using UOStudio.Common.Contracts;
 using ProjectDto = UOStudio.Client.Launcher.Contracts.ProjectDto;
 

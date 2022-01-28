@@ -7,16 +7,16 @@ using Serilog;
 
 namespace UOStudio.Client.Launcher.Services
 {
-    public class UoStudioClientTokenHandler : DelegatingHandler
+    public class UOStudioClientTokenHandler : DelegatingHandler
     {
         private readonly ILogger _logger;
         private readonly ITokenClient _tokenClient;
 
-        public UoStudioClientTokenHandler(
+        public UOStudioClientTokenHandler(
             ILogger logger,
             ITokenClient tokenClient)
         {
-            _logger = logger.ForContext<UoStudioClientTokenHandler>();
+            _logger = logger.ForContext<UOStudioClientTokenHandler>();
             _tokenClient = tokenClient;
         }
 

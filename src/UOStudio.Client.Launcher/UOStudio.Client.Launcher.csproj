@@ -15,12 +15,7 @@
         <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
         <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.1" />
         <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.1" />
+
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
@@ -41,10 +36,7 @@
         <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.7" />
-        <PackageReference Include="SQLitePCLRaw.core" Version="2.0.7" />
-        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.0.7" />
-        <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.0.7" />
+
         <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
         <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.0" />
     </ItemGroup>
@@ -56,6 +48,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\UOStudio.Client.Launcher.Contracts\UOStudio.Client.Launcher.Contracts.csproj" />
+      <ProjectReference Include="..\UOStudio.Client.Launcher.Data\UOStudio.Client.Launcher.Data.csproj" />
       <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
     </ItemGroup>
 

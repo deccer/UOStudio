@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -82,21 +83,15 @@ namespace UOStudio.Server.Domain.JoinProject
         private async Task QueueWorkItem(CancellationToken cancellationToken, Guid taskId, int projectId)
         {
             // client and server differ, server needs to provide client with new atlas files for download
-            var db = _contextFactory.CreateDbContext();
-            var backgroundTask = new BackgroundTask
-            {
-                Status = BackgroundTaskStatus.Running,
-                Id = taskId,
-                CompletedLocation = null
-            };
-            await db.BackgroundTasks.AddAsync(backgroundTask, cancellationToken);
-            await db.SaveChangesAsync(cancellationToken);
-            await db.DisposeAsync();
+            await QueueBackgroundTaskAsync(cancellationToken, taskId);
 
             var preparationResult = _projectService.PrepareProjectForClientDownload(projectId);
 
-            db = _contextFactory.CreateDbContext();
-            backgroundTask = await db.BackgroundTasks.FirstOrDefaultAsync(bt => bt.Id == taskId, cancellationToken);
+            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            var backgroundTask = await db.BackgroundTasks
+                .Where(bt => bt.Id == taskId)
+                .FirstOrDefaultAsync(cancellationToken);
+
             if (preparationResult.IsSuccess)
             {
                 backgroundTask.Status = BackgroundTaskStatus.Completed;
@@ -110,8 +105,19 @@ namespace UOStudio.Server.Domain.JoinProject
 
             db.BackgroundTasks.Update(backgroundTask);
             await db.SaveChangesAsync(cancellationToken);
+        }
 
-            await db.DisposeAsync();
+        private async Task QueueBackgroundTaskAsync(CancellationToken cancellationToken, Guid taskId)
+        {
+            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            var backgroundTask = new BackgroundTask
+            {
+                Status = BackgroundTaskStatus.Running,
+                Id = taskId,
+                CompletedLocation = null
+            };
+            await db.BackgroundTasks.AddAsync(backgroundTask, cancellationToken);
+            await db.SaveChangesAsync(cancellationToken);
         }
     }
 }

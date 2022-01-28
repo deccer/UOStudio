@@ -1,26 +1,30 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
+using System.Text;
+using Isopoh.Cryptography.Argon2;
 
 namespace UOStudio.Common.Core
 {
-    public class PasswordHasher : IPasswordHasher
+    internal sealed class PasswordHasher : IPasswordHasher
     {
-        public string Hash(string password, int iterations = 10000)
+        public (byte[] HashedPassword, byte[] Salt) Hash(string password)
         {
             var salt = new byte[PasswordConstants.SaltSize];
-            using var rng = new RNGCryptoServiceProvider();
+            using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(salt);
 
-            using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, salt, iterations);
-            var hash = rfc2898DeriveBytes.GetBytes(PasswordConstants.HashSize);
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+            var argonConfig = new Argon2Config
+            {
+                Type = Argon2Type.DataIndependentAddressing,
+                Version = Argon2Version.Nineteen,
+                TimeCost = 10,
+                Password = passwordBytes,
+                Salt = salt,
+                HashLength = PasswordConstants.HashSize
+            };
+            using var argon = new Argon2(argonConfig);
 
-            var hashBytes = new byte[PasswordConstants.SaltSize + PasswordConstants.HashSize];
-            Array.Copy(salt, 0, hashBytes, 0, PasswordConstants.SaltSize);
-            Array.Copy(hash, 0, hashBytes, PasswordConstants.SaltSize, PasswordConstants.HashSize);
-
-            var base64Hash = Convert.ToBase64String(hashBytes);
-
-            return $"$HP$V1${iterations}${base64Hash}";
+            return (argon.Hash().Buffer, salt);
         }
     }
 }

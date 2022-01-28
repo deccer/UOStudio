@@ -2,6 +2,6 @@
 {
     public interface IPasswordHasher
     {
-        string Hash(string password, int iterations = 10000);
+        (byte[] HashedPassword, byte[] Salt) Hash(string password);
     }
 }

@@ -64,7 +64,7 @@ namespace UOStudio.Server.Data
         private async Task EnsureCreatedCore()
         {
             var created = await Database.EnsureCreatedAsync();
-            if (!created)
+            if (created)
             {
                 return;
             }
@@ -74,28 +74,30 @@ namespace UOStudio.Server.Data
             var userQuick = await Users.FirstOrDefaultAsync(u => u.Name == "quick", CancellationToken.None);
             var userBlocked = await Users.FirstOrDefaultAsync(u => u.Name == "blocked", CancellationToken.None);
 
+            var adminUserPassword = _passwordHasher.Hash("admin");
             adminUser ??= new User
             {
                 Name = "admin",
-                Password = _passwordHasher.Hash("admin"),
+                Password = adminUserPassword.HashedPassword,
+                Nonce = adminUserPassword.Salt,
                 Permissions = Permission.AllPermissions.ToList()
             };
-            userRex ??= new User
-            {
-                Name = "rex",
-                Password = _passwordHasher.Hash("rex"),
-                Permissions = Role.Editor.ToList()
-            };
+
+            var userQuickPassword = _passwordHasher.Hash("quick");
             userQuick ??= new User
             {
                 Name = "quick",
-                Password = _passwordHasher.Hash("quick"),
+                Password = userQuickPassword.HashedPassword,
+                Nonce = userQuickPassword.Salt,
                 Permissions = Role.Editor.ToList()
             };
+
+            var userBlockedPassword = _passwordHasher.Hash("blocked");
             userBlocked ??= new User
             {
                 Name = "blocked",
-                Password = _passwordHasher.Hash("blocked"),
+                Password = userBlockedPassword.HashedPassword,
+                Nonce = userBlockedPassword.Salt,
                 Permissions = Role.BlockedUser.ToList()
             };
 

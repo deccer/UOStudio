@@ -27,16 +27,19 @@ namespace UOStudio.Client.Launcher.Services
 
         public async Task<Result<TokenPair>> AcquireTokenPairAsync(CancellationToken cancellationToken = default)
         {
+            _logger.Debug("Acquiring token from {@AuthBaseUri}", _userContext.AuthBaseUri);
             var loginResponse = await _httpClient.PostAsJsonAsync($"{_userContext.AuthBaseUri}api/auth", _userContext.UserCredentials, cancellationToken);
             if (loginResponse.IsSuccessStatusCode)
             {
                 var tokenPair = await loginResponse.Content.ReadFromJsonAsync<TokenPair>(cancellationToken: cancellationToken);
                 if (tokenPair != null)
                 {
+                    _logger.Debug("Acquired token");
                     _userContext.ConnectionTicket = loginResponse.Headers.GetValues("X-Ticket").FirstOrDefault();
                     return Result.Success(tokenPair);
                 }
-                
+
+                _logger.Debug("Unable to Acquire token");
                 return Result.Failure<TokenPair>("Unable to login");
             }
 

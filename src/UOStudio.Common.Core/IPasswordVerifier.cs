@@ -2,6 +2,6 @@
 {
     public interface IPasswordVerifier
     {
-        bool Verify(string password, string hashedPassword);
+        bool Verify(string password, byte[] nonce, byte[] hashedPassword);
     }
 }

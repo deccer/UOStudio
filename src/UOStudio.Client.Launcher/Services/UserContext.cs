@@ -14,7 +14,7 @@ namespace UOStudio.Client.Launcher.Services
         public int ServerPort { get; set; }
 
         public UserCredentials UserCredentials { get; set; }
-        
+
         public string ConnectionTicket { get; set; }
     }
 }

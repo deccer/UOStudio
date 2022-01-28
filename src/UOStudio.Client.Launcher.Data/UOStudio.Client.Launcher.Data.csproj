@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Serilog" Version="2.10.0" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.1" />
+        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.7" />
+        <PackageReference Include="SQLitePCLRaw.core" Version="2.0.7" />
+        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.0.7" />
+        <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.0.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UOStudio.Client.Launcher.Contracts\UOStudio.Client.Launcher.Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

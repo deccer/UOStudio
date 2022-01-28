@@ -7,15 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.1" />
-      <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-      <PackageReference Include="Serilog" Version="2.10.0" />
-      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.34.0.42011">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Update="JetBrains.Annotations" Version="2021.3.0" />
+        <PackageReference Include="Isopoh.Cryptography.Argon2" Version="1.1.11" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.1" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Serilog" Version="2.10.0" />
+        <PackageReference Update="SonarAnalyzer.CSharp" Version="8.34.0.42011">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Update="JetBrains.Annotations" Version="2021.3.0" />
     </ItemGroup>
 
 </Project>

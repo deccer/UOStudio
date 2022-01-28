@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Windows;
 using MahApps.Metro.Controls.Dialogs;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UOStudio.Client.Launcher.Contracts;
 using UOStudio.Client.Launcher.Data;
 using UOStudio.Client.Launcher.Services;
 using UOStudio.Client.Launcher.ViewModels;
@@ -17,23 +16,25 @@ namespace UOStudio.Client.Launcher
 {
     public partial class App
     {
+        private ServiceProvider _serviceProvider;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            var serviceProvider = BuildServiceProvider();
-            using (var scope = serviceProvider.GetService<IServiceScopeFactory>()!.CreateScope())
-            {
-                var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ProfileDbContext>>();
-                using var context = contextFactory.CreateDbContext();
-                context.Database.Migrate();
-            }
+            _serviceProvider = BuildServiceProvider();
 
-            MainWindow = serviceProvider.GetService<ShellView>();
+            MainWindow = _serviceProvider.GetService<ShellView>();
             MainWindow?.Show();
         }
 
-        private static IServiceProvider BuildServiceProvider()
+        protected override void OnExit(ExitEventArgs e)
+        {
+            _serviceProvider.Dispose();
+            base.OnExit(e);
+        }
+
+        private static ServiceProvider BuildServiceProvider()
         {
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
@@ -79,26 +80,14 @@ namespace UOStudio.Client.Launcher
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddSingleton<IClientStarterService, ClientStarterService>();
 
-            services.AddDbContextFactory<ProfileDbContext>((provider, options) =>
-            {
-                var cs = provider.GetRequiredService<ClientSettings>();
-                var profilesDb = string.IsNullOrEmpty(Path.GetDirectoryName(cs.ProfilesDirectory))
-                    ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Profiles", cs.ProfilesDirectory)
-                    : cs.ProfilesDirectory;
-                var profilesDbDirectory = Path.GetDirectoryName(profilesDb);
-                Directory.CreateDirectory(profilesDbDirectory);
-
-                options.UseSqlite($"Data Source={profilesDb}");
-            });
-            services.AddSingleton<IProfileService, ProfileService>();
-
+            services.AddProfileDatabase();
             services.AddTransient<ITokenClient, TokenClient>();
-            services.AddTransient<UoStudioClientTokenHandler>();
-            services.AddHttpClient<IUoStudioClient, UoStudioClient>(client =>
+            services.AddTransient<UOStudioClientTokenHandler>();
+            services.AddHttpClient<IUOStudioClient, IuoStudioClient>(client =>
             {
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            }).AddHttpMessageHandler<UoStudioClientTokenHandler>();
+            }).AddHttpMessageHandler<UOStudioClientTokenHandler>();
 
             return services.BuildServiceProvider();
         }

@@ -27,18 +27,18 @@ namespace UOStudio.Server.Api.Services
 
         public async Task<Result> ValidateCredentialsAsync(UserCredentials userCredentials, CancellationToken cancellationToken = default)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             var user = await db.Users.FirstOrDefaultAsync(u => u.Name == userCredentials.UserName, cancellationToken);
-            var isValid = user != null && AreCredentialsValid(userCredentials, user);
-            return !isValid
+            var isValidUser = user != null && AreCredentialsValid(user, userCredentials);
+            return !isValidUser
                 ? Result.Failure("Invalid credentials")
                 : Result.Success();
         }
 
         public async Task<Result> UpdateConnectionTicketAsync(string userName, string connectionTicket, CancellationToken cancellationToken = default)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             var user = await db.Users.FirstOrDefaultAsync(u => u.Name == userName, cancellationToken);
             if (user == null)
@@ -54,13 +54,15 @@ namespace UOStudio.Server.Api.Services
 
         public async Task<bool> ValidateConnectionTicketAsync(string connectionTicket)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            await using var db = await _contextFactory.CreateDbContextAsync();
 
             var userForConnectionTicket = await db.Users.SingleOrDefaultAsync(u => u.ConnectionTicket == connectionTicket);
             return userForConnectionTicket != null;
         }
 
-        private bool AreCredentialsValid(UserCredentials userCredentials, User user)
-            => user.Name == userCredentials.UserName && _passwordVerifier.Verify(userCredentials.Password, user.Password);
+        private bool AreCredentialsValid(User user, UserCredentials userCredentials)
+        {
+            return user.Name == userCredentials.UserName && _passwordVerifier.Verify(userCredentials.Password, user.Nonce, user.Password);
+        }
     }
 }

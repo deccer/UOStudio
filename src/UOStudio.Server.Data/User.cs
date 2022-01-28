@@ -3,13 +3,19 @@ using JetBrains.Annotations;
 
 namespace UOStudio.Server.Data
 {
-    public record User
+    public sealed record User
     {
-        public User(int id, string name, string password, params Permission[] permissions)
+        public User(
+            int id,
+            string name,
+            byte[] password,
+            byte[] nonce,
+            params Permission[] permissions)
         {
             Id = id;
             Name = name;
             Password = password;
+            Nonce = nonce;
         }
 
         [UsedImplicitly]
@@ -21,15 +27,17 @@ namespace UOStudio.Server.Data
 
         public string Name { get; set; }
 
-        public string Password { get; set; }
+        public byte[] Password { get; set; }
+
+        public byte[] Nonce { get; set; }
 
         public string RefreshToken { get; set; }
 
         public string ConnectionTicket { get; set; }
 
-        public virtual ICollection<Permission> Permissions { get; set; }
+        public ICollection<Permission> Permissions { get; set; }
 
-        public virtual ICollection<Project> Projects { get; set; }
+        public ICollection<Project> Projects { get; set; }
 
         public bool HasPermission(Permission permission)
         {

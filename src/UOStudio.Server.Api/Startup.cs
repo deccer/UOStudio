@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using UOStudio.Common.Core;
+using UOStudio.Common.Core.Extensions;
 using UOStudio.Server.Api.Extensions;
 using UOStudio.Server.Api.HostedServices;
 using UOStudio.Server.Api.Services;
@@ -63,8 +64,7 @@ namespace UOStudio.Server.Api
                     builder.UseSqlite($"Data Source={Path.Combine(databaseDirectory, "UOStudio.db")}");
                 }
             );
-            services.AddSingleton<IPasswordHasher, PasswordHasher>();
-            services.AddSingleton<IPasswordVerifier, PasswordVerifier>();
+            services.AddPasswordHandling();
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<ITokenService, TokenService>();
@@ -87,7 +87,7 @@ namespace UOStudio.Server.Api
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<UOStudioContext>>();
-                using var context = contextFactory.CreateDbContext();
+                var context = contextFactory.CreateDbContext();
                 context.Database.Migrate();
             }
 
@@ -95,8 +95,6 @@ namespace UOStudio.Server.Api
             {
                 app.UseSerilogRequestLogging();
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UOStudio.Server.Api v1"));
             }
 
             app.UseHttpsRedirection();
@@ -104,6 +102,8 @@ namespace UOStudio.Server.Api
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UOStudio.Server.Api v1"));
         }
     }
 }

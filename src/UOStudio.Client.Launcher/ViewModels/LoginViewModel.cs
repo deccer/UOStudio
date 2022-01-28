@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Serilog;
 using UOStudio.Client.Launcher.Commands;
 using UOStudio.Client.Launcher.Contracts;
+using UOStudio.Client.Launcher.Data.Repositories;
 using UOStudio.Client.Launcher.Messages;
 using UOStudio.Client.Launcher.Services;
 
@@ -17,9 +18,9 @@ namespace UOStudio.Client.Launcher.ViewModels
         private readonly ILogger _logger;
         private readonly INavigator _navigator;
         private readonly IUserContext _userContext;
-        private readonly IUoStudioClient _uoStudioClient;
+        private readonly IUOStudioClient _iuoStudioClient;
         private readonly IMessageBus _messageBus;
-        private readonly IProfileService _profileService;
+        private readonly IProfileRepository _profileRepository;
 
         private LookupItem _selectedProfile;
 
@@ -32,16 +33,16 @@ namespace UOStudio.Client.Launcher.ViewModels
             ILogger logger,
             INavigator navigator,
             IUserContext userContext,
-            IUoStudioClient uoStudioClient,
+            IUOStudioClient iuoStudioClient,
             IMessageBus messageBus,
-            IProfileService profileService)
+            IProfileRepository profileRepository)
         {
             _logger = logger;
             _navigator = navigator;
             _userContext = userContext;
-            _uoStudioClient = uoStudioClient;
+            _iuoStudioClient = iuoStudioClient;
             _messageBus = messageBus;
-            _profileService = profileService;
+            _profileRepository = profileRepository;
 
             LoginCommand = new AsyncDelegateCommand(Login);
             CancelLoginCommand = new AsyncDelegateCommand(CancelLogin);
@@ -80,7 +81,7 @@ namespace UOStudio.Client.Launcher.ViewModels
 
         public Task LoadAsync()
         {
-            ProfileNames = new ObservableCollection<LookupItem>(_profileService.GetProfiles());
+            ProfileNames = new ObservableCollection<LookupItem>(_profileRepository.GetProfiles());
             return Task.CompletedTask;
         }
 
@@ -100,7 +101,7 @@ namespace UOStudio.Client.Launcher.ViewModels
                     _cancellationTokenSource?.Dispose();
                     _cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
 
-                    var profile = await _profileService.GetProfileAsync(_selectedProfile.Id);
+                    var profile = await _profileRepository.GetProfileAsync(_selectedProfile.Id);
                     if (profile == null)
                     {
                         _logger.Error("Unable to fetch profile");
@@ -111,7 +112,7 @@ namespace UOStudio.Client.Launcher.ViewModels
                         _userContext.AuthBaseUri = new Uri(profile.AuthBaseUri);
                         _userContext.UserCredentials = new UserCredentials { UserName = profile.UserName, Password = profile.Password };
 
-                        var getProjectsResult = await _uoStudioClient.GetProjectsAsync(CancellationToken.None);
+                        var getProjectsResult = await _iuoStudioClient.GetProjectsAsync(CancellationToken.None);
                         if (getProjectsResult.IsFailure)
                         {
                             var failedReason = getProjectsResult.Error;

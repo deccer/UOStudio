@@ -1,25 +1,21 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Client.Launcher.Contracts;
-using UOStudio.Client.Launcher.Data;
 
-namespace UOStudio.Client.Launcher.Services
+namespace UOStudio.Client.Launcher.Data.Repositories
 {
-    public sealed class ProfileService : IProfileService
+    internal sealed class ProfileRepository : IProfileRepository
     {
         private readonly ILogger _logger;
         private readonly IDbContextFactory<ProfileDbContext> _contextFactory;
 
-        public ProfileService(
+        public ProfileRepository(
             ILogger logger,
             IDbContextFactory<ProfileDbContext> contextFactory)
         {
-            _logger = logger.ForContext<ProfileService>();
+            _logger = logger.ForContext<ProfileRepository>();
             _contextFactory = contextFactory;
         }
 
@@ -29,11 +25,11 @@ namespace UOStudio.Client.Launcher.Services
             var profiles = context.Profiles
                 .AsNoTracking()
                 .Select(p => new ProfileNameAndDescriptionDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description
-            }).AsEnumerable();
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description
+                }).AsEnumerable();
 
             return profiles.ToImmutableList();
         }
@@ -54,7 +50,7 @@ namespace UOStudio.Client.Launcher.Services
 
         public async Task<ProfileDto> GetProfileAsync(int profileId)
         {
-            using var context = _contextFactory.CreateDbContext();
+            await using var context = await _contextFactory.CreateDbContextAsync();
             var profile = await context.Profiles
                 .AsNoTracking()
                 .Where(p => p.Id == profileId)
@@ -76,7 +72,7 @@ namespace UOStudio.Client.Launcher.Services
 
         public async Task DeleteProfileAsync(int profileId)
         {
-            using var context = _contextFactory.CreateDbContext();
+            await using var context = await _contextFactory.CreateDbContextAsync();
             var profile = await context.Profiles.FindAsync(profileId);
             if (profile != null)
             {
@@ -88,7 +84,7 @@ namespace UOStudio.Client.Launcher.Services
 
         public async Task UpdateProfileAsync(int profileId, ProfileDto profileDto)
         {
-            using var context = _contextFactory.CreateDbContext();
+            await using var context = await _contextFactory.CreateDbContextAsync();
             var profile = await context.Profiles.FindAsync(profileId);
             if (profile != null)
             {
@@ -107,7 +103,7 @@ namespace UOStudio.Client.Launcher.Services
 
         public async Task<Result> AddProfileAsync(ProfileDto profileDto)
         {
-            using var context = _contextFactory.CreateDbContext();
+            await using var context = await _contextFactory.CreateDbContextAsync();
             var profile = await context.Profiles.FindAsync(profileDto.Id);
             if (profile != null)
             {

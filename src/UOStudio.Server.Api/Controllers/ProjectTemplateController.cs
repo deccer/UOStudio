@@ -62,12 +62,14 @@ namespace UOStudio.Server.Api.Controllers
                 : BadRequest();
         }
 
-        private static CreateProjectTemplateCommand ToCommand(IPrincipal user, CreateProjectTemplateRequest createProjectTemplateRequest) =>
-            new(
+        private static CreateProjectTemplateCommand ToCommand(IPrincipal user, CreateProjectTemplateRequest createProjectTemplateRequest)
+        {
+            return new CreateProjectTemplateCommand(
                 user,
                 createProjectTemplateRequest.Name,
                 createProjectTemplateRequest.ClientVersion,
                 createProjectTemplateRequest.Location
             );
+        }
     }
 }

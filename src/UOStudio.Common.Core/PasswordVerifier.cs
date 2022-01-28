@@ -1,40 +1,23 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Linq;
+using System.Text;
+using Isopoh.Cryptography.Argon2;
 
 namespace UOStudio.Common.Core
 {
-    public class PasswordVerifier : IPasswordVerifier
+    internal sealed class PasswordVerifier : IPasswordVerifier
     {
-        public bool Verify(string password, string hashedPassword)
+        public bool Verify(string password, byte[] nonce, byte[] hashedPassword)
         {
-            if (!IsHashSupported(hashedPassword))
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+            var argonConfig = new Argon2Config
             {
-                throw new NotSupportedException("The hash type is not supported");
-            }
-
-            var splitHashString = hashedPassword.Replace("$HP$V1$", "").Split('$');
-            var iterations = int.Parse(splitHashString[0]);
-            var base64Hash = splitHashString[1];
-
-            var hashBytes = Convert.FromBase64String(base64Hash);
-
-            var salt = new byte[PasswordConstants.SaltSize];
-            Array.Copy(hashBytes, 0, salt, 0, PasswordConstants.SaltSize);
-
-            using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, salt, iterations);
-            var hash = rfc2898DeriveBytes.GetBytes(PasswordConstants.HashSize);
-
-            for (var i = 0; i < PasswordConstants.HashSize; i++)
-            {
-                if (hashBytes[i + PasswordConstants.SaltSize] != hash[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+                Salt = nonce,
+                Password = passwordBytes,
+                Type = Argon2Type.DataIndependentAddressing,
+                Version = Argon2Version.Nineteen
+            };
+            using var argon = new Argon2(argonConfig);
+            return argon.Hash().Buffer.SequenceEqual(hashedPassword);
         }
-
-        private static bool IsHashSupported(string hashString) => hashString.Contains("$HP$V1$");
     }
 }

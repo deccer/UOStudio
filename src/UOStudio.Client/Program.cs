@@ -11,6 +11,7 @@ using UOStudio.Client.UI.Extensions;
 using UOStudio.Client.Worlds;
 using UOStudio.Common.Contracts;
 using UOStudio.Common.Core;
+using UOStudio.Common.Core.Extensions;
 
 namespace UOStudio.Client
 {
@@ -90,7 +91,7 @@ namespace UOStudio.Client
             services.AddSingleton<IProjectService, ProjectService>();
             services.AddSingleton<ITokenService, TokenService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
-            services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            services.AddPasswordHandling();
             services.AddSingleton<IContext, Context>();
             services.AddWindows();
             services.AddSingleton<IWorldProvider, WorldProvider>();

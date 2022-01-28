@@ -1,19 +1,22 @@
 ﻿using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace UOStudio.Client.Launcher.Data
 {
-    public sealed class ProfileDbContext : DbContext
+    internal sealed class ProfileDbContext : DbContext
     {
         public ProfileDbContext(DbContextOptions<ProfileDbContext> options)
             : base(options)
         {
             EnsureCreated();
         }
-        
+
         public DbSet<Profile> Profiles { get; set; }
+
+        public Task MigrateAsync()
+        {
+            return Database.MigrateAsync();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,7 +24,7 @@ namespace UOStudio.Client.Launcher.Data
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProfileDbContext).Assembly);
         }
-        
+
         [Conditional("DEBUG")]
         private void EnsureCreated()
         {
