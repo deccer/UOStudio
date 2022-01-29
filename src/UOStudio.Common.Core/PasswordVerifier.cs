@@ -11,11 +11,17 @@ namespace UOStudio.Common.Core
             var passwordBytes = Encoding.UTF8.GetBytes(password);
             var argonConfig = new Argon2Config
             {
-                Salt = nonce,
-                Password = passwordBytes,
                 Type = Argon2Type.DataIndependentAddressing,
-                Version = Argon2Version.Nineteen
+                TimeCost = 10,
+                MemoryCost = 65_536,
+                Lanes = 4,
+                Threads = 1,
+                Version = Argon2Version.Nineteen,
+                Password = passwordBytes,
+                Salt = nonce,
+                HashLength = PasswordConstants.HashSize
             };
+
             using var argon = new Argon2(argonConfig);
             return argon.Hash().Buffer.SequenceEqual(hashedPassword);
         }

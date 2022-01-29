@@ -16,8 +16,11 @@ namespace UOStudio.Common.Core
             var argonConfig = new Argon2Config
             {
                 Type = Argon2Type.DataIndependentAddressing,
-                Version = Argon2Version.Nineteen,
                 TimeCost = 10,
+                MemoryCost = 65_536,
+                Lanes = 4,
+                Threads = 1,
+                Version = Argon2Version.Nineteen,
                 Password = passwordBytes,
                 Salt = salt,
                 HashLength = PasswordConstants.HashSize
