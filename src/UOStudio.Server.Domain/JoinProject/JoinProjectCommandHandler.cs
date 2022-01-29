@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using JetBrains.Annotations;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Common.Core.Extensions;
 using UOStudio.Server.Data;
@@ -19,16 +17,16 @@ namespace UOStudio.Server.Domain.JoinProject
     {
         private readonly ILogger _logger;
         private readonly IProjectService _projectService;
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
 
         public JoinProjectCommandHandler(
             ILogger logger,
             IProjectService projectService,
-            IDbContextFactory<UOStudioContext> contextFactory)
+            ILiteDbFactory liteDbFactory)
         {
             _logger = logger.ForContext<JoinProjectCommandHandler>();
             _projectService = projectService;
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
         }
 
         public async Task<Result<JoinProjectResult>> Handle(JoinProjectCommand request, CancellationToken cancellationToken)
@@ -39,17 +37,21 @@ namespace UOStudio.Server.Domain.JoinProject
             }
 
             var userId = request.User.GetUserId();
-            await using var db = _contextFactory.CreateDbContext();
-            var user = await db.Users
-                .FindAsync(new object[] { userId }, cancellationToken);
+            using var db = _liteDbFactory.CreateLiteDatabase();
+
+            var users = db.GetCollection<User>(nameof(User));
+            var user = await users
+                .FindOneAsync(u => u.Id == userId);
+
             if (user == null)
             {
                 return Result.Failure<JoinProjectResult>("User not found");
             }
 
-            var project = await db.Projects
+            var projects = db.GetCollection<Project>(nameof(Project));
+            var project = await projects
                 .Include(p => p.AllowedUsers)
-                .FirstOrDefaultAsync(p => p.Id == request.ProjectId, cancellationToken);
+                .FindOneAsync(p => p.Id == request.ProjectId);
             if (project == null)
             {
                 return Result.Failure<JoinProjectResult>("Project not found");
@@ -83,14 +85,14 @@ namespace UOStudio.Server.Domain.JoinProject
         private async Task QueueWorkItem(CancellationToken cancellationToken, Guid taskId, int projectId)
         {
             // client and server differ, server needs to provide client with new atlas files for download
-            await QueueBackgroundTaskAsync(cancellationToken, taskId);
+            await QueueBackgroundTaskAsync(taskId);
 
             var preparationResult = _projectService.PrepareProjectForClientDownload(projectId);
 
-            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
-            var backgroundTask = await db.BackgroundTasks
-                .Where(bt => bt.Id == taskId)
-                .FirstOrDefaultAsync(cancellationToken);
+            using var db = _liteDbFactory.CreateLiteDatabase();
+            var backgroundTasks = db.GetCollection<BackgroundTask>();
+            var backgroundTask = await backgroundTasks
+                .FindOneAsync(bt => bt.Id == taskId);
 
             if (preparationResult.IsSuccess)
             {
@@ -103,21 +105,22 @@ namespace UOStudio.Server.Domain.JoinProject
                 backgroundTask.ErrorMessage = preparationResult.Error;
             }
 
-            db.BackgroundTasks.Update(backgroundTask);
-            await db.SaveChangesAsync(cancellationToken);
+            await backgroundTasks.UpdateAsync(backgroundTask);
+            await db.CommitAsync();
         }
 
-        private async Task QueueBackgroundTaskAsync(CancellationToken cancellationToken, Guid taskId)
+        private async Task QueueBackgroundTaskAsync(Guid taskId)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            using var db = _liteDbFactory.CreateLiteDatabase();
+            var backgroundTasks = db.GetCollection<BackgroundTask>(nameof(BackgroundTask));
             var backgroundTask = new BackgroundTask
             {
                 Status = BackgroundTaskStatus.Running,
                 Id = taskId,
                 CompletedLocation = null
             };
-            await db.BackgroundTasks.AddAsync(backgroundTask, cancellationToken);
-            await db.SaveChangesAsync(cancellationToken);
+            await backgroundTasks.InsertAsync(backgroundTask);
+            await db.CommitAsync();
         }
     }
 }

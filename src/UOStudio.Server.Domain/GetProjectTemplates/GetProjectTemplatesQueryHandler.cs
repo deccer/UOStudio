@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using JetBrains.Annotations;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Common.Contracts;
 using UOStudio.Server.Data;
@@ -16,25 +15,26 @@ namespace UOStudio.Server.Domain.GetProjectTemplates
     internal sealed class GetProjectTemplatesQueryHandler : IRequestHandler<GetProjectTemplatesQuery, Result<IList<ProjectTemplateDto>>>
     {
         private readonly ILogger _logger;
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
 
         public GetProjectTemplatesQueryHandler(
             ILogger logger,
-            IDbContextFactory<UOStudioContext> contextFactory)
+            ILiteDbFactory liteDbFactory)
         {
             _logger = logger.ForContext<GetProjectTemplatesQueryHandler>();
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
         }
 
         public async Task<Result<IList<ProjectTemplateDto>>> Handle(
             GetProjectTemplatesQuery request,
             CancellationToken cancellationToken)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var projectTemplates = db.ProjectTemplates
-                .AsNoTracking()
-                .AsQueryable().Select(pt => new ProjectTemplateDto
+            var projectTemplates = (await db
+                    .GetCollection<ProjectTemplate>()
+                    .FindAllAsync())
+                .Select(pt => new ProjectTemplateDto
                 {
                     Id = pt.Id,
                     Name = pt.Name

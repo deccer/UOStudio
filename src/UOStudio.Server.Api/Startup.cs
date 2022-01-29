@@ -3,20 +3,17 @@ using System.IO;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using UOStudio.Common.Core;
 using UOStudio.Common.Core.Extensions;
 using UOStudio.Server.Api.Extensions;
 using UOStudio.Server.Api.HostedServices;
 using UOStudio.Server.Api.Services;
 using UOStudio.Server.Common;
-using UOStudio.Server.Data;
+using UOStudio.Server.Data.Extensions;
 using UOStudio.Server.Domain.GetProjects;
 using UOStudio.Server.Services;
 
@@ -53,20 +50,10 @@ namespace UOStudio.Server.Api
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "UOStudio.Server.Api", Version = "v1" }); });
             services.AddMediatR(typeof(GetProjectsQuery).Assembly);
-            services.AddDbContextFactory<UOStudioContext>((provider, builder) =>
-                {
-                    var ss = provider.GetRequiredService<IOptions<ServerSettings>>();
-                    var serverSettings = ss.Value;
-                    var databaseDirectory = string.IsNullOrEmpty(Path.GetDirectoryName(serverSettings.DatabaseDirectory))
-                        ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, serverSettings.DatabaseDirectory)
-                        : serverSettings.DatabaseDirectory;
-                    Directory.CreateDirectory(databaseDirectory);
-                    builder.UseSqlite($"Data Source={Path.Combine(databaseDirectory, "UOStudio.db")}");
-                }
-            );
+
+            services.AddLiteDb();
             services.AddPasswordHandling();
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
-            services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<ITokenService, TokenService>();
             services.AddSingleton<IUserService, UserService>();
 
@@ -84,13 +71,6 @@ namespace UOStudio.Server.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<UOStudioContext>>();
-                var context = contextFactory.CreateDbContext();
-                context.Database.Migrate();
-            }
-
             if (env.IsDevelopment())
             {
                 app.UseSerilogRequestLogging();

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using JetBrains.Annotations;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Common.Core;
 using UOStudio.Server.Data;
@@ -16,16 +15,16 @@ namespace UOStudio.Server.Domain.CreateUser
     internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<int>>
     {
         private readonly ILogger _logger;
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
         private readonly IPasswordHasher _passwordHasher;
 
         public CreateUserCommandHandler(
             ILogger logger,
-            IDbContextFactory<UOStudioContext> contextFactory,
+            ILiteDbFactory liteDbFactory,
             IPasswordHasher passwordHasher)
         {
             _logger = logger.ForContext<CreateUserCommandHandler>();
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
             _passwordHasher = passwordHasher;
         }
 
@@ -36,18 +35,18 @@ namespace UOStudio.Server.Domain.CreateUser
                 return Result.Failure<int>("No permission");
             }
 
-            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
-            var user = await db.Users
-                .AsQueryable()
-                .Where(u => u.Name == request.UserName)
-                .FirstOrDefaultAsync(cancellationToken);
+            using var db = _liteDbFactory.CreateLiteDatabase();
+            var users = db.GetCollection<User>(nameof(User));
+            var user = await users
+                .FindOneAsync(u => u.Name == request.UserName);
 
             if (user != null)
             {
                 return Result.Failure<int>($"User '{request.UserName}' already exists");
             }
 
-            var permissions = Permission.AllPermissions.Where(permission => request.Permissions.Any(p => p == permission.Name));
+            var permissions = Permission.AllPermissions
+                .Where(permission => request.Permissions.Any(p => p == permission.Name));
             var userPassword = _passwordHasher.Hash(request.Password);
             user = new User
             {
@@ -57,8 +56,8 @@ namespace UOStudio.Server.Domain.CreateUser
                 Permissions = new List<Permission>(permissions)
             };
 
-            await db.Users.AddAsync(user, cancellationToken);
-            await db.SaveChangesAsync(cancellationToken);
+            await users.InsertAsync(user);
+            await db.CommitAsync();
 
             return Result.Success(user.Id);
         }

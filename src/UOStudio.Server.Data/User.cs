@@ -16,6 +16,7 @@ namespace UOStudio.Server.Data
             Name = name;
             Password = password;
             Nonce = nonce;
+            Permissions = permissions;
         }
 
         [UsedImplicitly]
@@ -35,9 +36,9 @@ namespace UOStudio.Server.Data
 
         public string ConnectionTicket { get; set; }
 
-        public ICollection<Permission> Permissions { get; set; }
+        public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
-        public ICollection<Project> Projects { get; set; }
+        public ICollection<Project> Projects { get; set; } = new List<Project>();
 
         public bool HasPermission(Permission permission)
         {

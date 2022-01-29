@@ -1,28 +1,28 @@
 ﻿using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using Microsoft.EntityFrameworkCore;
 using UOStudio.Common.Contracts;
 using UOStudio.Server.Data.Extensions;
 
 namespace UOStudio.Server.Data
 {
-    public sealed class UserRepository : IUserRepository
+    internal sealed class UserRepository : IUserRepository
     {
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
 
-        public UserRepository(IDbContextFactory<UOStudioContext> contextFactory)
+        public UserRepository(ILiteDbFactory liteDbFactory)
         {
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
         }
 
         public async Task<Result<UserDto>> GetUserAsync(string userName)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var user = await db.Users
-                .AsNoTracking()
-                .Include(u => u.Permissions)
-                .FirstOrDefaultAsync(u => u.Name == userName);
+            var users = db.GetCollection<User>(nameof(User));
+            var user = await users
+                .Include(user => user.Permissions)
+                .FindOneAsync(user => user.Name == userName);
+
             return user == null
                 ? Result.Failure<UserDto>("Invalid username")
                 : Result.Success(user.ToDto());
@@ -30,12 +30,12 @@ namespace UOStudio.Server.Data
 
         public async Task<Result<UserDto>> GetUserByRefreshTokenAsync(string refreshToken)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var user = await db.Users
-                .AsNoTracking()
-                .Include(u => u.Permissions)
-                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            var users = db.GetCollection<User>(nameof(User));
+            var user = await users
+                .FindOneAsync(user => user.RefreshToken == refreshToken);
+
             return user == null
                 ? Result.Failure<UserDto>("Invalid refresh token")
                 : Result.Success(user.ToDto());
@@ -43,18 +43,20 @@ namespace UOStudio.Server.Data
 
         public async Task<Result> UpdateRefreshTokenAsync(int userId, string refreshToken)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var user = await db.Users
-                .FirstOrDefaultAsync(u => u.Id == userId);
+            var users = db.GetCollection<User>(nameof(User));
+            var user = await users
+                .FindOneAsync(user => user.Id == userId);
+
             if (user == null)
             {
                 return Result.Failure("User not found");
             }
             user.RefreshToken = refreshToken;
 
-            db.Users.Update(user);
-            await db.SaveChangesAsync();
+            await users.UpdateAsync(user);
+            await db.CommitAsync();
 
             return Result.Success();
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 
 namespace UOStudio.Server.Data
 {
@@ -18,7 +17,7 @@ namespace UOStudio.Server.Data
 
         public User CreatedBy { get; set; }
 
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public virtual ICollection<User> AllowedUsers { get; set; }
     }

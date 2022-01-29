@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using JetBrains.Annotations;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Server.Data;
 
@@ -13,14 +12,14 @@ namespace UOStudio.Server.Domain.CreateProject
     internal sealed class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, Result<int>>
     {
         private readonly ILogger _logger;
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
 
         public CreateProjectCommandHandler(
             ILogger logger,
-            IDbContextFactory<UOStudioContext> contextFactory)
+            ILiteDbFactory liteDbFactory)
         {
             _logger = logger.ForContext<CreateProjectCommandHandler>();
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
         }
 
         public Task<Result<int>> Handle(CreateProjectCommand command, CancellationToken cancellationToken)

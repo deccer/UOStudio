@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using JetBrains.Annotations;
 
 namespace UOStudio.Server.Data
@@ -24,6 +24,8 @@ namespace UOStudio.Server.Data
 
         public string Location { get; set; }
 
-        public virtual ICollection<Project> Projects { get; set; }
+        public User CreatedBy { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }

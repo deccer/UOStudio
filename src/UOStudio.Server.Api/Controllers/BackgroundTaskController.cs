@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Server.Data;
 
@@ -15,22 +14,23 @@ namespace UOStudio.Server.Api.Controllers
     public class BackgroundTaskController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
 
         public BackgroundTaskController(
             ILogger logger,
-            IDbContextFactory<UOStudioContext> contextFactory)
+            ILiteDbFactory liteDbFactory)
         {
             _logger = logger.ForContext<BackgroundTaskController>();
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
         }
 
         [HttpGet("{backgroundTaskId:guid}", Name = nameof(GetBackgroundTask))]
         public async Task<IActionResult> GetBackgroundTask(Guid backgroundTaskId)
         {
-            await using var db = _contextFactory.CreateDbContext();
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var backgroundTask = await db.BackgroundTasks.FirstOrDefaultAsync(bt => bt.Id == backgroundTaskId);
+            var backgroundTasks = db.GetCollection<BackgroundTask>(nameof(BackgroundTask));
+            var backgroundTask = await backgroundTasks.FindOneAsync(bt => bt.Id == backgroundTaskId);
             return backgroundTask.Status switch
             {
                 BackgroundTaskStatus.Running => AcceptedAtRoute(nameof(GetBackgroundTask), new { backgroundTaskId }),

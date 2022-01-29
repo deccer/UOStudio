@@ -30,6 +30,11 @@ namespace UOStudio.Server.Api.Services
             _rsa = RSA.Create();
         }
 
+        public void Dispose()
+        {
+            _rsa.Dispose();
+        }
+
         public async Task<Result<TokenPair>> GetTokenAsync(string userName)
         {
             var userResult = await _userRepository.GetUserAsync(userName);

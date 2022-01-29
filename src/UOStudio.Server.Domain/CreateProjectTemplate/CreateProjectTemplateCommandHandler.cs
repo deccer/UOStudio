@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using JetBrains.Annotations;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Server.Data;
 using UOStudio.Server.Services;
@@ -14,16 +13,16 @@ namespace UOStudio.Server.Domain.CreateProjectTemplate
     internal sealed class CreateProjectTemplateCommandHandler : IRequestHandler<CreateProjectTemplateCommand, Result<int>>
     {
         private readonly ILogger _logger;
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
         private readonly IProjectTemplateService _projectTemplateService;
 
         public CreateProjectTemplateCommandHandler(
             ILogger logger,
-            IDbContextFactory<UOStudioContext> contextFactory,
+            ILiteDbFactory liteDbFactory,
             IProjectTemplateService projectTemplateService)
         {
             _logger = logger.ForContext<CreateProjectTemplateCommandHandler>();
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
             _projectTemplateService = projectTemplateService;
         }
 
@@ -34,11 +33,11 @@ namespace UOStudio.Server.Domain.CreateProjectTemplate
                 return Result.Failure<int>("No permission to create project templates");
             }
 
-            await using var db = _contextFactory.CreateDbContext();
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var projectTemplate = await db.ProjectTemplates
-                .AsQueryable()
-                .FirstOrDefaultAsync(pt => pt.Name == request.Name, cancellationToken);
+            var projectTemplates = db.GetCollection<ProjectTemplate>();
+            var projectTemplate = await projectTemplates
+                .FindOneAsync(pt => pt.Name == request.Name);
 
             if (projectTemplate != null)
             {
@@ -58,8 +57,8 @@ namespace UOStudio.Server.Domain.CreateProjectTemplate
                 Location = createProjectTemplateResult.Value
             };
 
-            await db.ProjectTemplates.AddAsync(projectTemplate, cancellationToken);
-            await db.SaveChangesAsync(cancellationToken);
+            await projectTemplates.InsertAsync(projectTemplate);
+            await db.CommitAsync();
 
             return Result.Success(projectTemplate.Id);
         }

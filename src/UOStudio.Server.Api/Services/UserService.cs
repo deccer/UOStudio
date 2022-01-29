@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UOStudio.Common.Contracts;
 using UOStudio.Common.Core;
@@ -12,24 +11,27 @@ namespace UOStudio.Server.Api.Services
     public sealed class UserService : IUserService
     {
         private readonly ILogger _logger;
-        private readonly IDbContextFactory<UOStudioContext> _contextFactory;
+        private readonly ILiteDbFactory _liteDbFactory;
         private readonly IPasswordVerifier _passwordVerifier;
 
         public UserService(
             ILogger logger,
-            IDbContextFactory<UOStudioContext> contextFactory,
+            ILiteDbFactory liteDbFactory,
             IPasswordVerifier passwordVerifier)
         {
             _logger = logger;
-            _contextFactory = contextFactory;
+            _liteDbFactory = liteDbFactory;
             _passwordVerifier = passwordVerifier;
         }
 
         public async Task<Result> ValidateCredentialsAsync(UserCredentials userCredentials, CancellationToken cancellationToken = default)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            using var db = _liteDbFactory.CreateLiteDatabase();
+            var users = db.GetCollection<User>(nameof(User));
 
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Name == userCredentials.UserName, cancellationToken);
+            var user = await users
+                .FindOneAsync(u => u.Name == userCredentials.UserName);
+
             var isValidUser = user != null && AreCredentialsValid(user, userCredentials);
             return !isValidUser
                 ? Result.Failure("Invalid credentials")
@@ -38,25 +40,32 @@ namespace UOStudio.Server.Api.Services
 
         public async Task<Result> UpdateConnectionTicketAsync(string userName, string connectionTicket, CancellationToken cancellationToken = default)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Name == userName, cancellationToken);
+            var users = db.GetCollection<User>(nameof(User));
+            var user = await users
+                .FindOneAsync(u => u.Name == userName);
+
             if (user == null)
             {
                 return Result.Failure("User does not exist");
             }
 
             user.ConnectionTicket = connectionTicket;
-            await db.SaveChangesAsync(cancellationToken);
+            await users.UpdateAsync(user);
+            await db.CommitAsync();
 
             return Result.Success();
         }
 
         public async Task<bool> ValidateConnectionTicketAsync(string connectionTicket)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync();
+            using var db = _liteDbFactory.CreateLiteDatabase();
 
-            var userForConnectionTicket = await db.Users.SingleOrDefaultAsync(u => u.ConnectionTicket == connectionTicket);
+            var users = db.GetCollection<User>(nameof(User));
+            var userForConnectionTicket = await users
+                .FindOneAsync(u => u.ConnectionTicket == connectionTicket);
+
             return userForConnectionTicket != null;
         }
 
