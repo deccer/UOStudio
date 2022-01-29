@@ -54,7 +54,7 @@ namespace UOStudio.Client.Engine.Native
                 return rectangle;
             }
 
-            throw new Exception("SDL: Unable to get the display bounds");
+            throw new SdlException("SDL: Unable to get the display bounds");
         }
 
         public static IntPtr CreateWindow(string windowTitle, int width, int height, WindowFlags flags)
