@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UOStudio.Client.Engine.Extensions;
 using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
 
 namespace UOStudio.Tools.TextureAtlasGenerator
@@ -32,6 +33,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton(Log.Logger);
 
+            services.AddEngineKit(configuration);
             services.AddSingleton<IHashCalculator, Sha1HashCalculator>();
             services.AddSingleton<IAssetExtractor, AssetExtractor>();
             services.AddSingleton<IAssetSorter, AssetSorter>();
@@ -42,7 +44,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             services.AddSingleton<IUvwCalculatorStrategy, UvwCalculatorStrategy>();
             services.AddSingleton<IAtlasGenerator, AtlasGenerator>();
             services.AddSingleton<ITileContainer, TileContainer>();
-            services.AddSingleton<ITexture3dGenerator, Texture3dGenerator>();
+            services.AddSingleton<ITextureArrayGenerator, TextureArrayGenerator>();
             services.AddSingleton<IUltimaArtProvider, UltimaArtProvider>();
             return services.BuildServiceProvider();
         }

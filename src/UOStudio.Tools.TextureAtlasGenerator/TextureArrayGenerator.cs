@@ -1,71 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.Graphics;
+using UOStudio.Client.Engine.Native;
 using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
 
 namespace UOStudio.Tools.TextureAtlasGenerator
 {
-    internal sealed class Texture3dGenerator : ITexture3dGenerator
+    internal sealed class TextureArrayGenerator : ITextureArrayGenerator
     {
         private readonly ILogger _logger;
-        private readonly IApplication _game;
+        private readonly IWindowFactory _windowFactory;
         private readonly IGraphicsDevice _graphicsDevice;
         private readonly int _atlasPageSize;
 
-        public Texture3dGenerator(
+        public TextureArrayGenerator(
             ILogger logger,
+            IWindowFactory windowFactory,
+            IGraphicsDevice graphicsDevice,
             IConfiguration configuration)
         {
-            _logger = logger.ForContext<Texture3dGenerator>();
+            _logger = logger.ForContext<TextureArrayGenerator>();
+            _windowFactory = windowFactory;
+            _graphicsDevice = graphicsDevice;
+
             _atlasPageSize = int.TryParse(configuration["AtlasPageSize"], out var atlasPageSize)
                 ? atlasPageSize
                 : 2048;
-
-            /*
-            _game = new Game();
-            _graphicsDevice = gdm.GraphicsDevice;
-            */
         }
 
-        public byte[] Generate3dTexture(IEnumerable<Bitmap> atlasPages)
+        public byte[] GenerateTextureArray(IEnumerable<Bitmap> atlasPages)
         {
-            /*
-            var textures = atlasPages
-                .Select(atlasPage => BitmapToTexture2D(_graphicsDevice, atlasPage))
-                .ToArray();
-
-            var pageCount = textures.Length;
-            var texture3DData = new Color[pageCount * _atlasPageSize * _atlasPageSize];
-            for (var pageIndex = 0; pageIndex < pageCount; pageIndex++)
+            if (!Sdl.Init(Sdl.InitFlags.Video))
             {
-                var pageData = new Color[_atlasPageSize * _atlasPageSize];
-                var page = textures[pageIndex];
-                page.GetData(pageData);
-                for (var y = 0; y < _atlasPageSize; y++)
-                {
-                    for (var x = 0; x < _atlasPageSize; x++)
-                    {
-                        var texture2DIndex = y * _atlasPageSize + x;
-                        var texture3DIndex = pageIndex * _atlasPageSize * _atlasPageSize + texture2DIndex;
-                        texture3DData[texture3DIndex] = pageData[texture2DIndex];
-                    }
-                }
-
-                page.Dispose();
+                return null;
             }
 
-            return ConvertColorsToBytes(texture3DData);
-            */
+            var windowSettings = new WindowSettings
+            {
+                IsVsyncEnabled = true,
+                ResolutionHeight = 10,
+                ResolutionWidth = 10,
+                Visible = false
+            };
 
-            throw new NotImplementedException();
+            var window = _windowFactory.CreateWindow("UOStudio.TextureGenerator", windowSettings);
+            if (!window.Initialize())
+            {
+                return null;
+            }
+
+            if (!_graphicsDevice.Initialize(ContextSettings.Default, window.Handle))
+            {
+                return null;
+            }
+
+            var textures = atlasPages
+                .Select(atlasPage => ToImageSharpImage(atlasPage))
+                .ToArray();
+
+            var textureArray = _graphicsDevice.CreateTextureArrayFromImages(textures, TextureFormat.Rgb8);
+            var bytes = textureArray.GetBytes();
+            textureArray.Dispose();
+
+            window.Dispose();
+            Sdl.Quit();
+
+            return bytes;
         }
 
         public void Dispose()
         {
+        }
+
+        private static SixLabors.ImageSharp.Image ToImageSharpImage(Bitmap bitmap)
+        {
+            using var memoryStream = new MemoryStream();
+            bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            return SixLabors.ImageSharp.Image.Load(memoryStream);
         }
 
         private static ITexture BitmapToTexture2D(IGraphicsDevice graphicsDevice, Bitmap atlasPage)

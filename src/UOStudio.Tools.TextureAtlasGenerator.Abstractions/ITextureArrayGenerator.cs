@@ -4,8 +4,8 @@ using System.Drawing;
 
 namespace UOStudio.Tools.TextureAtlasGenerator.Abstractions
 {
-    public interface ITexture3dGenerator : IDisposable
+    public interface ITextureArrayGenerator : IDisposable
     {
-        byte[] Generate3dTexture(IEnumerable<Bitmap> atlasPages);
+        byte[] GenerateTextureArray(IEnumerable<Bitmap> atlasPages);
     }
 }
