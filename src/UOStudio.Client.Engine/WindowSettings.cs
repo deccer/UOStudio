@@ -9,7 +9,8 @@
             ResolutionScale = 1.0f,
             WindowMode = WindowMode.Windowed,
             IsVsyncEnabled = true,
-            UpdatesPerSecond = 60
+            UpdatesPerSecond = 60,
+            Visible = true
         };
 
         public int ResolutionWidth { get; set; }
@@ -23,5 +24,7 @@
         public bool IsVsyncEnabled { get; set; }
 
         public int UpdatesPerSecond { get; set; }
+
+        public bool Visible { get; set; }
     }
 }
