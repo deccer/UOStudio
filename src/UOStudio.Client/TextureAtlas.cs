@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
 using Serilog;
 using UOStudio.Client.Engine.Graphics;
-using UOStudio.TextureAtlasGenerator.Contracts;
+using UOStudio.Tools.TextureAtlasGenerator.Contracts;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
-namespace UOStudio.TextureAtlasGenerator.Client
+namespace UOStudio.Client
 {
-    public class TextureAtlas : IDisposable
+    internal sealed class TextureAtlas : ITextureAtlas
     {
         private readonly LandTile _invalidLandTile;
         private readonly ItemTile _invalidItemTile;
 
         private readonly ILogger _logger;
         private readonly IGraphicsDevice _graphicsDevice;
+        private readonly string _projectsDirectory;
         private readonly string _atlasName;
 
         private IDictionary<int, LandTile> _landTiles;
@@ -24,10 +28,15 @@ namespace UOStudio.TextureAtlasGenerator.Client
 
         public ITextureArray AtlasTexture { get; private set; }
 
-        public TextureAtlas(ILogger logger, IGraphicsDevice graphicsDevice, string atlasName)
+        internal TextureAtlas(
+            ILogger logger,
+            IGraphicsDevice graphicsDevice,
+            string projectsDirectory,
+            string atlasName)
         {
             _logger = logger.ForContext<TextureAtlas>();
             _graphicsDevice = graphicsDevice;
+            _projectsDirectory = projectsDirectory;
             _atlasName = atlasName;
             _invalidLandTile = new LandTile(-1, default);
             _invalidItemTile = new ItemTile(default, default);
@@ -57,23 +66,44 @@ namespace UOStudio.TextureAtlasGenerator.Client
                 ? staticTile
                 : _invalidItemTile;
 
-        public void LoadContent()
+        public bool Load()
         {
             _logger.Debug("Loading Atlas Texture...");
-            /*
+
+            var atlasJsonFilePath = Path.Combine(_projectsDirectory, $"{_atlasName}.json");
+            var atlasTextureDataFilePath = Path.Combine(_projectsDirectory, $"{_atlasName}.blob");
+            if (!File.Exists(atlasJsonFilePath))
+            {
+                _logger.Error("TextureAtlas - Metadata file {@AtlasJson} cannot be found", atlasJsonFilePath);
+                return false;
+            }
+
+            if (!File.Exists(atlasTextureDataFilePath))
+            {
+                _logger.Error("TextureAtlas - TextureData file {@TextureData} cannot be found", atlasTextureDataFilePath);
+                return false;
+            }
+
+
             var sw = Stopwatch.StartNew();
-            var atlasDataJson = File.ReadAllText(Path.Combine(contentManager.RootDirectory, $"{_atlasName}.json"));
+            var atlasDataJson = File.ReadAllText(atlasJsonFilePath);
             var atlasData = JsonConvert.DeserializeObject<Atlas>(atlasDataJson);
+            if (atlasData == null)
+            {
+                _logger.Error("TextureAtlas - Metadata incorrect");
+                sw.Stop();
+                return false;
+            }
+
             _depth = atlasData.Depth;
-            var atlasTextureData = File.ReadAllBytes(Path.Combine(contentManager.RootDirectory, $"{_atlasName}.blob"));
-            AtlasTexture = new Texture3D(
-                _graphicsDevice,
+            var atlasTextureData = File.ReadAllBytes(atlasTextureDataFilePath);
+            AtlasTexture = _graphicsDevice.CreateTextureArrayFromBytes(
                 atlasData.Width,
                 atlasData.Height,
                 atlasData.Depth,
-                false,
-                SurfaceFormat.Color);
-            AtlasTexture.SetData(atlasTextureData);
+                atlasTextureData,
+                TextureFormat.Rgb8);
+
             sw.Stop();
             _logger.Debug("Loading Atlas Texture...Done, Took {@Elapsed}s", sw.Elapsed.TotalSeconds);
 
@@ -89,7 +119,7 @@ namespace UOStudio.TextureAtlasGenerator.Client
 
             sw.Stop();
             _logger.Debug("Loading Atlas Data...Done. Took {@Elapsed}s", sw.Elapsed.TotalSeconds);
-            */
+            return true;
         }
     }
 }

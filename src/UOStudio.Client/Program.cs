@@ -96,6 +96,7 @@ namespace UOStudio.Client
             services.AddWindows();
             services.AddSingleton<IWorldProvider, WorldProvider>();
             services.AddSingleton<IWorldRenderer, WorldRenderer>();
+            services.AddSingleton<ITextureAtlasProvider, TextureAtlasProvider>();
             services.AddSingleton<IApplication, ClientApplication>();
 
             return services.BuildServiceProvider();
