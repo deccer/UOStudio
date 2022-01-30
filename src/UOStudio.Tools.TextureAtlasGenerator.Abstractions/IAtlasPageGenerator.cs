@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using UOStudio.TextureAtlasGenerator.Contracts;
+using UOStudio.Tools.TextureAtlasGenerator.Contracts;
 
-namespace UOStudio.TextureAtlasGenerator.Abstractions
+namespace UOStudio.Tools.TextureAtlasGenerator.Abstractions
 {
     public interface IAtlasPageGenerator
     {

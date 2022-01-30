@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     /// <summary>
     /// Contains translation tables used for mapping body values to file subsets.

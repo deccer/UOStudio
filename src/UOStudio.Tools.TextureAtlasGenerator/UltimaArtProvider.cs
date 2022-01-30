@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
-using UOStudio.TextureAtlasGenerator.Abstractions;
-using UOStudio.TextureAtlasGenerator.Ultima;
+using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Ultima;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class UltimaArtProvider : IUltimaArtProvider
     {

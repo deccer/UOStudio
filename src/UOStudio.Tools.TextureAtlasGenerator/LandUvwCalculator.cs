@@ -1,7 +1,7 @@
-﻿using UOStudio.TextureAtlasGenerator.Abstractions;
-using UOStudio.TextureAtlasGenerator.Contracts;
+﻿using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Contracts;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class LandUvwCalculator : IUvwCalculator
     {

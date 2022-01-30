@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public sealed class Animdata
     {

@@ -1,4 +1,4 @@
-namespace UOStudio.TextureAtlasGenerator.Ultima.Helpers
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima.Helpers
 {
     static internal class UopUtils
     {

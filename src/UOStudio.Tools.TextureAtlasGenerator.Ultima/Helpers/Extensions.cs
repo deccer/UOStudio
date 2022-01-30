@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima.Helpers
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima.Helpers
 {
     public static class Extensions
     {

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public static class BinaryExtensions
     {

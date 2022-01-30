@@ -24,7 +24,7 @@ using System.IO;
     31 - animdata.mul
 */
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public sealed class Verdata
     {

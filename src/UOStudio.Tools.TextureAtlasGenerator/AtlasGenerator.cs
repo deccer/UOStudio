@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using UOStudio.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class AtlasGenerator : IAtlasGenerator
     {

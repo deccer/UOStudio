@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public sealed class HuedTileList
     {

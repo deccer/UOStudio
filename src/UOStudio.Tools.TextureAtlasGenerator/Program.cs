@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using UOStudio.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal static class Program
     {

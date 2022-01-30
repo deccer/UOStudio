@@ -3,7 +3,7 @@ using System.Drawing.Imaging;
 using System.IO;
 
 // ascii text support written by arul
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public sealed class ASCIIFont
     {

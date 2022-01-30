@@ -1,4 +1,4 @@
-﻿namespace UOStudio.TextureAtlasGenerator.Contracts
+﻿namespace UOStudio.Tools.TextureAtlasGenerator.Contracts
 {
     public struct Vertex
     {

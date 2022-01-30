@@ -1,4 +1,4 @@
-﻿namespace UOStudio.TextureAtlasGenerator.Ultima
+﻿namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public enum WaveFormat
     {

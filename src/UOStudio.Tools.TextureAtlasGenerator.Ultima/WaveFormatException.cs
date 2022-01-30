@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public class WaveFormatException : Exception
     {

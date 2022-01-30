@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using UOStudio.TextureAtlasGenerator.Ultima.Helpers;
+using UOStudio.Tools.TextureAtlasGenerator.Ultima.Helpers;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public static class Art
     {

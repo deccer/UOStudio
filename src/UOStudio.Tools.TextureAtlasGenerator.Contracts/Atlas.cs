@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UOStudio.TextureAtlasGenerator.Contracts
+namespace UOStudio.Tools.TextureAtlasGenerator.Contracts
 {
     public class Atlas
     {

@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.Graphics;
-using UOStudio.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class Texture3dGenerator : ITexture3dGenerator
     {

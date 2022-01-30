@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Security.Cryptography;
-using UOStudio.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class Sha1HashCalculator : IHashCalculator
     {

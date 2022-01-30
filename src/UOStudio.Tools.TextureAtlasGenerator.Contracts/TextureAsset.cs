@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace UOStudio.TextureAtlasGenerator.Contracts
+namespace UOStudio.Tools.TextureAtlasGenerator.Contracts
 {
     public struct TextureAsset
     {

@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using UOStudio.TextureAtlasGenerator.Abstractions;
-using UOStudio.TextureAtlasGenerator.Contracts;
-using UOStudio.TextureAtlasGenerator.Ultima;
+using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Contracts;
+using UOStudio.Tools.TextureAtlasGenerator.Ultima;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class AssetExtractor : IAssetExtractor
     {

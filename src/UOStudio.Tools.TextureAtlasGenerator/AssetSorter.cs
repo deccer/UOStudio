@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UOStudio.TextureAtlasGenerator.Abstractions;
-using UOStudio.TextureAtlasGenerator.Contracts;
+using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
+using UOStudio.Tools.TextureAtlasGenerator.Contracts;
 
-namespace UOStudio.TextureAtlasGenerator
+namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class AssetSorter : IAssetSorter
     {

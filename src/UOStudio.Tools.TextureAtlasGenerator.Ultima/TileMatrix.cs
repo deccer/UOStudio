@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using UOStudio.TextureAtlasGenerator.Ultima.Helpers;
+using UOStudio.Tools.TextureAtlasGenerator.Ultima.Helpers;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public sealed class TileMatrix
     {

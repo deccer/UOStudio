@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace UOStudio.TextureAtlasGenerator.Ultima
+namespace UOStudio.Tools.TextureAtlasGenerator.Ultima
 {
     public abstract unsafe class ProcessStream : Stream
     {
