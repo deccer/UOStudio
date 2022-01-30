@@ -6,10 +6,21 @@ namespace UOStudio.Tools.TextureAtlasGenerator
 {
     internal sealed class Sha1HashCalculator : IHashCalculator
     {
+        private readonly HashAlgorithm _hashAlgorithm;
+
+        public Sha1HashCalculator()
+        {
+            _hashAlgorithm = SHA1.Create();
+        }
+
+        public void Dispose()
+        {
+            _hashAlgorithm.Dispose();
+        }
+
         public string CalculateHash(byte[] bytes)
         {
-            using var sha1 = SHA1.Create();
-            return Convert.ToHexString(sha1.ComputeHash(bytes));
+            return Convert.ToHexString(_hashAlgorithm.ComputeHash(bytes));
         }
     }
 }

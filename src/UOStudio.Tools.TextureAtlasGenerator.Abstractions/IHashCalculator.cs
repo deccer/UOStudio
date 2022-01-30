@@ -1,6 +1,8 @@
-﻿namespace UOStudio.Tools.TextureAtlasGenerator.Abstractions
+﻿using System;
+
+namespace UOStudio.Tools.TextureAtlasGenerator.Abstractions
 {
-    public interface IHashCalculator
+    public interface IHashCalculator : IDisposable
     {
         string CalculateHash(byte[] bytes);
     }
