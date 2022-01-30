@@ -67,17 +67,19 @@ namespace UOStudio.Client.Engine.Graphics
 
         IBuffer CreateBuffer<T>(int itemCount) where T : unmanaged;
 
-        IBuffer CreateBuffer<T>(T item) where T: unmanaged;
+        IBuffer CreateBuffer<T>(T item) where T : unmanaged;
 
-        IBuffer CreateBuffer<T>(string name, T item) where T: unmanaged;
+        IBuffer CreateBuffer<T>(string name, T item) where T : unmanaged;
 
-        IBuffer CreateBuffer<T>(string name, int itemCount) where T: unmanaged;
+        IBuffer CreateBuffer<T>(string name, int itemCount) where T : unmanaged;
 
-        IBuffer CreateBuffer<T>(T[] items) where T: unmanaged;
+        IBuffer CreateBuffer<T>(T[] items) where T : unmanaged;
 
-        IBuffer CreateBuffer<T>(string name, T[] items) where T: unmanaged;
+        IBuffer CreateBuffer<T>(string name, T[] items) where T : unmanaged;
 
-        IBuffer CreateBuffer<T>(IEnumerable<T> items) where T: unmanaged;
+        IBuffer CreateBuffer<T>(string name, IEnumerable<T> items) where T : unmanaged;
+
+        IBuffer CreateBuffer<T>(IEnumerable<T> items) where T : unmanaged;
 
         IInputLayout GetInputLayout(VertexType vertexType);
 

@@ -199,9 +199,14 @@ namespace UOStudio.Client.Engine.Graphics
             return new Buffer<T>(name, items);
         }
 
+        public IBuffer CreateBuffer<T>(string name, IEnumerable<T> items) where T : unmanaged
+        {
+            return new Buffer<T>(name, items.ToArray());
+        }
+
         public IBuffer CreateBuffer<T>(IEnumerable<T> items) where T: unmanaged
         {
-            return new Buffer<T>(typeof(T).Name, items.ToArray());
+            return CreateBuffer(typeof(T).Name, items);
         }
 
         public IInputLayout GetInputLayout(VertexType vertexType)
