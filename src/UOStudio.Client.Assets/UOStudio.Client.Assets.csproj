@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <Folder Include="Fonts" />
+        <Folder Include="Shaders" />
         <Folder Include="Textures" />
         <None Update="**\*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
