@@ -4,7 +4,6 @@ using Serilog;
 using UOStudio.Client.Engine;
 using UOStudio.Client.Engine.Graphics;
 using UOStudio.Client.Engine.Mathematics;
-using UOStudio.TextureAtlasGenerator.Client;
 
 namespace UOStudio.Client
 {
