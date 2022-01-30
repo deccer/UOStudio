@@ -53,6 +53,7 @@ namespace UOStudio.Client
             ILogger logger,
             WindowSettings windowSettings,
             ContextSettings contextSettings,
+            IWindowFactory windowFactory,
             IGraphicsDevice graphicsDevice,
             ClientStartParameters clientStartParameters,
             IMeshLibrary meshLibrary,

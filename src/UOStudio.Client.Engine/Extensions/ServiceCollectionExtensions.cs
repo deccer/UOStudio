@@ -19,6 +19,7 @@ namespace UOStudio.Client.Engine.Extensions
 
             services.AddSingleton<IInputLayoutMapper, InputLayoutMapper>();
             services.AddSingleton<IInputLayoutProvider, InputLayoutProvider>();
+            services.AddSingleton<IWindowFactory, WindowFactory>();
             services.AddSingleton<IGraphicsDevice, GraphicsDevice>();
 
             services.AddSingleton<ITextureLibrary, TextureLibrary>();

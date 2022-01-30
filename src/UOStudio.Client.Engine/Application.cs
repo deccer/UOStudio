@@ -5,7 +5,6 @@ using UOStudio.Client.Engine.Graphics;
 using UOStudio.Client.Engine.Input;
 using UOStudio.Client.Engine.Native;
 using UOStudio.Client.Engine.Native.OpenGL;
-using UOStudio.Client.Engine.Platform;
 using Buffer = System.Buffer;
 
 namespace UOStudio.Client.Engine
@@ -16,14 +15,15 @@ namespace UOStudio.Client.Engine
 
         private readonly ILogger _logger;
         private readonly WindowSettings _windowSettings;
+        private readonly IWindowFactory _windowFactory;
         private readonly ContextSettings _contextSettings;
 
+        private readonly IWindow _window;
         private readonly IGraphicsDevice _graphicsDevice;
 
         private readonly bool _showUpdatesPerSecond = true;
         private readonly int _showUpdatesPerSecondRate = 1000;
 
-        private IntPtr _windowHandle;
         private int _updatesPerSecond;
         private int _framesPerSecond;
         private bool _isRunning;
@@ -35,20 +35,16 @@ namespace UOStudio.Client.Engine
 
         public bool IsFocused { get; private set; }
 
-        public string Title
-        {
-            get => Sdl.GetWindowTitle(_windowHandle);
-            set => Sdl.SetWindowTitle(_windowHandle, value);
-        }
-
         protected Application(
             ILogger logger,
             WindowSettings windowSettings,
             ContextSettings contextSettings,
+            IWindowFactory windowFactory,
             IGraphicsDevice graphicsDevice)
         {
             _logger = logger.ForContext<Application>();
             _windowSettings = windowSettings;
+            _windowFactory = windowFactory;
             _contextSettings = contextSettings;
             _graphicsDevice = graphicsDevice;
 
@@ -56,6 +52,7 @@ namespace UOStudio.Client.Engine
             FrameHeight = (int)(_windowSettings.ResolutionHeight * _windowSettings.ResolutionScale);
             ResolutionWidth = _windowSettings.ResolutionWidth;
             ResolutionHeight = _windowSettings.ResolutionHeight;
+            _window = _windowFactory.CreateWindow("UOStudio", _windowSettings);
         }
 
         public void Run()
@@ -115,7 +112,7 @@ namespace UOStudio.Client.Engine
                 Render(currentTime, updateRate);
                 Timer.EndFrame();
                 _framesPerSecond++;
-                Sdl.SwapWindow(_windowHandle);
+                Sdl.SwapWindow(_window.Handle);
 
                 if (_showUpdatesPerSecond && stopwatch.ElapsedMilliseconds > nextUpdate)
                 {
@@ -147,64 +144,20 @@ namespace UOStudio.Client.Engine
                 return false;
             }
 
-            var windowFlags = Sdl.WindowFlags.SupportOpenGL | Sdl.WindowFlags.AllowHighDpi | Sdl.WindowFlags.InputGrabbed;
-            switch (_windowSettings.WindowMode)
+            if (!_window.Initialize())
             {
-                case WindowMode.Windowed or WindowMode.MaximizedWindow:
-                    windowFlags |= Sdl.WindowFlags.Resizable;
-                    break;
-                case WindowMode.ExclusiveFullscreen or WindowMode.FullscreenWindow:
-                    windowFlags |= Sdl.WindowFlags.Borderless;
-                    break;
-            }
-
-            if (_windowSettings.WindowMode is WindowMode.MaximizedWindow)
-            {
-                windowFlags |= Sdl.WindowFlags.Maximized;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Windows.SetProcessDpiAwareness(Windows.ProcessDpiAwareness.SystemDpiAware);
-            }
-
-            var displayBounds = Sdl.GetDisplayBounds(0);
-            var windowWidth = _windowSettings.WindowMode is WindowMode.ExclusiveFullscreen or WindowMode.FullscreenWindow
-                ? displayBounds.Width
-                : _windowSettings.ResolutionWidth;
-            var windowHeight = _windowSettings.WindowMode is WindowMode.ExclusiveFullscreen or WindowMode.FullscreenWindow
-                ? displayBounds.Height
-                : _windowSettings.ResolutionHeight;
-
-            _windowHandle = Sdl.CreateWindow(
-                "EngineKit",
-                windowWidth,
-                windowHeight,
-                windowFlags);
-            if (_windowHandle == IntPtr.Zero)
-            {
-                _logger.Error("SDL: CreateWindow failed");
-                UnInitialize();
+                _logger.Error("SDL: Unable to create a window");
                 return false;
             }
 
-            if (_windowSettings.WindowMode == WindowMode.MaximizedWindow)
-            {
-                Sdl.GetWindowSize(_windowHandle, out windowWidth, out windowHeight);
-            }
-            _windowSettings.ResolutionWidth = windowWidth;
-            _windowSettings.ResolutionHeight = windowHeight;
-
-            Mouse.WindowHandle = _windowHandle;
-
-            if (!_graphicsDevice.Initialize(_contextSettings, _windowHandle))
+            if (!_graphicsDevice.Initialize(_contextSettings, _window.Handle))
             {
                 _logger.Error("App: Unable to initialize graphics device");
                 return false;
             }
 
             _graphicsDevice.VSync = _windowSettings.IsVsyncEnabled;
-            Resized(windowWidth, windowHeight);
+            Resized(_window.Width, _window.Height);
             return true;
         }
 
@@ -227,11 +180,7 @@ namespace UOStudio.Client.Engine
 
         protected virtual void UnInitialize()
         {
-            if (_windowHandle != IntPtr.Zero)
-            {
-                Sdl.MakeCurrent(_windowHandle, IntPtr.Zero);
-                Sdl.DestroyWindow(_windowHandle);
-            }
+            _window.Dispose();
             Sdl.Quit();
         }
 
