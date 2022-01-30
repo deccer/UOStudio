@@ -141,7 +141,7 @@ namespace UOStudio.Client.Engine
 
         protected virtual bool Initialize()
         {
-            if (Sdl.Init(Sdl.InitFlags.Video) < 0)
+            if (!Sdl.Init(Sdl.InitFlags.Video))
             {
                 _logger.Error("SDL: Init failed");
                 return false;

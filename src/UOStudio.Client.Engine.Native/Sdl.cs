@@ -37,9 +37,9 @@ namespace UOStudio.Client.Engine.Native
             return (KeyCode)((int)x | ScanCodeMask);
         }
 
-        public static int Init(InitFlags initFlags)
+        public static bool Init(InitFlags initFlags)
         {
-            return _sdlInitFnPtr(initFlags);
+            return _sdlInitFnPtr(initFlags) == 0;
         }
 
         public static void Quit()
