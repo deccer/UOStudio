@@ -10,6 +10,7 @@
     <PropertyGroup>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
 
     <ItemGroup>
@@ -62,7 +63,6 @@
         <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Core\UOStudio.Common.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Common.Network\UOStudio.Common.Network.csproj" />
-        <ProjectReference Include="..\UOStudio.Tools.TextureAtlasGenerator.Client\UOStudio.Tools.TextureAtlasGenerator.Client.csproj" />
         <ProjectReference Include="..\UOStudio.Tools.TextureAtlasGenerator.Contracts\UOStudio.Tools.TextureAtlasGenerator.Contracts.csproj" />
     </ItemGroup>
 
@@ -73,42 +73,6 @@
             <Visible>false</Visible>
         </Content>
         <None Update="appsettings.json">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\control-login-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\control-logout-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-add-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-coast-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-elevate-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-flatten-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-lower-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-paint-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-smooth-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Textures\terrain-subtract-32.png">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Fonts\AdventPro-Regular.ttf">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Content\Fonts\Ruda-Regular.ttf">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="UOStudio.Client.png">
