@@ -1,6 +1,0 @@
-<Project>
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-    </PropertyGroup>
-</Project>

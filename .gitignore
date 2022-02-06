@@ -352,9 +352,6 @@ MigrationBackup/
 # Rider
 .idea/
 
-# FNA libs
-!external/fnalibs/**/*.*
-
 # MkDocs
 site/
 
