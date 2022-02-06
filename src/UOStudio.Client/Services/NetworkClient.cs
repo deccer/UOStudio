@@ -89,7 +89,7 @@ namespace UOStudio.Client.Services
             _logger.Debug("NetworkClient: Requesting Chunk {@ChunkPositionX},{@ChunkPositionY}", chunkPosition.X, chunkPosition.Y);
             _dataWriter.Reset();
             _dataWriter.Put(PacketIds.C2S.RequestChunk);
-            _dataWriter.Put(worldId); // worldId
+            _dataWriter.Put(worldId);
             _dataWriter.Put(chunkPosition.X);
             _dataWriter.Put(chunkPosition.Y);
 

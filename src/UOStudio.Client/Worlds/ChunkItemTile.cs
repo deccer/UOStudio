@@ -2,7 +2,7 @@
 
 namespace UOStudio.Client.Worlds
 {
-    internal class ChunkItemTile
+    public class ChunkItemTile
     {
         public ChunkItemTile(ushort tileId, int z, int hue)
         {

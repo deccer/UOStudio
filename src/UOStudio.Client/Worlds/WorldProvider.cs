@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Serilog;
-using UOStudio.Client.Engine.Mathematics;
 
 namespace UOStudio.Client.Worlds
 {
-    internal class WorldProvider : IWorldProvider
+    internal sealed class WorldProvider : IWorldProvider
     {
         private readonly IDictionary<int, World> _worlds;
         private readonly ILogger _logger;
@@ -29,11 +28,6 @@ namespace UOStudio.Client.Worlds
             return world;
         }
 
-        public WorldChunk GetChunk(int worldId, Point chunkPosition)
-        {
-            _logger.Debug("WorldProvider: trying to get chunk at position {@ChunkPosX},{@ChunkPosY}", chunkPosition.X, chunkPosition.Y);
-            var world = GetWorld(worldId);
-            return world?.GetChunk(chunkPosition);
-        }
+
     }
 }

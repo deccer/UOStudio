@@ -3,7 +3,7 @@ using UOStudio.Common.Network;
 
 namespace UOStudio.Client.Worlds
 {
-    internal sealed class WorldChunk
+    public sealed class WorldChunk
     {
         public ChunkStaticTile[] Tiles { get; }
 
@@ -55,11 +55,12 @@ namespace UOStudio.Client.Worlds
                     chunkTile.Z != chunkData.StaticTileData[i].Z ||
                     chunkTile.Hue != chunkData.StaticTileData[i].Hue)
                 {
-                    Tiles[i] = new ChunkStaticTile(chunkTile.TileId, chunkTile.Z, chunkTile.Hue);
+                    Tiles[i] = new ChunkStaticTile(chunkData.StaticTileData[i].TileId, chunkData.StaticTileData[i].Z, chunkData.StaticTileData[i].Hue);
                     IsDirty = true;
                 }
             }
 
+            /*
             for (var i = 0; i < chunkData.ItemTileData.Length; i++)
             {
                 var chunkTile = Items[i];
@@ -71,6 +72,7 @@ namespace UOStudio.Client.Worlds
                     IsDirty = true;
                 }
             }
+            */
         }
     }
 }

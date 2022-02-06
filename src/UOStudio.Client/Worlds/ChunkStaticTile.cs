@@ -2,7 +2,7 @@ using System;
 
 namespace UOStudio.Client.Worlds
 {
-    internal class ChunkStaticTile
+    public class ChunkStaticTile
     {
         public ChunkStaticTile(ushort tileId, int z, int hue)
         {
