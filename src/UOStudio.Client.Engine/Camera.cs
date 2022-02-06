@@ -25,6 +25,12 @@ namespace UOStudio.Client.Engine
 
         private CameraMode _cameraMode;
 
+        public CameraMode CameraMode
+        {
+            get => _cameraMode;
+            set => _cameraMode = value;
+        }
+
         public Matrix ViewMatrix { get; private set; }
 
         public Matrix ProjectionMatrix { get; private set; }
