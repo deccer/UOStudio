@@ -21,6 +21,12 @@ namespace UOStudio.Client.Engine.Graphics
             return new Texture(fileName, minFilter, magFilter, wrapMode);
         }
 
+        public TextureFormat Format { get; private set; }
+
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+
         private Texture()
         {
             _id = GL.CreateTexture(GL.TextureTarget.Texture2d);
@@ -39,6 +45,7 @@ namespace UOStudio.Client.Engine.Graphics
         {
             Width = width;
             Height = height;
+            Format = textureFormat;
             var label = string.IsNullOrEmpty(name)
                 ? $"T_{width}x{height}_{textureFormat}_{minFilter}_{magFilter}_{wrapMode}"
                 : $"T_{name}_{width}x{height}_{textureFormat}_{minFilter}_{magFilter}_{wrapMode}";
@@ -81,6 +88,7 @@ namespace UOStudio.Client.Engine.Graphics
         {
             Width = width;
             Height = height;
+            Format = textureFormat;
             var label = string.IsNullOrEmpty(name)
                 ? $"T_{width}x{height}_{textureFormat}_{minFilter}_{magFilter}_{wrapMode}"
                 : $"T_{name}_{width}x{height}_{textureFormat}_{minFilter}_{magFilter}_{wrapMode}";
@@ -145,10 +153,6 @@ namespace UOStudio.Client.Engine.Graphics
             CreateTexture(image, minFilter, magFilter, wrapMode);
         }
 
-        public int Width { get; set; }
-
-        public int Height { get; set; }
-
         public IntPtr AsIntPtr()
         {
             return new IntPtr(_id);
@@ -204,6 +208,7 @@ namespace UOStudio.Client.Engine.Graphics
             {
                 var mipLevels = (int)MathF.Floor(MathF.Log2(MathF.Max(Width, Height)));
                 var sizedInternalFormat = GL.SizedInternalFormat.Rgba8;
+                Format = sizedInternalFormat.ToTextureFormat();
                 GL.TextureStorage2D(_id, mipLevels, sizedInternalFormat, image.Width, image.Height);
                 GL.TextureParameter(_id, GL.TextureParameterName.TextureMinFilter, (int)minFilter.ToTextureMinFilter());
                 GL.TextureParameter(_id, GL.TextureParameterName.TextureMagFilter, (int)magFilter.ToTextureMagFilter());

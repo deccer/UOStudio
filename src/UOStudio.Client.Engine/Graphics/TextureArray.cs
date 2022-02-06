@@ -16,6 +16,8 @@ namespace UOStudio.Client.Engine.Graphics
         private readonly int _height;
         private readonly int _slices;
 
+        public GL.SizedInternalFormat Format { get; private set; }
+
         private TextureArray()
         {
             _id = GL.CreateTexture(GL.TextureTarget.Texture2dArray);
@@ -37,9 +39,10 @@ namespace UOStudio.Client.Engine.Graphics
             _width = width;
             _height = height;
             _slices = slices;
+            Format = textureFormat.ToSizedInternalFormat();
             var label = $"TA_{width}x{height}x{slices}_{textureFormat}_{minFilter}_{magFilter}_{wrapMode}";
             GL.ObjectLabel(GL.ObjectIdentifier.Texture, _id, label);
-            GL.TextureStorage3D(_id, 1, textureFormat.ToSizedInternalFormat(), width, height, slices);
+            GL.TextureStorage3D(_id, 1, Format, width, height, slices);
             GL.TextureParameter(_id, GL.TextureParameterName.TextureMinFilter, (int)minFilter.ToTextureMinFilter());
             GL.TextureParameter(_id, GL.TextureParameterName.TextureMagFilter, (int)magFilter.ToTextureMagFilter());
             GL.TextureParameter(_id, GL.TextureParameterName.TextureWrapS, (int)wrapMode.ToTextureWrapMode());
@@ -82,9 +85,10 @@ namespace UOStudio.Client.Engine.Graphics
 
                 if (layer == 0)
                 {
+                    Format = textureFormat.ToSizedInternalFormat();
                     var label = $"TA_{image.Width}x{image.Height}x{fileNames.Length}_{textureFormat}_{minFilter}_{magFilter}_{wrapMode}";
                     GL.ObjectLabel(GL.ObjectIdentifier.Texture, _id, label);
-                    GL.TextureStorage3D(_id, 1, textureFormat.ToSizedInternalFormat(), image.Width, image.Height, fileNames.Length);
+                    GL.TextureStorage3D(_id, 1, Format, image.Width, image.Height, fileNames.Length);
 
                     GL.TextureParameter(_id, GL.TextureParameterName.TextureMinFilter, (int)minFilter.ToTextureMinFilter());
                     GL.TextureParameter(_id, GL.TextureParameterName.TextureMagFilter, (int)magFilter.ToTextureMagFilter());
@@ -116,9 +120,10 @@ namespace UOStudio.Client.Engine.Graphics
             {
                 if (layer == 0)
                 {
+                    Format = textureFormat.ToSizedInternalFormat();
                     var label = $"TA_{image.Width}x{image.Height}x{images.Count()}_{textureFormat}_{minFilter}_{magFilter}_{wrapMode}";
                     GL.ObjectLabel(GL.ObjectIdentifier.Texture, _id, label);
-                    GL.TextureStorage3D(_id, 1, textureFormat.ToSizedInternalFormat(), image.Width, image.Height, images.Count());
+                    GL.TextureStorage3D(_id, 1, Format, image.Width, image.Height, images.Count());
 
                     GL.TextureParameter(_id, GL.TextureParameterName.TextureMinFilter, (int)minFilter.ToTextureMinFilter());
                     GL.TextureParameter(_id, GL.TextureParameterName.TextureMagFilter, (int)magFilter.ToTextureMagFilter());
@@ -151,6 +156,11 @@ namespace UOStudio.Client.Engine.Graphics
             GL.GetTextureImage(_id, 0, _pixelFormat, _pixelType, byteCount, ref bytes);
 
             return bytes;
+        }
+
+        public static implicit operator uint(TextureArray texture)
+        {
+            return texture._id;
         }
 
         private int CalculateByteCount()

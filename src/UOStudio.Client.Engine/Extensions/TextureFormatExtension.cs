@@ -35,6 +35,7 @@ namespace UOStudio.Client.Engine.Extensions
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static GL.PixelType ToPixelType(this TextureFormat textureFormat)
         {
             return textureFormat switch
@@ -63,6 +64,7 @@ namespace UOStudio.Client.Engine.Extensions
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static GL.PixelFormat ToPixelFormat(this TextureFormat textureFormat)
         {
             return textureFormat switch
@@ -88,6 +90,35 @@ namespace UOStudio.Client.Engine.Extensions
                 TextureFormat.R16ui => GL.PixelFormat.RedInteger,
                 TextureFormat.Rg16ui => GL.PixelFormat.RedInteger,
                 TextureFormat.Rg11b10f => GL.PixelFormat.Rgb,
+            };
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TextureFormat ToTextureFormat(this GL.SizedInternalFormat sizedInternalFormat)
+        {
+            return sizedInternalFormat switch
+            {
+                GL.SizedInternalFormat.DepthComponent16 => TextureFormat.Depth16,
+                GL.SizedInternalFormat.DepthComponent24 => TextureFormat.Depth24,
+                GL.SizedInternalFormat.Depth24Stencil8 => TextureFormat.Depth24Stencil8,
+                GL.SizedInternalFormat.DepthComponent32f => TextureFormat.Depth32f,
+                GL.SizedInternalFormat.Depth32fStencil8 => TextureFormat.Depth32fStencil8,
+                GL.SizedInternalFormat.R8 => TextureFormat.R8,
+                GL.SizedInternalFormat.Rg8 => TextureFormat.Rg8,
+                GL.SizedInternalFormat.Rgb8 => TextureFormat.Rgb8,
+                GL.SizedInternalFormat.Rgb10A2 => TextureFormat.Rgb10a2,
+                GL.SizedInternalFormat.Rgba8 => TextureFormat.Rgba8,
+                GL.SizedInternalFormat.R16f => TextureFormat.R16f,
+                GL.SizedInternalFormat.Rg16f => TextureFormat.Rg16f,
+                GL.SizedInternalFormat.Rgb16f => TextureFormat.Rgb16f,
+                GL.SizedInternalFormat.Rgba16f => TextureFormat.Rgba16f,
+                GL.SizedInternalFormat.R32f => TextureFormat.R32f,
+                GL.SizedInternalFormat.Rg32f => TextureFormat.Rg32f,
+                GL.SizedInternalFormat.Rgb32f => TextureFormat.Rgb32f,
+                GL.SizedInternalFormat.Rgba32f => TextureFormat.Rgba32f,
+                GL.SizedInternalFormat.R16ui => TextureFormat.R16ui,
+                GL.SizedInternalFormat.Rg16ui => TextureFormat.Rg16ui,
+                GL.SizedInternalFormat.R11fG11fB10f => TextureFormat.Rg11b10f,
             };
         }
     }
