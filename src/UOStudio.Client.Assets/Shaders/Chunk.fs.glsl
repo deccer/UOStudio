@@ -12,5 +12,5 @@ layout (binding = 0) uniform sampler2DArray t_textures;
 
 void main()
 {
-    out_color = vec4(texture(t_textures, vec3(fs_uv, fs_uv_index)).rgb * fs_color, 1.0);
+    out_color = vec4(fs_color, 1.0) * texture(t_textures, vec3(fs_uv, fs_uv_index));
 }

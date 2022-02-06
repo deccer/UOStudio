@@ -21,7 +21,7 @@ layout (location = 8) uniform mat4 u_world;
 
 void main()
 {
-    fs_position = u_world * vec4(i_position, 1.0);
+    fs_position = u_world * vec4(i_position.x, 0.0, i_position.y, 1.0);
     gl_Position = u_projection * u_view * fs_position;
 
     fs_color = i_color;
