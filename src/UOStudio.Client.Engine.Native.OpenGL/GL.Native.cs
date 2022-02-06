@@ -2443,5 +2443,41 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             _getCompressedTextureImageDelegate = (delegate* unmanaged<uint, int, int, void*, void>)Sdl.GetProcAddress("glGetCompressedTextureImage");
             _getCompressedTextureImageDelegate(texture, level, bufSize, pixels);
         }
+
+        public static void TextureView(
+            uint texture,
+            TextureTarget target,
+            uint origtexture,
+            SizedInternalFormat internalformat,
+            uint minlevel,
+            uint numlevels,
+            uint minlayer,
+            uint numlayers)
+            => _textureViewDelegate(texture, target, origtexture, internalformat, minlevel, numlevels, minlayer, numlayers);
+        private static delegate* unmanaged<uint, TextureTarget, uint, SizedInternalFormat, uint, uint, uint, uint, void> _textureViewDelegate = &TextureView_Lazy;
+
+        [UnmanagedCallersOnly]
+        private static void TextureView_Lazy(
+            uint texture,
+            TextureTarget target,
+            uint origtexture,
+            SizedInternalFormat internalformat,
+            uint minlevel,
+            uint numlevels,
+            uint minlayer,
+            uint numlayers)
+        {
+            _textureViewDelegate = (delegate* unmanaged<uint, TextureTarget, uint, SizedInternalFormat, uint, uint, uint, uint, void>)Sdl.GetProcAddress("glTextureView");
+            _textureViewDelegate(texture, target, origtexture, internalformat, minlevel, numlevels, minlayer, numlayers);
+        }
+
+        public static void GenTextures(int n, uint* textures) => _genTexturesDelegate(n, textures);
+        private static delegate* unmanaged<int, uint*, void> _genTexturesDelegate = &GenTextures_Lazy;
+        [UnmanagedCallersOnly]
+        private static void GenTextures_Lazy(int n, uint* textures)
+        {
+            _genTexturesDelegate = (delegate* unmanaged<int, uint*, void>)Sdl.GetProcAddress("glGenTextures");
+            _genTexturesDelegate(n, textures);
+        }
     }
 }

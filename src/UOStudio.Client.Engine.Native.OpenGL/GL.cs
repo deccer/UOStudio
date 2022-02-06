@@ -241,6 +241,13 @@ namespace UOStudio.Client.Engine.Native.OpenGL
             }
         }
 
+        public static unsafe uint GenTexture()
+        {
+            uint texture;
+            GenTextures(1, &texture);
+            return texture;
+        }
+
         public static unsafe uint CreateTexture(TextureTarget target)
         {
             uint texture;
