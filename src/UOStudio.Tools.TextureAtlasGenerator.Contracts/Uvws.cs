@@ -4,10 +4,12 @@
     {
         public void SetW(int atlasPageCount)
         {
+            /*
             V1.W = V1.W / atlasPageCount;
             V2.W = V2.W / atlasPageCount;
             V3.W = V3.W / atlasPageCount;
             V4.W = V4.W / atlasPageCount;
+            */
         }
 
         public Vertex V1;

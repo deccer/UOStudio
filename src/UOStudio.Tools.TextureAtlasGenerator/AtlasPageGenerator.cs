@@ -42,6 +42,11 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             Graphics atlasPageGraphics = null;
             var firstItemOnTheRow = -1;
             var drawCountPerPage = new Dictionary<int, int>();
+
+            var atlasPage = new Bitmap(_atlasPageSize, _atlasPageSize);
+            atlasPages.Add(atlasPage);
+            atlasPageGraphics = Graphics.FromImage(atlasPage);
+
             for (var i = 0; i < textureAssets.Count; ++i)
             {
                 var textureAsset = textureAssets[i];
@@ -61,25 +66,15 @@ namespace UOStudio.Tools.TextureAtlasGenerator
                 }
                 else if (textureAsset.TileType == TileType.Land)
                 {
-                    _tileContainer.AddLandTile(new LandTile(textureAsset.TileId, tileUvws));
+                    _tileContainer.AddLandTile(new LandTile(textureAsset, tileUvws));
                 }
                 else
                 {
-                    _tileContainer.AddLandTextureTile(new LandTile(textureAsset.TileId, tileUvws));
+                    _tileContainer.AddLandTextureTile(new LandTile(textureAsset, tileUvws));
                 }
 
                 if (!alreadyProcessed.Contains(textureAsset.ArtHash))
                 {
-                    if (currentPixelPositionX == 0 && currentPixelPositionY == 0)
-                    {
-                        drawCountPerPage.Add(atlasPageNumber, 0);
-                        var atlasPage = new Bitmap(_atlasPageSize, _atlasPageSize);
-                        atlasPages.Add(atlasPage);
-                        atlasPageNumber++;
-                        atlasPageGraphics?.Dispose();
-                        atlasPageGraphics = Graphics.FromImage(atlasPage);
-                    }
-
                     if (currentPixelPositionX == 0)
                     {
                         firstItemOnTheRow = i;
@@ -110,12 +105,24 @@ namespace UOStudio.Tools.TextureAtlasGenerator
                     {
                         currentPixelPositionX = 0;
                         currentPixelPositionY = 0;
+
+                        atlasPageNumber++;
+                        drawCountPerPage.Add(atlasPageNumber, 0);
+
+                        //atlasPage?.Dispose();
+                        atlasPage = new Bitmap(_atlasPageSize, _atlasPageSize);
+                        atlasPages.Add(atlasPage);
+                        atlasPageGraphics?.Dispose();
+                        atlasPageGraphics = Graphics.FromImage(atlasPage);
+
                         continue;
                     }
 
                     alreadyProcessed.Add(textureAsset.ArtHash);
                 }
             }
+
+            atlasPageGraphics?.Dispose();
 
             return atlasPages;
         }

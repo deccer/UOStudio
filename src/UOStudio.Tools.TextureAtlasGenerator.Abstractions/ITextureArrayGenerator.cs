@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace UOStudio.Tools.TextureAtlasGenerator.Abstractions
 {
-    public interface ITextureArrayGenerator : IDisposable
+    public interface ITextureArrayGenerator
     {
         byte[] GenerateTextureArray(IEnumerable<Bitmap> atlasPages);
     }

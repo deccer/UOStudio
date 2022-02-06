@@ -2,6 +2,6 @@
 {
     public interface IAtlasGenerator
     {
-        void Run();
+        void Run(string atlasName);
     }
 }

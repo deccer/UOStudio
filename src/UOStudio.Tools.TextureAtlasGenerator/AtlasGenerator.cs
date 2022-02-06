@@ -41,7 +41,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
                 bool.TryParse(configuration["StoreIndividualPages"], out var storeIndividualPages) && storeIndividualPages;
         }
 
-        public void Run()
+        public void Run(string atlasName)
         {
             if (!Directory.Exists(_exportPath))
             {
@@ -75,8 +75,8 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             }
 
             var textureArrayBytes = _textureArrayGenerator.GenerateTextureArray(atlasPages);
-            File.WriteAllBytes(Path.Combine(_exportPath, "Atlas.blob"), textureArrayBytes);
-            _tileContainer.Save(Path.Combine(_exportPath, "Atlas.json"), atlasPages.Count);
+            File.WriteAllBytes(Path.Combine(_exportPath, $"{atlasName}.blob"), textureArrayBytes);
+            _tileContainer.Save(Path.Combine(_exportPath, $"{atlasName}.json"), atlasPages.Count);
             _logger.Information("Done");
         }
     }

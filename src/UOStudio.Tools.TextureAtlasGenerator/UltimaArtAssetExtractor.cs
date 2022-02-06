@@ -8,7 +8,7 @@ using UOStudio.Tools.TextureAtlasGenerator.Ultima;
 
 namespace UOStudio.Tools.TextureAtlasGenerator
 {
-    internal sealed class AssetExtractor : IAssetExtractor
+    internal sealed class UltimaArtAssetExtractor : IAssetExtractor
     {
         private readonly ILogger _logger;
         private readonly IHashCalculator _hashCalculator;
@@ -16,7 +16,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
 
         private readonly string _ultimaOnlinePath;
 
-        public AssetExtractor(
+        public UltimaArtAssetExtractor(
             ILogger logger,
             IHashCalculator hashCalculator,
             IConfiguration configuration,
@@ -41,8 +41,10 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             assets.AddRange(ExtractArt(Art.GetMaxItemID(), TileType.Item));
 
             sw.Stop();
-            _logger.Information("Extracting Art from {@UltimaOnlinePath}. Took {@TotalSeconds}s",
-                _ultimaOnlinePath, sw.Elapsed.TotalSeconds);
+            _logger.Information(
+                "Extracting Art from {@UltimaOnlinePath}. Took {@TotalSeconds}s",
+                _ultimaOnlinePath,
+                sw.Elapsed.TotalSeconds);
 
             return assets;
         }
@@ -71,7 +73,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
                 {
                     TileType.Item => _ultimaArtProvider.GetStatic(i),
                     TileType.Land => _ultimaArtProvider.GetLand(i),
-                    _             => _ultimaArtProvider.GetTexture(i)
+                    _ => _ultimaArtProvider.GetTexture(i)
                 };
 
                 assets.Add(new TextureAsset(i, tileType, artHash, art));

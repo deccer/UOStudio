@@ -14,7 +14,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             var serviceProvider = BuildServiceProvider();
             var textureAtlasGenerator = serviceProvider.GetService<IAtlasGenerator>();
 
-            textureAtlasGenerator!.Run();
+            textureAtlasGenerator!.Run("External");
         }
 
         private static IServiceProvider BuildServiceProvider()
@@ -35,7 +35,15 @@ namespace UOStudio.Tools.TextureAtlasGenerator
 
             services.AddEngineKit(configuration);
             services.AddSingleton<IHashCalculator, Sha1HashCalculator>();
-            services.AddSingleton<IAssetExtractor, AssetExtractor>();
+            if (false)
+            {
+                services.AddSingleton<IAssetExtractor, UltimaArtAssetExtractor>();
+            }
+            else
+            {
+                services.AddSingleton<IAssetExtractor, ExternalTexturesAssetExtractor>();
+            }
+
             services.AddSingleton<IAssetSorter, AssetSorter>();
             services.AddSingleton<IAtlasPageGenerator, AtlasPageGenerator>();
             services.AddSingleton<IUvwCalculator, ItemUvwCalculator>();

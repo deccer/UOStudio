@@ -64,7 +64,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
                 .Select(atlasPage => ToImageSharpImage(atlasPage))
                 .ToArray();
 
-            var textureArray = _graphicsDevice.CreateTextureArrayFromImages(textures, TextureFormat.Rgb8);
+            var textureArray = _graphicsDevice.CreateTextureArrayFromImages(textures, TextureFormat.Rgba8);
             var bytes = textureArray.GetBytes();
             textureArray.Dispose();
 
@@ -72,10 +72,6 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             Sdl.Quit();
 
             return bytes;
-        }
-
-        public void Dispose()
-        {
         }
 
         private static SixLabors.ImageSharp.Image ToImageSharpImage(Bitmap bitmap)
@@ -86,48 +82,6 @@ namespace UOStudio.Tools.TextureAtlasGenerator
             memoryStream.Seek(0, SeekOrigin.Begin);
 
             return SixLabors.ImageSharp.Image.Load(memoryStream);
-        }
-
-        private static ITexture BitmapToTexture2D(IGraphicsDevice graphicsDevice, Bitmap atlasPage)
-        {
-            /*
-            var texture2D = new Texture2D(graphicsDevice, atlasPage.Width, atlasPage.Height, false, SurfaceFormat.Color);
-            var bitmapData = atlasPage.LockBits(new Rectangle(0, 0, atlasPage.Width, atlasPage.Height),
-                ImageLockMode.ReadOnly, atlasPage.PixelFormat);
-            var pixelBufferSize = bitmapData.Height * bitmapData.Stride;
-            var pixelBuffer = new byte[pixelBufferSize];
-            Marshal.Copy(bitmapData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
-            texture2D.SetData(pixelBuffer);
-            atlasPage.UnlockBits(bitmapData);
-            atlasPage.Dispose();
-            return texture2D;
-            */
-
-            throw new NotImplementedException();
-        }
-
-        private static byte[] ConvertColorsToBytes(Color[] data)
-        {
-            var n = data.Length;
-            var bytes = new byte[n * sizeof(uint)];
-            if (n == 0)
-            {
-                return bytes;
-            }
-
-            unsafe
-            {
-                fixed (byte* bytesPtr = &bytes[0])
-                {
-                    var targetArray = (uint*)bytesPtr;
-                    for (var i = 0; i < n; i++)
-                    {
-                        targetArray[i] = data[i].B | ((uint)data[i].G << 8) | ((uint)data[i].R << 16) | ((uint)data[i].A << 24);
-                    }
-                }
-            }
-
-            return bytes;
         }
     }
 }
