@@ -16,6 +16,7 @@ namespace UOStudio.Client
 
         private readonly ILogger _logger;
         private readonly IGraphicsDevice _graphicsDevice;
+        private readonly TextureFormat _textureFormat;
         private readonly string _projectsDirectory;
         private readonly string _atlasName;
 
@@ -28,17 +29,21 @@ namespace UOStudio.Client
 
         public ITextureArray AtlasTexture { get; private set; }
 
+        public ITextureView[] AtlasTextureViews { get; private set; }
+
         internal TextureAtlas(
             ILogger logger,
             IGraphicsDevice graphicsDevice,
+            TextureFormat textureFormat,
             string projectsDirectory,
             string atlasName)
         {
             _logger = logger.ForContext<TextureAtlas>();
             _graphicsDevice = graphicsDevice;
+            _textureFormat = textureFormat;
             _projectsDirectory = projectsDirectory;
             _atlasName = atlasName;
-            _invalidLandTile = new LandTile(-1, default);
+            _invalidLandTile = new LandTile(default, default);
             _invalidItemTile = new ItemTile(default, default);
 
             _landTiles = new Dictionary<int, LandTile>();
@@ -48,6 +53,10 @@ namespace UOStudio.Client
 
         public void Dispose()
         {
+            foreach (var atlastTextureViews in AtlasTextureViews)
+            {
+                atlastTextureViews?.Dispose();
+            }
             AtlasTexture?.Dispose();
         }
 
@@ -65,6 +74,12 @@ namespace UOStudio.Client
             => _itemTiles.TryGetValue(staticId, out var staticTile)
                 ? staticTile
                 : _invalidItemTile;
+
+        public int LandTileCount => _landTiles.Count;
+
+        public int LandTextureCount => _landTextureTiles.Count;
+
+        public int ItemTileCount => _itemTiles.Count;
 
         public bool Load()
         {
@@ -84,7 +99,6 @@ namespace UOStudio.Client
                 return false;
             }
 
-
             var sw = Stopwatch.StartNew();
             var atlasDataJson = File.ReadAllText(atlasJsonFilePath);
             var atlasData = JsonConvert.DeserializeObject<Atlas>(atlasDataJson);
@@ -102,7 +116,12 @@ namespace UOStudio.Client
                 atlasData.Height,
                 atlasData.Depth,
                 atlasTextureData,
-                TextureFormat.Rgb8);
+                _textureFormat);
+            AtlasTextureViews = new ITextureView[atlasData.Depth];
+            for (uint i = 0; i < Depth; i++)
+            {
+                AtlasTextureViews[i] = new TextureView(AtlasTexture, i);
+            }
 
             sw.Stop();
             _logger.Debug("Loading Atlas Texture...Done, Took {@Elapsed}s", sw.Elapsed.TotalSeconds);

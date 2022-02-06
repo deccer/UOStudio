@@ -1,7 +1,9 @@
-﻿namespace UOStudio.Client
+﻿using UOStudio.Client.Engine.Graphics;
+
+namespace UOStudio.Client
 {
     public interface ITextureAtlasProvider
     {
-        bool TryLoadTextureAtlas(string atlasName, out ITextureAtlas textureAtlas);
+        bool TryLoadTextureAtlas(string atlasName, TextureFormat textureFormat, out ITextureAtlas textureAtlas);
     }
 }

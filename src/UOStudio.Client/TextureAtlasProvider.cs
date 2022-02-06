@@ -20,11 +20,15 @@ namespace UOStudio.Client
             _graphicsDevice = graphicsDevice;
         }
 
-        public bool TryLoadTextureAtlas(string atlasName, out ITextureAtlas textureAtlas)
+        public bool TryLoadTextureAtlas(
+            string atlasName,
+            TextureFormat textureFormat,
+            out ITextureAtlas textureAtlas)
         {
             textureAtlas = new TextureAtlas(
                 _logger,
                 _graphicsDevice,
+                textureFormat,
                 _clientSettings.Value.ProjectsDirectory,
                 atlasName);
             if (textureAtlas.Load())
