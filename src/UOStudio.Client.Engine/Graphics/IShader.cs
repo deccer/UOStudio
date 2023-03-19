@@ -1,4 +1,5 @@
-﻿using UOStudio.Client.Engine.Mathematics;
+using UOStudio.Client.Engine.Mathematics;
+using Point = UOStudio.Client.Engine.Mathematics.Point;
 
 namespace UOStudio.Client.Engine.Graphics
 {

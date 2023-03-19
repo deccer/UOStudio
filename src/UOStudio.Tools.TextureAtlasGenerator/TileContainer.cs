@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Serilog;
 using UOStudio.Tools.TextureAtlasGenerator.Abstractions;
 using UOStudio.Tools.TextureAtlasGenerator.Contracts;
@@ -47,7 +47,7 @@ namespace UOStudio.Tools.TextureAtlasGenerator
         {
             SetW(atlasPageCount);
             var atlas = GetAtlas(atlasPageCount);
-            var json = JsonConvert.SerializeObject(atlas, Formatting.Indented);
+            var json = JsonSerializer.Serialize(atlas, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(fileName, json);
 
             var atlasHash = _hashCalculator.CalculateHash(Encoding.UTF8.GetBytes(json));

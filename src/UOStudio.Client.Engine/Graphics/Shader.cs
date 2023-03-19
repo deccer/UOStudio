@@ -1,6 +1,7 @@
-﻿using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions;
 using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Client.Engine.Native.OpenGL;
+using Point = UOStudio.Client.Engine.Mathematics.Point;
 
 namespace UOStudio.Client.Engine.Graphics
 {

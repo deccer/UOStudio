@@ -49,7 +49,7 @@ namespace UOStudio.Server.Api
             services.AddSingleton(Log.Logger);
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "UOStudio.Server.Api", Version = "v1" }); });
-            services.AddMediatR(typeof(GetProjectsQuery).Assembly);
+            services.AddMediatR(cfg => { cfg.RegisterServicesFromAssemblies(typeof(GetProjectsQuery).Assembly); });
 
             services.AddLiteDb();
             services.AddPasswordHandling();
