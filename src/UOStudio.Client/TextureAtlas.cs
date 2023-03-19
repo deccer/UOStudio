@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Serilog;
 using UOStudio.Client.Engine.Graphics;
 using UOStudio.Tools.TextureAtlasGenerator.Contracts;
@@ -101,7 +101,7 @@ namespace UOStudio.Client
 
             var sw = Stopwatch.StartNew();
             var atlasDataJson = File.ReadAllText(atlasJsonFilePath);
-            var atlasData = JsonConvert.DeserializeObject<Atlas>(atlasDataJson);
+            var atlasData = JsonSerializer.Deserialize<Atlas>(atlasDataJson);
             if (atlasData == null)
             {
                 _logger.Error("TextureAtlas - Metadata incorrect");
