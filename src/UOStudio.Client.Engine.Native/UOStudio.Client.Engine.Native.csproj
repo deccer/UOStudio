@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
@@ -19,5 +19,12 @@
     <PropertyGroup Condition="'$(IsLinux)'=='true'">
         <DefineConstants>LINUX</DefineConstants>
     </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Update="JetBrains.Annotations" Version="2022.3.1" />
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.54.0.64047">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
 
 </Project>

@@ -1,44 +1,44 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TargetFramework>net7.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
         <UseDebugLibraries>true</UseDebugLibraries>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ControlzEx" Version="5.0.1" />
-        <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.1" />
-        <PackageReference Include="FontAwesome5" Version="2.1.6" />
+        <PackageReference Include="ControlzEx" Version="5.0.2" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="2.38.1" />
+        <PackageReference Include="FontAwesome5" Version="2.1.11" />
         <PackageReference Include="MahApps.Metro" Version="2.4.9" />
         <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
-        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.4" />
         <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
 
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
-        <PackageReference Include="Serilog" Version="2.10.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+        <PackageReference Include="Serilog" Version="2.12.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 
-        <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.0" />
+        <PackageReference Include="System.Collections.Immutable" Version="7.0.0" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -51,6 +51,14 @@
       <ProjectReference Include="..\UOStudio.Client.Launcher.Contracts\UOStudio.Client.Launcher.Contracts.csproj" />
       <ProjectReference Include="..\UOStudio.Client.Launcher.Data\UOStudio.Client.Launcher.Data.csproj" />
       <ProjectReference Include="..\UOStudio.Common.Contracts\UOStudio.Common.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="JetBrains.Annotations" Version="2022.3.1" />
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.54.0.64047">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

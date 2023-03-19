@@ -1,25 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.1" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+      <PackageReference Include="CSharpFunctionalExtensions" Version="2.38.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
       <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-      <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-      <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.15.1" />
-      <PackageReference Include="Microsoft.IdentityModel.Logging" Version="6.15.1" />
-      <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="6.15.1" />
-      <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.15.1" />
-      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.15.1" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+      <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.27.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Logging" Version="6.27.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="6.27.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.27.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.27.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="JetBrains.Annotations" Version="2022.3.1" />
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.54.0.64047">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

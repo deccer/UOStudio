@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using ImGuiNET;
 using UOStudio.Client.Engine.Graphics;
@@ -6,6 +6,7 @@ using UOStudio.Client.Engine.Input;
 using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Client.Engine.Native.OpenGL;
 using Num = System.Numerics;
+using Point = UOStudio.Client.Engine.Mathematics.Point;
 using Vector2 = UOStudio.Client.Engine.Mathematics.Vector2;
 
 namespace UOStudio.Client.Engine.UI

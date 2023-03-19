@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -14,15 +14,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Ardalis.GuardClauses" Version="4.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-        <PackageReference Include="Serilog" Version="2.10.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-        <PackageReference Include="CSharpFunctionalExtensions" Version="2.27.1" />
-        <PackageReference Include="ImGui.NET" Version="1.86.0" />
-        <PackageReference Include="SeeingSharp2.AssimpImporter" Version="0.8.1" />
+        <PackageReference Include="Ardalis.GuardClauses" Version="4.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Serilog" Version="2.12.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="2.38.1" />
+        <PackageReference Include="ImGui.NET" Version="1.89.4" />
+        <PackageReference Include="SeeingSharp2.AssimpImporter" Version="0.9.2" />
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
     </ItemGroup>
 
@@ -30,6 +30,14 @@
       <ProjectReference Include="..\UOStudio.Client.Engine.Mathematics\UOStudio.Client.Engine.Mathematics.csproj" />
       <ProjectReference Include="..\UOStudio.Client.Engine.Native.OpenGL\UOStudio.Client.Engine.Native.OpenGL.csproj" />
       <ProjectReference Include="..\UOStudio.Client.Engine.Native\UOStudio.Client.Engine.Native.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="JetBrains.Annotations" Version="2022.3.1" />
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.54.0.64047">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

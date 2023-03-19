@@ -1,7 +1,10 @@
+using System.Runtime.CompilerServices;
+using Assimp;
 using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Runtime.InteropServices;
 using UOStudio.Client.Engine.Extensions;
 using UOStudio.Client.Engine.Mathematics;
 using UOStudio.Client.Engine.Native.OpenGL;
@@ -194,6 +197,8 @@ namespace UOStudio.Client.Engine.Graphics
             };
         }
 
+        
+
         private void CreateTexture(
             Image<Rgba32> image,
             MinFilter minFilter,
@@ -204,6 +209,8 @@ namespace UOStudio.Client.Engine.Graphics
             Height = image.Height;
 
             image.Mutate(ipc => ipc.Flip(FlipMode.Vertical));
+
+            
             if (image.TryGetSinglePixelSpan(out var pixelSpan))
             {
                 var mipLevels = (int)MathF.Floor(MathF.Log2(MathF.Max(Width, Height)));
