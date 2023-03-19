@@ -53,6 +53,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\UOStudio.Client.Assets\UOStudio.Client.Assets.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Core\UOStudio.Client.Core.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Engine.Mathematics\UOStudio.Client.Engine.Mathematics.csproj" />
         <ProjectReference Include="..\UOStudio.Client.Engine.Native.OpenGL\UOStudio.Client.Engine.Native.OpenGL.csproj" />
