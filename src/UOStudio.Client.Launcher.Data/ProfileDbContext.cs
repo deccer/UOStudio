@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace UOStudio.Client.Launcher.Data
@@ -49,8 +49,8 @@ namespace UOStudio.Client.Launcher.Data
                 ServerPort = 9050,
                 UserName = "admin",
                 Password = "admin",
-                AuthBaseUri = "https://localhost:5001",
-                ApiBaseUri = "https://localhost:5001"
+                AuthBaseUri = "https://localhost:5000",
+                ApiBaseUri = "https://localhost:5000"
             };
             var localhostEditorProfile = await Profiles
                 .FirstOrDefaultAsync(p => p.Name == "localhost - editor", CancellationToken.None);
@@ -61,8 +61,8 @@ namespace UOStudio.Client.Launcher.Data
                 ServerName = "localhost",
                 UserName = "editor",
                 Password = "editor",
-                AuthBaseUri = "https://localhost:5001",
-                ApiBaseUri = "https://localhost:5001"
+                AuthBaseUri = "https://localhost:5000",
+                ApiBaseUri = "https://localhost:5000"
             };
 
             var localhostInvalidProfile = await Profiles
@@ -74,8 +74,8 @@ namespace UOStudio.Client.Launcher.Data
                 ServerName = "localhost",
                 UserName = "invalid",
                 Password = "invalid",
-                AuthBaseUri = "https://localhost:5001",
-                ApiBaseUri = "https://localhost:5001"
+                AuthBaseUri = "https://localhost:5000",
+                ApiBaseUri = "https://localhost:5000"
             };
 
             await Profiles.AddRangeAsync(localhostAdminProfile, localhostEditorProfile, localhostInvalidProfile);
